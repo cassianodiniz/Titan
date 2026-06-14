@@ -134,11 +134,27 @@ flowchart TD
 
 ## Instalar
 
-Pelo `/plugin`: adicione o marketplace onde o plugin está publicado e instale **dev**.
+### Opção 1 — Completo, com tudo (recomendado)
 
-O plugin **orquestra** ferramentas externas (superpowers, `/pesquisa`, taste-skill, MCPs,
-Codex CLI…) — ele não as empacota. O passo a passo completo, com os comandos de cada
-dependência e um **instalador guiado** (`install.sh`), está em **[INSTALL.md](INSTALL.md)**.
+Abra o **Claude Code** no terminal e cole esta linha — o Claude lê o `INSTALL.md` e instala e
+configura **o plugin + as dependências** (skills externas, MCPs, Codex), só te chamando pros
+logins e pelas chaves:
+
+```
+Leia https://raw.githubusercontent.com/cassianodiniz/dev-plugin/main/INSTALL.md e execute a instalação completa seguindo as instruções.
+```
+
+### Opção 2 — Rápido, só o plugin (via marketplace)
+
+```
+/plugin marketplace add cassianodiniz/cassiano.diniz
+/plugin install dev@cassiano.diniz
+```
+
+> ⚠️ O marketplace instala **só o plugin**. As ferramentas externas que ele orquestra
+> (superpowers, `/pesquisa`, taste-skill, MCPs, Codex CLI…) **não** vêm juntas — elas seguem o
+> **[INSTALL.md](INSTALL.md)** (que tem também um instalador guiado, `install.sh`). Use a Opção 1
+> se quiser tudo de uma vez.
 
 ## Estrutura
 

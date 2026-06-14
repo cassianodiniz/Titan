@@ -41,11 +41,11 @@ As tabelas abaixo são a referência completa, item por item, caso queira instal
 
 ## 1. Instalar o próprio plugin `dev`
 
-Pelo `/plugin`, adicione o marketplace onde o `dev` está publicado e instale:
+Pelo `/plugin`, adicione o marketplace e instale:
 
 ```
-/plugin marketplace add <marketplace-ou-repo-onde-o-dev-está>
-/plugin install dev@<nome-do-marketplace>
+/plugin marketplace add cassianodiniz/cassiano.diniz
+/plugin install dev@cassiano.diniz
 ```
 
 Depois as skills ficam disponíveis como `dev:planejar`, `dev:auto-prompt`, `dev:handoff`.
