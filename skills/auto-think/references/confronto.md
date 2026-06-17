@@ -33,7 +33,8 @@ no detalhe. Manifesto enxuto e de alto sinal vence manifesto inchado. Estrutura:
 Depois siga o motor: mascarar dado (seção 1), selar (seção 2), montar o input final
 (`/tmp/confronto-input.md` = prompt adversarial abaixo + linha do selo + manifesto) e chamar
 (seção 3). Confronta em LOTE quando der (várias candidatas num input só) pra não estourar custo.
-Use `xhigh` quando o problema for pesado (decisão de arquitetura, comparação grande).
+O confronto do auto-think roda **SEMPRE em `xhigh` + `service_tier="fast"`** (gpt-5.5) — máximo de
+raciocínio na via rápida; já vem assim no comando do motor (`../../_shared/confronto-codex.md`).
 
 ## Prompt adversarial — 1ª rodada (passo 3: derrubar cada candidata)
 

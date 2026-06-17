@@ -1,6 +1,6 @@
 ---
 name: auto-think
-description: "Modo larga-e-some pra ESTUDAR um problema difícil A FUNDO — dispara vários ângulos EM PARALELO (agentes independentes), pesquisa o que o mundo já resolveu, levanta um LEQUE de soluções candidatas, confronta cada uma com o Codex em mais de uma rodada, verifica o que se sustenta, re-cava o que ficou aberto, e entrega as soluções viáveis COM VEREDITO. Fundo é o padrão; o usuário FREIA dizendo 'rápido'. NÃO executa a solução (quem executa é /auto-prompt) — para na recomendação. Acionar quando o usuário disser '/auto-think <problema>', 'auto-think', 'estuda isso a fundo', 'pesquisa e me traz a melhor forma de fazer X', 'qual o melhor jeito de', 'investiga esse problema de vários ângulos', 'confronta as opções e decide', 'pensa nisso e volta com solução', 'larga isso pra estudar' — mesmo sem citar 'auto-think'. NÃO acionar pra pergunta factual rápida que se responde direto (sem estudo), nem pra EXECUTAR/implementar uma tarefa (isso é /auto-prompt), nem pra planejar um produto novo do zero (isso é /planejar)."
+description: "Modo larga-e-some pra ESTUDAR um problema DIFÍCIL ou uma decisão que PESA — dispara vários ângulos EM PARALELO (agentes independentes), pesquisa o que o mundo e outras empresas já resolveram, levanta um LEQUE de candidatas, confronta cada uma com o Codex em mais de uma rodada, verifica o que se sustenta, re-cava o que ficou aberto, e entrega as soluções viáveis COM VEREDITO. Tem dois tamanhos: FUNDO é o padrão; modo LEVE quando o usuário diz 'rápido/leve/só o essencial' — mas decisão sem-volta, de produto ou de alto impacto puxa fundo mesmo no leve. NÃO executa a solução (quem executa é /auto-prompt) — para na recomendação. Acionar quando o usuário disser '/auto-think <problema>', 'auto-think', 'estuda isso a fundo', 'pesquisa e me traz a melhor forma de fazer X', 'investiga esse problema de vários ângulos', 'confronta as opções e decide', 'qual o melhor caminho pra <algo que exige estudo>', 'pensa nisso e volta com solução', 'larga isso pra estudar' — mesmo sem citar 'auto-think'. NÃO acionar pra pergunta factual rápida nem decisão pequena e reversível que dá pra responder direto sem estudo, nem pra EXECUTAR/implementar uma tarefa (isso é /auto-prompt), nem pra planejar um produto novo do zero (isso é /planejar)."
 ---
 
 # auto-think
@@ -48,15 +48,29 @@ sabendo que ela é a cara.
 **Pisos concretos do modo fundo** (pra não recair no mínimo):
 - **≥ 4 ângulos** atacados em paralelo, cada um como agente independente (ver passo 2).
 - **Pesquisa externa obrigatória** sempre que o problema for "qual a melhor forma de X" / "como
-  os outros resolvem isto" — nunca decidir a melhor forma só de cabeça.
+  os outros resolvem isto" / **uma decisão de produto** (aí inclui *o que outras empresas estão
+  fazendo*) — nunca decidir só de cabeça.
+- **Em decisão de produto, confrontar o PLANO que o usuário trouxe é obrigatório** (ângulo
+  contrário, passo 2) — não assumir que o que ele trouxe está certo.
 - **≥ 3 candidatas** levantadas antes de podar (poda escolhe entre opções reais, não settla na
   primeira).
 - **2 rodadas de confronto:** a primeira em todas as candidatas, a segunda nos sobreviventes.
 - Re-cava enquanto houver **incerteza em aberto que mude a decisão** (o motor da profundidade —
   ver passo 5), não enquanto "achar coisa nova".
 
-No modo freado (usuário pediu rápido): ≥2 ângulos, 1 confronto, sem re-cavar, entrega a
-recomendada + no máximo 1 alternativa.
+**O modo LEVE — você liga, não o modelo.** Quando você diz "rápido", "leve", "só o essencial",
+"não precisa tanto" — ou chama `/auto-think rápido <problema>` — a skill encolhe de propósito:
+≥2 ângulos, 1 confronto, sem re-cavar, entrega a recomendada + no máximo 1 alternativa. É seguro
+porque a escolha é SUA, não um chute do modelo — o modelo decidir sozinho "isso é pequeno"
+continua proibido (ver acima).
+
+**A trava de impacto — o que protege a cura mesmo no leve.** O modo leve NÃO vale pra tudo. Se,
+ao enquadrar, o problema for **difícil de desfazer** (sem-volta), de **alto impacto** (mexe em
+produto, dinheiro, dado real de pessoa, decisão estratégica) ou ainda tiver **incerteza que muda
+a decisão**, a skill **não fica leve**: ou puxa fundo automático, ou para e diz "isso é
+sem-volta/de produto — recomendo ir fundo, confirma?". O eixo é **reversível e baixo impacto →
+leve OK; sem-volta ou alto impacto → fundo**, nunca "pequeno vs grande" — tamanho o modelo erra,
+impacto é mais observável, e na dúvida vai fundo.
 
 ---
 
@@ -91,12 +105,10 @@ problema SÓ faz sentido expondo o dado real → **para e pede autorização esp
 manda mesmo assim. Isso vale tanto pro confronto (Codex) quanto pra busca na web. Vale também
 pros agentes paralelos: cada agente recebe o problema já mascarado.
 
-**A régra concreta do que sai:** o que vai pra fora é o **problema abstraído** — a estrutura, o
-padrão, o raciocínio — **nunca o registro real verbatim**. Campos que mascara sempre: nome,
-CPF/documento, telefone, email, endereço, e qualquer credencial (token, senha, chave, string de
-conexão). Antes de salvar o arquivo que vai pro Codex ou montar a busca, relê e confirma que
-nenhum desses campos passou cru. A pesquisa na web usa o enunciado genérico do problema ("como
-resolver X nesse tipo de sistema"), nunca um dado interno colado.
+**A regra concreta do que sai:** o que vai pra fora é o **problema abstraído** (estrutura,
+padrão, raciocínio), **nunca o registro real verbatim**. Antes de salvar o arquivo que vai pro
+Codex ou montar a busca, relê e confirma que nenhum campo cru passou. A pesquisa na web usa o
+enunciado genérico ("como resolver X nesse tipo de sistema"), nunca um dado interno colado.
 
 Fora isso, o auto-think é leitura: não escreve em banco, não envia mensagem, não mexe em
 arquivo do usuário (a não ser rascunho próprio em `/tmp`). Nenhuma trava dura de execução se
@@ -138,9 +150,11 @@ Antes de cavar, separa o que é **fato** do que é **suposição** e decide o te
 - **Escreve em 1-2 linhas o que assumiu** antes de sumir: qual o escopo, onde vai olhar, e o
   que conta como "resolvido" (o critério de sucesso). Isso é o que protege o "larga e some":
   se a suposição estiver errada, o usuário corrige cedo em vez de no fim.
-- **Decide a profundidade aqui:** fundo por padrão (ver a Calibragem). Só cai pro modo freado
-  se o usuário pediu "rápido/essencial" no enunciado. Na dúvida, fundo. **Nunca encolhe por
-  chute** ("acho que isso é simples") — isso é o que fazia a skill trabalhar pouco.
+- **Decide a profundidade aqui:** fundo por padrão (ver a Calibragem). Cai pro **modo leve** só
+  se o usuário pediu "rápido/leve/essencial" **E a trava de impacto liberar** — se a decisão for
+  sem-volta, de produto ou de alto impacto, ignora o "rápido" e vai fundo (ou pergunta antes). Na
+  dúvida, fundo. **Nunca encolhe por chute** ("acho que isso é simples") — isso é o que fazia a
+  skill trabalhar pouco.
 - **Escape do trivial (única exceção ao fundo-por-padrão):** se ao enquadrar o problema ele se
   revelar trivial ou JÁ resolvido — e isso for **provável com evidência colada**, não com
   palpite — diz isso direto e não gasta o ciclo. "Já tem resposta pronta aqui: <prova>" é uma
@@ -174,7 +188,9 @@ disparar. Antes de montar um leque grande, **prova numa fatia** que o disparo pa
 - **Custo/risco:** o que cada caminho cobra (dinheiro, dependência nova, manutenção, o que
   quebra quando crescer).
 - **Precedente (fonte oficial + web):** o que o mundo já resolveu sobre isto — padrões, armadilhas
-  conhecidas. **Obrigatório** quando o problema é "melhor forma de X" ou "como os outros fazem".
+  conhecidas. **Obrigatório** quando o problema é "melhor forma de X", "como os outros fazem", **ou
+  uma decisão de produto/estratégica** — aí cobre *o que outras empresas já fazem*, a visão de fora
+  que o usuário precisa pra não decidir no escuro.
   Quando o problema é claramente de uma tecnologia com dono (Cloudflare, Supabase, React,
   Postgres…), a fonte de MAIOR garantia não é a web aberta — é a régua oficial daquele domínio: a
   **documentação oficial** (via `context7`, sempre disponível, nada a instalar) e, se houver, uma
@@ -182,9 +198,12 @@ disparar. Antes de montar um leque grande, **prova numa fatia** que o disparo pa
   web aberta; a web cobre o que elas não respondem. Como casar e o que fazer sem skill instalada:
   logo abaixo.
 - **Contexto interno:** como isto encaixa no sistema real do usuário (código, banco, arquivos).
-- Ângulos extras quando o problema pedir: **contrário** (e se a premissa do pedido estiver
-  errada?), **escala** (e quando crescer 10x?), **alternativa radical** (e se não fizer nada / se
-  resolver por fora?).
+- **Contrário — OBRIGATÓRIO em decisão de produto/estratégica:** confronta a premissa e o
+  **PLANO QUE O USUÁRIO TROUXE** em vez de assumir que está certo (e se a premissa do pedido
+  estiver errada? que parte do plano dele não se sustenta?). Fora decisão de produto, é ângulo
+  extra como os de baixo.
+- Outros ângulos extras quando o problema pedir: **escala** (e quando crescer 10x?),
+  **alternativa radical** (e se não fizer nada / se resolver por fora?).
 
 Pra a parte web, **reusa o que já existe**: `/pesquisa` (funil com fontes/citações) ou
 `deep-research` (leque + verificação + síntese citada). Não reescreve um pesquisador do zero.
@@ -226,19 +245,16 @@ radical) pra garantir que não é falta de imaginação, e não convergência re
 
 ### 3. Confrontar os achados (Codex tenta derrubar) — 1ª rodada
 Cada achado e cada candidata passa pelo Codex como **advogado do diabo** — o mesmo mecanismo do
-`/gpt`. O Codex tenta REFUTAR: isto resolve mesmo o problema ou só um sintoma? A premissa é fato
+`/dev:gpt-blindagem`. O Codex tenta REFUTAR: isto resolve mesmo o problema ou só um sintoma? A premissa é fato
 ou foi vendida como fato? Tem caminho mais simples? A fonte sustenta a afirmação? O que
 sobrevive fica; o que é refutado cai (com o motivo registrado pra a entrega).
 
-Como chamar o Codex (mascarando dado real ANTES — ver a trava acima; sempre com o teto de 15 min
-da trava #4):
-```bash
-perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-5.5 -c model_reasoning_effort="high" --skip-git-repo-check - < /tmp/autothink-confronto.md
-```
-Use `xhigh` quando o problema for pesado (decisão de arquitetura, comparação grande). Confronta
-em LOTE quando der (várias candidatas num input só) pra não estourar custo. Como montar o
-manifesto e os prompts adversariais das duas rodadas: `references/confronto.md`. Mecânica de
-chamada, selo de versão e fallback: motor compartilhado `../_shared/confronto-codex.md`.
+Como chamar o Codex (mascarando dado real ANTES — ver a trava acima): a mecânica exata é UMA SÓ
+e mora no motor compartilhado `../_shared/confronto-codex.md` (invocação com teto de 15 min, selo
+de versão, fallback) — não recopie o comando aqui. O auto-think roda **sempre em `xhigh` +
+`service_tier="fast"`** (gpt-5.5: máximo de raciocínio na via rápida, já no comando do motor);
+confronta em LOTE quando der (várias candidatas num input só) pra não estourar custo. Como montar
+o manifesto e os prompts adversariais das duas rodadas: `references/confronto.md`.
 
 ### 4. O PORTÃO DE QUALIDADE — 4 perguntas que toda candidata passa
 Achar uma solução não é o fim — é o gatilho pra interrogá-la. Nenhuma candidata vira "séria"
@@ -304,7 +320,7 @@ decisão e bati o teto — continuo?"**. O teto é rede contra descontrole, não
 Antes de entregar, os finalistas (a recomendada + as alternativas reais) voltam ao Codex **uma
 segunda vez**, agora com a pergunta afiada: *dessas que sobraram, qual escolher e por quê — e o
 que ainda fura na recomendada?* Essa segunda passada é o que separa "sobreviveu por sorte" de
-"sobreviveu de verdade", e costuma melhorar a justificativa do veredito. No modo freado, pula
+"sobreviveu de verdade", e costuma melhorar a justificativa do veredito. No modo leve, pula
 esta rodada.
 
 ### 7. Entregar
@@ -331,18 +347,14 @@ uma segunda chamada.
 **3. Orçamento de chamadas (a trava dura — porque espiral = chamadas infinitas).** O ciclo todo
 gasta no máximo: **2 rodadas de confronto** (1ª em todas as candidatas, 2ª nos finalistas) +
 **3 re-cavas**. Bateu o teto → para e entrega o que tem, com aviso. Contar chamada o modelo
-consegue cumprir; matar por relógio, não. No modo freado: 1 confronto, 0 re-cava.
+consegue cumprir; matar por relógio, não. No modo leve: 1 confronto, 0 re-cava.
 
 **4. O GPT tem 15 min — passou disso, travou.** A chamada do Codex vai envelopada num teto de
-15 min que o sistema operacional mata sozinho. **Portátil** (o `timeout` puro NÃO existe no Mac;
-o `perl` existe no Mac e no Windows):
-```bash
-perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-5.5 -c model_reasoning_effort="high" --skip-git-repo-check - < /tmp/autothink-input.md
-```
-(No Linux ou Mac com coreutils dá pra usar `timeout 900` / `gtimeout 900` no lugar — mas o `perl`
-acima funciona em todos.) Rodou mais de 15 min = **travou**, ponto. O processo é morto. Regra do
-dono: **mata e refaz** — re-dispara a mesma chamada uma vez. Travou de novo → desiste dela e cai
-no fallback de confronto (ver composição), seguindo com o que tem.
+15 min que o SO mata sozinho (o `perl -e 'alarm 900'` do motor compartilhado — `timeout` puro não
+existe no Mac, `perl` existe no Mac e no Windows). O comando exato é o do
+`../_shared/confronto-codex.md`; aqui só a regra: rodou mais de 15 min = **travou**, ponto. O
+processo é morto. **Mata e refaz** — re-dispara a mesma chamada uma vez. Travou de novo → desiste
+dela e cai no fallback de confronto (ver composição), seguindo com o que tem.
 
 **5. Agente em background que não volta não trava o ciclo.** Dispara com `run_in_background`,
 faz um check-in; o ângulo que não retornou até o ponto de síntese **não segura o resto** —

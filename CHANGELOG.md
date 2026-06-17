@@ -1,5 +1,39 @@
 # Changelog — dev
 
+## 1.3.0 — 2026-06-16
+
+### Adicionado
+- **5ª skill: `gpt-blindagem`** — o revisor adversarial via Codex GPT-5.5, que era skill standalone na raiz (`~/.claude/skills/gpt-blindagem`), passou a viver **dentro do plugin** (`dev/skills/gpt-blindagem`). Acionamento por barra agora é `/dev:gpt-blindagem`; os gatilhos falados ("blinda isso", "chama o gpt", "advogado do diabo") seguem iguais. Manifesto: descrição atualizada (quatro → cinco skills).
+
+### Mudado
+- **Reapontado o `$GPT`** no `gpt-blindagem/SKILL.md` pro novo caminho (`~/.claude/skills/dev/skills/gpt-blindagem` no Mac, `D:/skills/dev/skills/gpt-blindagem` no Windows) — senão a skill não acha os próprios `run-gpt.sh`/`verify-selo.sh`.
+- **Ponteiros pro nome novo:** `auto-think/SKILL.md` ("mesmo mecanismo do `/dev:gpt-blindagem`") e `_shared/confronto-codex.md` (atalho de reusar os scripts da skill irmã) passaram a citar `/dev:gpt-blindagem`.
+
+## 1.2.4 — 2026-06-16
+
+### Mudado
+- **Ponteiros pro revisor adversarial:** `/gpt` → `/gpt-blindagem` (a skill standalone foi renomeada — nome mais claro e tranquilizador pra quem é novo em IA: "blinda sua decisão" em vez de "inimigo"). Atualizado em `auto-think/SKILL.md` (o "mesmo mecanismo do /gpt-blindagem") e `_shared/confronto-codex.md` (o atalho de reusar `run-gpt.sh`/`verify-selo.sh`).
+
+## 1.2.3 — 2026-06-16
+
+### Mudado
+- **auto-think (confronto):** passou a rodar **sempre em `gpt-5.5` · `xhigh` · `service_tier="fast"`** — esforço máximo de raciocínio na via rápida do gpt-5.5. O `fast` vai explícito no comando porque o confronto roda com `--ignore-user-config` (ignora o tier do config global do Codex). Antes era `high` "salvo quando pesado"; agora é xhigh fixo. Sincronizado no motor `_shared/confronto-codex.md`, no `auto-think/SKILL.md` e no `auto-think/references/confronto.md`.
+- **_shared/confronto-codex.md:** `--full-auto` (deprecado pelo Codex 0.130) trocado por `--sandbox workspace-write` equivalente. `planejar` mantém seu próprio esforço (high na checagem leve, xhigh na sanidade) — não herda o xhigh fixo do auto-think.
+
+## 1.2.2 — 2026-06-16
+
+### Mudado
+- **auto-think:** o "modo freado" (escondido numa frase) virou **modo LEVE de primeira classe** — o usuário liga dizendo "rápido/leve/só o essencial" ou `/auto-think rápido <problema>`, e a skill encolhe de propósito (≥2 ângulos, 1 confronto, sem re-cavar). É seguro porque a escolha é do **usuário**, não um chute do modelo (o modelo decidir sozinho "isso é pequeno" continua proibido). Adicionada a **trava de impacto**: mesmo no leve, decisão **sem-volta / de produto / alto impacto / com incerteza que muda a decisão** puxa fundo automático (ou pergunta antes) — o eixo é reversível/baixo impacto vs sem-volta/alto impacto, nunca "pequeno vs grande". A trava está fiada no passo 1 (enquadramento), não só declarada.
+- **auto-think (gatilho):** descrição afinada pra não disparar sozinha em coisa pequena — removido o gatilho largo "qual o melhor jeito de" (virou "qual o melhor caminho pra <algo que exige estudo>") e adicionado o anti-gatilho "decisão pequena e reversível que dá pra responder direto". Fecha o vazamento de abrir o canhão em decisão trivial.
+- **auto-think (reforço da cura):** em **decisão de produto/estratégica**, dois ângulos que eram opcionais viraram **obrigatórios** — o **Contrário** (confrontar a premissa e o PLANO QUE O USUÁRIO TROUXE em vez de assumir que está certo) e o **Precedente** (pesquisar o que **outras empresas** já fazem, a visão de fora). Ataca direto o problema que originou a skill: estudar de menos e aceitar o plano do usuário sem questionar.
+
+## 1.2.1 — 2026-06-16
+
+### Corrigido
+- **auto-think:** removidos os dois blocos de comando do Codex que estavam **copiados inline** no `SKILL.md` (passo 3 e trava #4). Eles divergiam do motor: usavam três nomes de arquivo temporário diferentes (`/tmp/autothink-confronto.md`, `/tmp/autothink-input.md`) contra o `/tmp/confronto-input.md` que o motor sela com hash, e estavam sem as flags `--ignore-user-config --full-auto`. Seguindo o inline ao pé da letra, o selo (hash) podia nunca bater. Agora o comando mora num lugar só (`_shared/confronto-codex.md`) e o `SKILL.md` só aponta pra ele. Também: typo "régra"→"regra" e corte da repetição da regra de mascarar dado.
+- **auto-prompt:** o comando do crítico (Codex) ganhou o **teto de 15 min** (`perl -e 'alarm 900'`) que faltava — era o único da família rodando `codex exec` cru, sem nada que matasse um Codex travado. Alinha com auto-think/planejar/_shared.
+- **_shared/confronto-codex.md:** o cálculo do selo usava `sha256sum` cru, que **não existe no Mac de fábrica** (só `shasum -a 256`) — o passo do selo do auto-think e do planejar quebraria numa máquina sem ele. Agora testa e cai pro `shasum`, igual o `verify-selo.sh` já fazia.
+
 ## 1.2.0 — 2026-06-15
 
 ### Adicionado

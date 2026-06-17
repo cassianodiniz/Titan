@@ -24,7 +24,8 @@ O erro clássico do confronto é o Codex revisar uma versão antiga do material.
 calcule o hash do que vai ser confrontado e exija que o Codex o repita de volta.
 
 ```bash
-H=$(sha256sum /tmp/confronto-input.md | cut -d' ' -f1); echo "$H"
+# sha256sum existe no Linux; o Mac de fábrica só tem `shasum -a 256` (sem sha256sum)
+H=$( { command -v sha256sum >/dev/null 2>&1 && sha256sum /tmp/confronto-input.md || shasum -a 256 /tmp/confronto-input.md; } | cut -d' ' -f1 ); echo "$H"
 ```
 
 Monte o input final = **prompt + a linha do selo com `H` + o material**. Peça ao Codex pra
@@ -39,8 +40,9 @@ resposta cai num arquivo de saída.
 
 ```bash
 perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-5.5 \
-  -c model_reasoning_effort="high" \
-  --skip-git-repo-check --ignore-user-config --full-auto \
+  -c model_reasoning_effort="xhigh" \
+  -c service_tier="fast" \
+  --skip-git-repo-check --ignore-user-config --sandbox workspace-write \
   - < /tmp/confronto-input.md > /tmp/confronto-review.md 2>/dev/null
 ```
 
@@ -51,10 +53,12 @@ perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-5.5 \
 - **`alarm 900` é o teto.** GPT que roda mais de 15 min travou; o SO mata (SIGALRM). Refaz uma
   vez; travou de novo → "Codex fora" (seção 5). Usa `perl` porque o `timeout` puro não existe
   no Mac; no Linux dá pra trocar por `timeout 900`.
-- **Esforço:** `high` é o padrão (checagem de enquadramento). Use `xhigh` quando o problema for
-  pesado — revisão profunda de plano, decisão de arquitetura, comparação grande.
-- **Atalho:** se a skill `/gpt` estiver instalada, dá pra reusar os scripts dela
-  (`run-gpt.sh`, `verify-selo.sh`) em vez de montar a chamada na unha.
+- **Esforço e tier:** o comando acima já vem em `xhigh` + `service_tier="fast"` (o padrão do
+  `auto-think`: máximo de raciocínio na via rápida do gpt-5.5). O `fast` precisa ser explícito
+  porque `--ignore-user-config` ignora o tier do config global. Uma skill que queira esforço
+  menor numa checagem leve (ex: `planejar` na 1ª chamada) troca `xhigh` por `high` no comando dela.
+- **Atalho:** a skill irmã `/dev:gpt-blindagem` (no mesmo plugin) traz os scripts
+  (`run-gpt.sh`, `verify-selo.sh`) — dá pra reusar em vez de montar a chamada na unha.
 
 ## 4. Regra de ouro — o Claude filtra antes, COM PROVA
 

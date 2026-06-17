@@ -166,8 +166,11 @@ estado final BLOQUEADO até o Codex voltar ou o usuário autorizar explicitament
 O crítico nunca é o próprio executor (não se auto-aprova). É o Codex, via Bash:
 
 ```bash
-codex exec --model gpt-5.5 -c model_reasoning_effort="high" --skip-git-repo-check - < /tmp/critico-input.md
+perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-5.5 -c model_reasoning_effort="high" --skip-git-repo-check - < /tmp/critico-input.md
 ```
+O `perl -e 'alarm 900'` é o teto de 15 min: Codex que passa disso travou, o SO mata sozinho
+(`timeout` puro não existe no Mac, `perl` existe no Mac e no Windows). Travou → mata e refaz uma
+vez; travou de novo → cai no fallback (crítico vira agente Claude separado).
 
 **Quantas rodadas de revisão é decisão do usuário** (faz parte do esforço dele). O que a
 skill garante: risco ALTO exige pelo menos 1 revisão VÁLIDA antes de fechar — sem ela,
