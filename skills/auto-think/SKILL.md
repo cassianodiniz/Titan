@@ -1,6 +1,6 @@
 ---
 name: auto-think
-description: "Modo larga-e-some pra ESTUDAR um problema DIFÍCIL ou uma decisão que PESA — dispara vários ângulos EM PARALELO (agentes independentes), pesquisa o que o mundo e outras empresas já resolveram, levanta um LEQUE de candidatas, confronta cada uma com o Codex em mais de uma rodada, verifica o que se sustenta, re-cava o que ficou aberto, e entrega as soluções viáveis COM VEREDITO. Tem dois tamanhos: FUNDO é o padrão; modo LEVE quando o usuário diz 'rápido/leve/só o essencial' — mas decisão sem-volta, de produto ou de alto impacto puxa fundo mesmo no leve. NÃO executa a solução (quem executa é /auto-prompt) — para na recomendação. Acionar quando o usuário disser '/auto-think <problema>', 'auto-think', 'estuda isso a fundo', 'pesquisa e me traz a melhor forma de fazer X', 'investiga esse problema de vários ângulos', 'confronta as opções e decide', 'qual o melhor caminho pra <algo que exige estudo>', 'pensa nisso e volta com solução', 'larga isso pra estudar' — mesmo sem citar 'auto-think'. NÃO acionar pra pergunta factual rápida nem decisão pequena e reversível que dá pra responder direto sem estudo, nem pra EXECUTAR/implementar uma tarefa (isso é /auto-prompt), nem pra planejar um produto novo do zero (isso é /planejar)."
+description: "Modo larga-e-some pra ESTUDAR um problema DIFÍCIL ou uma decisão que PESA — dispara vários ângulos EM PARALELO (agentes independentes), pesquisa o que o mundo e outras empresas já resolveram, levanta um LEQUE de candidatas, confronta cada uma com o Codex em mais de uma rodada, verifica o que se sustenta, re-cava o que ficou aberto, e entrega as soluções viáveis COM VEREDITO. Vai sempre fundo (estudo raso não é estudo): se você só quer uma resposta rápida sobre uma decisão que JÁ tem em mente, isso é a /Titan:gpt-refletir, não esta skill. NÃO executa a solução (quem executa é /auto-prompt) — para na recomendação. Acionar quando o usuário disser '/auto-think <problema>', 'auto-think', 'estuda isso a fundo', 'pesquisa e me traz a melhor forma de fazer X', 'investiga esse problema de vários ângulos', 'confronta as opções e decide', 'qual o melhor caminho pra <algo que exige estudo>', 'pensa nisso e volta com solução', 'larga isso pra estudar' — mesmo sem citar 'auto-think'. NÃO acionar pra pergunta factual rápida nem decisão pequena e reversível que dá pra responder direto sem estudo, nem pra EXECUTAR/implementar uma tarefa (isso é /auto-prompt), nem pra planejar um produto novo do zero (isso é /planejar)."
 ---
 
 # auto-think
@@ -34,10 +34,11 @@ um leque de candidatas, confronto em mais de uma rodada. Um auto-think que entre
 rasa "falhou", mesmo que a resposta esteja certa — porque o pedido foi *estudar*, e estudar
 raso não é estudar.
 
-**Quem freia é o usuário, não a skill.** O sentido normal da escala é pra BAIXO: se ele disser
-"rápido", "só o essencial", "não precisa tanto", aí sim a skill encolhe (menos ângulos, um
-confronto só, sem re-cavar). Sem esse freio, **vai fundo**. A skill nunca decide sozinha
-"acho que isso é simples, vou de leve" — na dúvida entre raso e fundo, vai fundo, porque foi
+**É sempre fundo — não tem mais "modo rápido".** Antes existia um modo leve quando você pedia
+"rápido/só o essencial"; ele saiu. O motivo: quando o que você quer é uma resposta rápida sobre
+uma decisão que você JÁ tem em mente, o caminho é a `/Titan:gpt-refletir` (confronto avulso e
+direto) — não o auto-think. Aqui, se foi chamado, **vai fundo**. A skill nunca decide sozinha
+"acho que isso é simples, vou de raso" — na dúvida entre raso e fundo, vai fundo, porque foi
 pra isso que foi chamada.
 
 **O custo entra avisado, nunca como freio.** Ir fundo gasta mais (Codex em mais rodadas,
@@ -58,19 +59,10 @@ sabendo que ela é a cara.
 - Re-cava enquanto houver **incerteza em aberto que mude a decisão** (o motor da profundidade —
   ver passo 5), não enquanto "achar coisa nova".
 
-**O modo LEVE — você liga, não o modelo.** Quando você diz "rápido", "leve", "só o essencial",
-"não precisa tanto" — ou chama `/auto-think rápido <problema>` — a skill encolhe de propósito:
-≥2 ângulos, 1 confronto, sem re-cavar, entrega a recomendada + no máximo 1 alternativa. É seguro
-porque a escolha é SUA, não um chute do modelo — o modelo decidir sozinho "isso é pequeno"
-continua proibido (ver acima).
-
-**A trava de impacto — o que protege a cura mesmo no leve.** O modo leve NÃO vale pra tudo. Se,
-ao enquadrar, o problema for **difícil de desfazer** (sem-volta), de **alto impacto** (mexe em
-produto, dinheiro, dado real de pessoa, decisão estratégica) ou ainda tiver **incerteza que muda
-a decisão**, a skill **não fica leve**: ou puxa fundo automático, ou para e diz "isso é
-sem-volta/de produto — recomendo ir fundo, confirma?". O eixo é **reversível e baixo impacto →
-leve OK; sem-volta ou alto impacto → fundo**, nunca "pequeno vs grande" — tamanho o modelo erra,
-impacto é mais observável, e na dúvida vai fundo.
+**Quer rápido? Use a outra skill.** O atalho pra "me dá um parecer rápido sobre isto" deixou de
+morar aqui — ele é a `/Titan:gpt-refletir`, que confronta uma decisão pronta sem o estudo de
+vários ângulos. O auto-think é a ferramenta de **estudar a fundo**; pedir pra ele ser raso é
+pedir a coisa errada.
 
 ---
 
@@ -150,11 +142,9 @@ Antes de cavar, separa o que é **fato** do que é **suposição** e decide o te
 - **Escreve em 1-2 linhas o que assumiu** antes de sumir: qual o escopo, onde vai olhar, e o
   que conta como "resolvido" (o critério de sucesso). Isso é o que protege o "larga e some":
   se a suposição estiver errada, o usuário corrige cedo em vez de no fim.
-- **Decide a profundidade aqui:** fundo por padrão (ver a Calibragem). Cai pro **modo leve** só
-  se o usuário pediu "rápido/leve/essencial" **E a trava de impacto liberar** — se a decisão for
-  sem-volta, de produto ou de alto impacto, ignora o "rápido" e vai fundo (ou pergunta antes). Na
-  dúvida, fundo. **Nunca encolhe por chute** ("acho que isso é simples") — isso é o que fazia a
-  skill trabalhar pouco.
+- **A profundidade é sempre fundo** (ver a Calibragem) — não há mais modo leve. **Nunca encolhe
+  por chute** ("acho que isso é simples"): isso é o que fazia a skill trabalhar pouco. Se for um
+  parecer rápido sobre uma decisão pronta, o caminho é a `/Titan:gpt-refletir`, não esta skill.
 - **Escape do trivial (única exceção ao fundo-por-padrão):** se ao enquadrar o problema ele se
   revelar trivial ou JÁ resolvido — e isso for **provável com evidência colada**, não com
   palpite — diz isso direto e não gasta o ciclo. "Já tem resposta pronta aqui: <prova>" é uma
@@ -320,8 +310,7 @@ decisão e bati o teto — continuo?"**. O teto é rede contra descontrole, não
 Antes de entregar, os finalistas (a recomendada + as alternativas reais) voltam ao Codex **uma
 segunda vez**, agora com a pergunta afiada: *dessas que sobraram, qual escolher e por quê — e o
 que ainda fura na recomendada?* Essa segunda passada é o que separa "sobreviveu por sorte" de
-"sobreviveu de verdade", e costuma melhorar a justificativa do veredito. No modo leve, pula
-esta rodada.
+"sobreviveu de verdade", e costuma melhorar a justificativa do veredito.
 
 ### 7. Entregar
 Ver "Entrega final" abaixo.
@@ -347,7 +336,7 @@ uma segunda chamada.
 **3. Orçamento de chamadas (a trava dura — porque espiral = chamadas infinitas).** O ciclo todo
 gasta no máximo: **2 rodadas de confronto** (1ª em todas as candidatas, 2ª nos finalistas) +
 **3 re-cavas**. Bateu o teto → para e entrega o que tem, com aviso. Contar chamada o modelo
-consegue cumprir; matar por relógio, não. No modo leve: 1 confronto, 0 re-cava.
+consegue cumprir; matar por relógio, não.
 
 **4. O GPT tem 15 min — passou disso, travou.** A chamada do Codex vai envelopada num teto de
 15 min que o SO mata sozinho (o `perl -e 'alarm 900'` do motor compartilhado — `timeout` puro não

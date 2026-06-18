@@ -4,7 +4,7 @@ Plugin com **cinco skills**. Cada uma é uma **porta de entrada independente** �
 por qualquer uma:
 
 - **🧠 /planejar** — desenha um produto/software do zero, **descobre como o problema já foi resolvido lá fora** e **audita a planta** antes de construir.
-- **🔬 /auto-think** — **estuda um problema difícil a fundo** (vários ângulos em paralelo, confronta os achados com o Codex) e entrega **soluções com veredito**. Não executa — para na recomendação.
+- **🔬 /auto-think** — você traz um **problema sem resposta**; ele **estuda a fundo** (vários ângulos em paralelo, confronta os achados com o Codex) e entrega **opções com veredito**. Gera caminhos — não executa, para na recomendação.
 - **⚙️ /auto-prompt** — executa uma tarefa do início ao fim, se corrigindo sozinho, e **verifica a casa** construída.
 - **🪢 /handoff** — salva o ponto exato do trabalho e passa o bastão pra outra sessão.
 - **🛡️ /gpt-refletir** — **segunda opinião adversarial pra refletir antes de cravar**, no meio de qualquer conversa: sem precisar de plano nem código formal, ele monta o alvo sozinho, o Codex tenta derrubar, e devolve veredito **Seguir / Ajustar / Bloquear**. Se der **Seguir**, oferece executar com a `/auto-prompt`.
@@ -18,11 +18,12 @@ enche, o `auto-prompt` chama o `handoff`, e numa sessão nova você retoma de on
 > conferência duas vezes — são dois momentos diferentes.
 >
 > E entre os dois "pensadores": **`planejar` parte de uma IDEIA de produto** (desenha algo novo);
-> **`auto-think` parte de um PROBLEMA difícil** (investiga e recomenda). Os dois entregam pro
+> **`auto-think` parte de um PROBLEMA sem resposta** (investiga e recomenda opções). Os dois entregam pro
 > `auto-prompt` executar.
 >
-> O **`gpt-refletir`** fica de fora do ciclo: é o **confronto avulso**, que você chama a
-> qualquer momento pra refletir sobre uma decisão na hora — o mesmo motor de confronto Codex que o
+> Já o **`gpt-refletir`** parte de uma **decisão que você JÁ tomou** — não gera opções, **testa a que você
+> escolheu** (o GPT tenta derrubar). É o **confronto avulso**, fora do ciclo, que você chama a
+> qualquer momento — o mesmo motor de confronto Codex que o
 > `planejar` e o `auto-think` usam por dentro, só que sob demanda e sem alvo pronto.
 
 ```mermaid
@@ -34,19 +35,27 @@ enche, o `auto-prompt` chama o `handoff`, e numa sessão nova você retoma de on
 }}}%%
 flowchart TD
     START(["💡 Você chega com algo pra fazer"])
-    PORTAS{"VOCÊ escolhe por onde começar<br/>as 5 portas são independentes · não há maestro"}
+    PORTAS{"VOCÊ escolhe por onde começar<br/>as 5 portas são independentes"}
     START --> PORTAS
 
-    E1(["ideia / produto novo"])
-    E2(["problema difícil pra estudar"])
-    E3(["tarefa pronta pra largar"])
-    E4(["recomeçar sessão · reduzir contexto"])
-    E5(["decisão pra refletir agora"])
-    PORTAS --> E1 --> PINTRO
-    PORTAS --> E2 --> TINTRO
-    PORTAS --> E3 --> AINTRO
-    PORTAS --> E4 --> HINTRO
-    PORTAS --> E5 --> GINTRO
+    subgraph PORTASROW[" "]
+        direction LR
+        E1(["🧠 ideia de produto<br/>quero CONSTRUIR do zero"])
+        E2(["🔬 problema sem resposta<br/>quero ESTUDAR e ver opções"])
+        E3(["⚙️ tarefa definida<br/>quero EXECUTAR até o fim"])
+        E4(["🪢 recomeçar sessão<br/>reduzir contexto"])
+        E5(["🛡️ já decidi algo<br/>quero TESTAR antes de cravar"])
+    end
+    PORTAS --> E1
+    PORTAS --> E2
+    PORTAS --> E3
+    PORTAS --> E4
+    PORTAS --> E5
+    E1 --> PINTRO
+    E2 --> TINTRO
+    E3 --> AINTRO
+    E4 --> HINTRO
+    E5 --> GINTRO
 
     %% ───────── PLANEJAR ─────────
     subgraph PLANEJAR[" "]
@@ -73,8 +82,8 @@ flowchart TD
     %% ───────── AUTO-THINK ─────────
     subgraph AUTOTHINK[" "]
         direction TB
-        TINTRO["<b>🔬 /auto-think</b> — estuda o problema a fundo e <b>entrega soluções com veredito</b> (não executa)<br/>fundo é o padrão; você freia dizendo 'rápido' · o esforço é seu"]
-        T1["<b>1 · Enquadra o problema</b><br/><i>separa fato de suposição, decide a fundura</i>"]
+        TINTRO["<b>🔬 /auto-think</b> — você traz um PROBLEMA sem resposta; ele estuda a fundo e <b>entrega opções com veredito</b> (não executa)<br/>sempre fundo · gera caminhos, não testa um já escolhido (isso é o gpt-refletir)"]
+        T1["<b>1 · Enquadra o problema</b><br/><i>separa fato de suposição, delimita o que estudar</i>"]
         T2["<b>2 · Estuda vários ângulos EM PARALELO</b><br/><i>técnico · simplicidade · custo/risco · precedente · contexto interno</i><br/><i>se é de uma tecnologia com dono → puxa a <b>doc oficial</b> + sua <b>skill instalada</b></i>"]
         T3["<b>3 · Codex GPT confronta</b> — 1ª rodada<br/><i>tenta DERRUBAR cada candidata</i>"]
         T4["<b>4 · Re-cava o que ficou aberto</b><br/><i>só dúvida que muda a decisão · teto duro contra espiral</i>"]
@@ -125,7 +134,7 @@ flowchart TD
     %% ───────── GPT-BLINDAGEM ─────────
     subgraph GPTBLIND[" "]
         direction TB
-        GINTRO["<b>🛡️ /gpt-refletir</b> — segunda opinião adversarial pra refletir antes de cravar<br/>monta o alvo sozinho · mesmo confronto Codex de planejar/auto-think, mas sob demanda"]
+        GINTRO["<b>🛡️ /gpt-refletir</b> — você JÁ tem uma decisão; o GPT tenta derrubar pra você refletir antes de cravar<br/>monta o alvo sozinho · testa uma decisão pronta (≠ auto-think, que gera opções do zero)"]
         G1["<b>Monta o ALVO na hora</b><br/><i>a decisão + plano + código que mexemos — sem precisar de PR</i>"]
         G2["<b>Codex GPT tenta DERRUBAR</b> — rodada 1<br/><i>advogado do diabo: caça o furo</i>"]
         G3["<b>Você filtra com prova</b><br/><i>descarta o que não procede; o GPT é insumo, não ordem</i>"]
@@ -190,4 +199,5 @@ flowchart TD
     style AUTO fill:#f0f8f1,stroke:#1f6b4f,stroke-width:2px;
     style HANDOFF fill:#fdf6ee,stroke:#ea580c,stroke-width:2px;
     style GPTBLIND fill:#fff1f3,stroke:#f43f5e,stroke-width:2px;
+    style PORTASROW fill:none,stroke:none;
 ```
