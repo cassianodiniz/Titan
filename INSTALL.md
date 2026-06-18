@@ -9,33 +9,33 @@ O que tem fallback, degrada sozinho.
 
 ---
 
-## 0. Jeito rápido (instalador guiado) — recomendado pra quem não curte terminal
+## 0. Autoinstall — um comando
 
-Tem um script que **instala sozinho** a parte que dá pra automatizar. Você roda (ou pede pro
-Claude: *"roda o install.sh do Titan"*):
+O `install.sh` instala **tudo que dá** sozinho, via a CLI `claude` (`claude plugin install`),
+`npx` e `npm`: o próprio plugin Titan, os plugins externos (superpowers, cloudflare), as skills
+via npx (taste-skill, find-skills, gemini-api-dev), o **Codex CLI** (se faltar) e o MCP do Stitch
+(se você passar a chave). Não precisa mais colar `/plugin` na mão.
 
+**Numa máquina que ainda não tem o plugin** (bootstrap direto do GitHub):
 ```bash
-bash install.sh                      # instala as skills automáticas
-STITCH_API_KEY=suachave bash install.sh   # + configura o MCP do Stitch
+curl -fsSL https://raw.githubusercontent.com/cassianodiniz/Titan/main/install.sh | bash
 ```
 
-**O script instala pra você:** Taste Skill, Find Skill, gemini-api-dev e (se passar a chave) o
-MCP do Stitch.
+**Se já tem o plugin** (roda da pasta dele, ou peça pro Claude *"roda o install.sh do Titan"*):
+```bash
+bash install.sh                          # instala tudo que dá
+STITCH_API_KEY=suachave bash install.sh  # + configura o MCP do Stitch
+SKIP_PLUGIN=1 bash install.sh            # só as dependências (não reinstala o Titan)
+```
 
-**Só você consegue fazer** (o script não digita `/plugin` por você — ele te lembra disso no fim):
+**Só sobra o que depende de chave/conta sua** (o script avisa no fim):
+- `codex login` — uma vez, interativo (se ele instalou o Codex agora)
+- `GEMINI_API_KEY` — grátis em https://aistudio.google.com/apikey (mockups da planejar)
+- `/pesquisa` + Perplexity — vêm do curso/seu provedor; sem eles a planejar pula a pesquisa web
+- MCPs `context7`/`firecrawl` — conforme seu provedor (opcionais, degradam sozinhos)
 
-1. Colar no Claude Code, uma linha por vez:
-   ```
-   /plugin marketplace add obra/superpowers-marketplace
-   /plugin install superpowers@superpowers-marketplace
-   /plugin marketplace add cloudflare/skills
-   /plugin install cloudflare@cloudflare
-   ```
-2. Dar as chaves: `GEMINI_API_KEY` (mockups) e a chave do Stitch.
-3. Pegar a `/pesquisa` no curso do professor e ter os MCPs `context7`/`firecrawl`/`perplexity`
-   + o **Codex CLI** (o crítico) no ambiente.
-
-As tabelas abaixo são a referência completa, item por item, caso queira instalar na mão.
+Depois, **reinicie o Claude Code** pra carregar os plugins. As tabelas abaixo são a referência
+item-por-item, caso queira instalar na mão.
 
 ---
 

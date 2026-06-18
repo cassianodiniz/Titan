@@ -6,7 +6,8 @@
 - **Skill `gpt-blindagem` renomeada para `gpt-refletir`.** Acionamento agora `/Titan:gpt-refletir` (gatilhos novos: "reflete sobre isso", "reflete essa decisão") — os de função seguem ("advogado do diabo", "contraponto", "acha o furo", "/gpt"). A função não mudou (o GPT continua tentando derrubar a decisão); só o nome/enquadramento passou de "blindar" para "refletir".
 - **Veredito SEGUIR agora oferece execução.** Quando o confronto fecha em SEGUIR, a skill oferece levar a decisão pra `/Titan:auto-prompt` executar (opcional, só com OK). Antes parava no veredito.
 - **`auto-think` perdeu o "modo rápido/leve".** Agora é sempre fundo — parecer rápido sobre uma decisão pronta é papel da `gpt-refletir`. Isso deixa as duas distintas: auto-think parte de um problema SEM resposta (gera opções); gpt-refletir parte de uma decisão que você JÁ tem (testa ela).
-- **Fluxograma:** gpt-refletir como 5ª porta com cor própria; flecha do veredito SEGUIR → auto-prompt; as 5 portas alinhadas lado a lado no topo, cada uma definindo a intenção (construir / estudar / executar / retomar / testar uma decisão).
+- **Fluxograma:** gpt-refletir como 5ª porta com cor própria; flecha do veredito SEGUIR → auto-prompt; as 5 portas alinhadas lado a lado no topo, cada uma definindo a intenção (construir / estudar / executar / retomar / testar uma decisão). Embutido no README (no fim).
+- **Autoinstall de verdade:** `install.sh` agora instala tudo via CLI `claude plugin install` + `npx` + `npm` (o próprio Titan, superpowers, cloudflare, as skills npx e o Codex CLI), com bootstrap por `curl ... | bash`. Antes só lembrava de colar os `/plugin` na mão.
 
 ## 1.4.0 — 2026-06-18
 
