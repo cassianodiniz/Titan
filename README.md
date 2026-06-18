@@ -15,16 +15,21 @@ refletir sobre uma decisão antes de cravar, e passar o bastão entre sessões.
 /plugin install Titan@cassiano.diniz
 ```
 
-**2. Os requisitos** (as ferramentas externas que algumas skills usam — Codex CLI, superpowers,
-cloudflare, etc.) — um comando no terminal (Mac/Linux; Windows via Git Bash):
+**2. Os requisitos** — as ferramentas externas que algumas skills usam. Um comando no terminal
+instala o que dá automático (Mac/Linux; Windows via Git Bash):
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/cassianodiniz/Titan/main/install.sh | SKIP_PLUGIN=1 bash
 ```
 
-Esse comando instala **só os requisitos** (o plugin você instalou no passo 1). Depois, **reinicie o
-Claude Code**. O que sobra manual (login do Codex, chaves de API) e o detalhe de cada dependência
-estão no **[INSTALL.md](INSTALL.md)**.
+Ele instala: o **Codex CLI** (o crítico que confronta as decisões), os plugins **superpowers**
+(brainstorm + escrever o plano) e **cloudflare**, e as skills **taste-skill** (design de tela),
+**find-skills** e **gemini-api-dev** (mockups). Fica manual só o que depende de conta/chave sua:
+**`codex login`**, a **GEMINI_API_KEY** (mockups, grátis em aistudio.google.com/apikey) e — se você
+usar — a **/pesquisa + Perplexity** (a pesquisa web da planejar). Detalhe item a item no
+**[INSTALL.md](INSTALL.md)**. Depois, **reinicie o Claude Code**.
+
+> Nenhum requisito trava o plugin: o que faltar, a skill degrada com aviso e segue.
 
 ## O que faz
 
