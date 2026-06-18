@@ -1,78 +1,49 @@
 # Titan — pensar, fazer e passar o bastão
 
-Cinco skills de desenvolvimento, chamáveis individualmente — repo-agnóstico, serve pra qualquer projeto.
+Cinco skills de desenvolvimento, chamáveis individualmente — repo-agnóstico, serve pra qualquer
+projeto: planejar um produto novo, estudar um problema a fundo, executar uma tarefa com crítico,
+refletir sobre uma decisão antes de cravar, e passar o bastão entre sessões.
 
 **Autoria:** Cassiano Diniz · **Co-autoria:** Thales Laray
 
-## ⚡ Instalar (copia e cola)
+## Instalar
 
-**Tudo de uma vez** — plugin + todas as dependências, num comando no terminal (Mac/Linux; Windows via Git Bash):
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/cassianodiniz/Titan/main/install.sh | bash
-```
-
-**Só o plugin** — cola no Claude Code, uma linha por vez:
+**1. O plugin** — no Claude Code, uma linha por vez:
 
 ```
 /plugin marketplace add cassianodiniz/cassiano.diniz
 /plugin install Titan@cassiano.diniz
 ```
 
-Depois **reinicie o Claude Code**. O que sobra manual (login do Codex, chaves de API) e a lista
-de cada dependência estão no **[INSTALL.md](INSTALL.md)**.
+**2. Os requisitos** (as ferramentas externas que algumas skills usam — Codex CLI, superpowers,
+cloudflare, etc.) — um comando no terminal (Mac/Linux; Windows via Git Bash):
 
-## As 5 skills
+```bash
+curl -fsSL https://raw.githubusercontent.com/cassianodiniz/Titan/main/install.sh | SKIP_PLUGIN=1 bash
+```
+
+Esse comando instala **só os requisitos** (o plugin você instalou no passo 1). Depois, **reinicie o
+Claude Code**. O que sobra manual (login do Codex, chaves de API) e o detalhe de cada dependência
+estão no **[INSTALL.md](INSTALL.md)**.
+
+## O que faz
 
 | Comando | O que faz |
 |---|---|
-| `/Titan:planejar <ideia>` | Metodologia completa pra desenhar um produto/software novo do zero antes de codar (8 fases: brainstorm → escopo → design → plano auditado). No fim, oferece executar com a auto-prompt. |
-| `/Titan:auto-think <problema>` | Modo "largar e esquecer" pra **estudar a fundo um problema sem resposta**: ataca de vários ângulos em paralelo, confronta os achados com o Codex em 2 rodadas, e entrega **opções com veredito** (a recomendada + alternativas). Gera caminhos — não executa, para na recomendação. (Sempre fundo; pra um parecer rápido de uma decisão pronta, é a `gpt-refletir`.) |
-| `/Titan:auto-prompt <tarefa>` | Modo "largar e esquecer": o Claude executa a tarefa e o crítico (Codex) confronta o trabalho antes de fechar. A verificação obrigatória é calibrada pelo **risco da tarefa** (trivial faz e entrega; sensível liga o protocolo completo). Protocolo de segurança e verificação embutido. |
-| `/Titan:gpt-refletir` | Segunda opinião adversarial pra **refletir sobre uma decisão que você JÁ tem** antes de cravar: monta o alvo sozinho, o Codex (GPT-5.5) tenta derrubar (advogado do diabo) e devolve veredito **Seguir / Ajustar / Bloquear**. Roda no meio de qualquer conversa, sem precisar de plano nem PR. Se der **Seguir**, oferece executar com a auto-prompt. |
+| `/Titan:planejar <ideia>` | Desenha um produto/software novo do zero antes de codar (8 fases: brainstorm → escopo → design → plano auditado). No fim, oferece executar com a auto-prompt. |
+| `/Titan:auto-think <problema>` | Estuda a fundo um problema **sem resposta**: ataca de vários ângulos em paralelo, confronta com o Codex em 2 rodadas, e entrega **opções com veredito**. Gera caminhos — não executa. |
+| `/Titan:auto-prompt <tarefa>` | Executa a tarefa do início ao fim e o crítico (Codex) confronta o trabalho antes de fechar. A verificação é calibrada pelo **risco** (trivial faz e entrega; sensível liga o protocolo completo). |
+| `/Titan:gpt-refletir` | Segunda opinião adversarial pra **refletir sobre uma decisão que você JÁ tem** antes de cravar: o Codex (GPT-5.5) tenta derrubar e devolve veredito **Seguir / Ajustar / Bloquear**. Se der Seguir, oferece executar com a auto-prompt. |
 | `/Titan:handoff` | Gera um documento de passagem de bastão pra continuar o trabalho numa sessão nova, do zero. |
 
-A `planejar` e a `auto-think` são os dois **pensadores** — uma desenha um produto novo, a outra
-estuda um problema sem resposta; as duas **entregam pra `auto-prompt` executar** (sempre oferecendo,
-nunca disparando sozinhas). A ponte `planejar → auto-prompt` passa um contrato de execução salvo
-em arquivo, pra a auto-prompt não replanejar nem perder premissa. A `gpt-refletir` é o **confronto
-avulso** — fora do ciclo, testa uma decisão pronta a qualquer momento. As três (`planejar`,
-`auto-think`, `gpt-refletir`) confrontam com o Codex pelo **mesmo motor compartilhado**
-(`skills/_shared/confronto-codex.md`).
+**Como se encaixam:** `planejar` e `auto-think` são os dois pensadores (uma desenha um produto
+novo, a outra estuda um problema) e entregam pra `auto-prompt` executar. `gpt-refletir` é o
+confronto avulso — fora do ciclo, testa uma decisão pronta a qualquer momento. `handoff` salva o
+ponto e passa pra próxima sessão.
 
-## Orquestrador — o que precisa por fora
+## Fluxograma
 
-- **auto-prompt**, **handoff** e **gpt-refletir** funcionam sozinhas (as que confrontam só dependem
-  do `codex` CLI pro crítico — e a auto-prompt/gpt-refletir têm fallback se o Codex faltar).
-- **auto-think** usa o `codex` CLI (confronto), a `/pesquisa`/`deep-research` + `perplexity`
-  (parte web), o `context7` (doc oficial de domínio) e a `Agent`/`Workflow` tool (ângulos em
-  paralelo). Se alguma faltar, degrada com aviso — não trava.
-- **planejar** é um orquestrador: o pipeline completo usa skills externas (`superpowers:*`,
-  `/pesquisa`, `perplexity`, `context7`, `firecrawl`, `taste-skill`, Stitch, `gemini-api-dev`).
-  Sem elas, ela roda em modo degradado (pula as fases que dependem do que falta) — não quebra,
-  mas entrega menos.
-
-Lista completa de dependências e comandos de instalação: **[INSTALL.md](INSTALL.md)**.
-
-## Compatibilidade Mac / Windows
-
-Os scripts (ex.: `verify-selo.sh`) são **bash** — rodam nativo no Mac/Linux e, no **Windows, via
-Git Bash**. Não rodam em PowerShell/cmd nativo.
-
-## Instalar
-
-Os comandos estão no topo (**⚡ Instalar**). Depois de instalar, as skills ficam disponíveis como
-`Titan:planejar`, `Titan:auto-think`, `Titan:auto-prompt`, `Titan:gpt-refletir` e `Titan:handoff`.
-A lista completa de dependências e o que sobra manual estão no **[INSTALL.md](INSTALL.md)**.
-
----
-
-## Fluxograma — as 5 portas e o ciclo
-
-As cinco skills são **portas de entrada independentes**: você começa por qualquer uma. Elas também
-se encadeiam (plano/estudo → execução → handoff), e a `gpt-refletir` entra à parte pra testar uma
-decisão a qualquer momento. O desenho completo (com as fases de cada skill) está abaixo — e em
-detalhe em **[FLUXOGRAMA.md](FLUXOGRAMA.md)**.
+As 5 portas e o ciclo (detalhe em [FLUXOGRAMA.md](FLUXOGRAMA.md)):
 
 ```mermaid
 %%{init: {'theme':'base', 'themeVariables': {
