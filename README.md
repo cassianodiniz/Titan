@@ -35,14 +35,14 @@ usar — a **/pesquisa + Perplexity** (a pesquisa web da planejar). Detalhe item
 
 | Comando | O que faz |
 |---|---|
-| `/Titan:planejar <ideia>` | Desenha um produto/software novo do zero antes de codar (8 fases: brainstorm → escopo → design → plano auditado). No fim, oferece executar com a auto-prompt. |
+| `/Titan:planejar <ideia>` | Desenha um produto/software novo do zero antes de codar (8 fases: brainstorm → escopo → design → plano auditado). No fim, oferece executar com a auto-worker. |
 | `/Titan:auto-think <problema>` | Estuda a fundo um problema **sem resposta**: ataca de vários ângulos em paralelo, confronta com o Codex em 2 rodadas, e entrega **opções com veredito**. Gera caminhos — não executa. |
-| `/Titan:auto-prompt <tarefa>` | Executa a tarefa do início ao fim e o crítico (Codex) confronta o trabalho antes de fechar. A verificação é calibrada pelo **risco** (trivial faz e entrega; sensível liga o protocolo completo). |
-| `/Titan:gpt-refletir` | Segunda opinião adversarial pra **refletir sobre uma decisão que você JÁ tem** antes de cravar: o Codex (GPT-5.5) tenta derrubar e devolve veredito **Seguir / Ajustar / Bloquear**. Se der Seguir, oferece executar com a auto-prompt. |
+| `/Titan:auto-worker <tarefa>` | Executa a tarefa do início ao fim e o crítico (Codex) confronta o trabalho antes de fechar. A verificação é calibrada pelo **risco** (trivial faz e entrega; sensível liga o protocolo completo). |
+| `/Titan:gpt-optimizer` | Segunda opinião adversarial pra **refletir sobre uma decisão que você JÁ tem** antes de cravar: o Codex (GPT-5.5) tenta derrubar e devolve veredito **Seguir / Ajustar / Bloquear**. Se der Seguir, oferece executar com a auto-worker. |
 | `/Titan:handoff` | Gera um documento de passagem de bastão pra continuar o trabalho numa sessão nova, do zero. |
 
 **Como se encaixam:** `planejar` e `auto-think` são os dois pensadores (uma desenha um produto
-novo, a outra estuda um problema) e entregam pra `auto-prompt` executar. `gpt-refletir` é o
+novo, a outra estuda um problema) e entregam pra `auto-worker` executar. `gpt-optimizer` é o
 confronto avulso — fora do ciclo, testa uma decisão pronta a qualquer momento. `handoff` salva o
 ponto e passa pra próxima sessão.
 
@@ -98,7 +98,7 @@ flowchart TD
         PINTRO --> P0 --> P1 --> P1B --> P2 --> P3 --> P4 --> P5 --> P6 --> P7 --> P8
     end
 
-    P8 --> PONTE{"Oferecer execução com a auto-prompt?<br/>opcional, só com seu OK"}
+    P8 --> PONTE{"Oferecer execução com a auto-worker?<br/>opcional, só com seu OK"}
     PONTE -->|"prefiro de outro jeito"| FIMP(["📄 Plano salvo em docs/"])
     PONTE -->|"você aceita"| CONTRATO["<b>📄 Contrato de execução</b><br/><i>trava o objetivo e o que NÃO reabrir</i>"]
     CONTRATO --> AINTRO
@@ -106,7 +106,7 @@ flowchart TD
     %% ───────── AUTO-THINK ─────────
     subgraph AUTOTHINK[" "]
         direction TB
-        TINTRO["<b>🔬 /auto-think</b> — você traz um PROBLEMA sem resposta; ele estuda a fundo e <b>entrega opções com veredito</b> (não executa)<br/>sempre fundo · gera caminhos, não testa um já escolhido (isso é o gpt-refletir)"]
+        TINTRO["<b>🔬 /auto-think</b> — você traz um PROBLEMA sem resposta; ele estuda a fundo e <b>entrega opções com veredito</b> (não executa)<br/>sempre fundo · gera caminhos, não testa um já escolhido (isso é o gpt-optimizer)"]
         T1["<b>1 · Enquadra o problema</b><br/><i>separa fato de suposição, delimita o que estudar</i>"]
         T2["<b>2 · Estuda vários ângulos EM PARALELO</b><br/><i>técnico · simplicidade · custo/risco · precedente · contexto interno</i><br/><i>se é de uma tecnologia com dono → puxa a <b>doc oficial</b> + sua <b>skill instalada</b></i>"]
         T3["<b>3 · Codex GPT confronta</b> — 1ª rodada<br/><i>tenta DERRUBAR cada candidata</i>"]
@@ -123,7 +123,7 @@ flowchart TD
     %% ───────── AUTO-PROMPT ─────────
     subgraph AUTO[" "]
         direction TB
-        AINTRO["<b>⚙️ /auto-prompt</b> — executa até o fim, uma tarefa por vez, e <b>verifica a casa</b><br/>entra do plano (planejar) ou da solução (auto-think) acima, OU direto do zero · o esforço é seu"]
+        AINTRO["<b>⚙️ /auto-worker</b> — executa até o fim, uma tarefa por vez, e <b>verifica a casa</b><br/>entra do plano (planejar) ou da solução (auto-think) acima, OU direto do zero · o esforço é seu"]
         ARISK{"Qual o risco da tarefa?<br/>ele define quanto verificar"}
         NIVEL["<b>O nível define QUANTO verificar</b> — as travas duras valem em todos:<br/>🟢 <b>baixo</b> · faz e confere (sem crítico obrigatório)<br/>🟡 <b>médio</b> · + <b>Codex GPT</b> confronta antes de fechar<br/>🔴 <b>alto</b> · + testa o que machuca + travas + 1 revisão válida (sem revisor = BLOQUEADO)"]
         AEXE["<b>Claude executa a TAREFA ATUAL e PROVA cada passo</b><br/><i>uma tarefa por vez; o que não dá pra provar vira pendência marcada, nunca passa como pronto</i>"]
@@ -158,7 +158,7 @@ flowchart TD
     %% ───────── GPT-BLINDAGEM ─────────
     subgraph GPTBLIND[" "]
         direction TB
-        GINTRO["<b>🛡️ /gpt-refletir</b> — você JÁ tem uma decisão; o GPT tenta derrubar pra você refletir antes de cravar<br/>monta o alvo sozinho · testa uma decisão pronta (≠ auto-think, que gera opções do zero)"]
+        GINTRO["<b>🛡️ /gpt-optimizer</b> — você JÁ tem uma decisão; o GPT tenta derrubar pra você refletir antes de cravar<br/>monta o alvo sozinho · testa uma decisão pronta (≠ auto-think, que gera opções do zero)"]
         G1["<b>Monta o ALVO na hora</b><br/><i>a decisão + plano + código que mexemos — sem precisar de PR</i>"]
         G2["<b>Codex GPT tenta DERRUBAR</b> — rodada 1<br/><i>advogado do diabo: caça o furo</i>"]
         G3["<b>Você filtra com prova</b><br/><i>descarta o que não procede; o GPT é insumo, não ordem</i>"]
@@ -174,7 +174,7 @@ flowchart TD
     GFIM -. "deu SEGUIR → quer executar agora?<br/>só com seu OK" .-> AINTRO
 
     %% ───────── cores (uma família por skill) ─────────
-    %% planejar=índigo · auto-think=teal · auto-prompt=verde · handoff=âmbar · estrutura=cinza
+    %% planejar=índigo · auto-think=teal · auto-worker=verde · handoff=âmbar · estrutura=cinza
     classDef cabP fill:#4338ca,color:#ffffff,stroke:#a5b4fc,stroke-width:1.5px;
     classDef cabT fill:#0f766e,color:#ffffff,stroke:#5eead4,stroke-width:1.5px;
     classDef cabA fill:#15803d,color:#ffffff,stroke:#86efac,stroke-width:1.5px;

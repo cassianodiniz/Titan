@@ -1,6 +1,6 @@
 # Instalar o plugin `Titan` (e o que ele usa por fora)
 
-O plugin `Titan` (skills `planejar`, `auto-prompt`, `auto-think`, `handoff`, `gpt-refletir`) **orquestra** ferramentas externas —
+O plugin `Titan` (skills `planejar`, `auto-worker`, `auto-think`, `handoff`, `gpt-optimizer`) **orquestra** ferramentas externas —
 ele não empacota elas. Este arquivo reúne tudo que precisa instalar pra ele rodar completo.
 
 A boa notícia: nada disso trava o plugin. A `planejar` tem um **preflight (Fase 0)** que confere
@@ -48,7 +48,7 @@ Pelo `/plugin`, adicione o marketplace e instale:
 /plugin install Titan@cassiano.diniz
 ```
 
-Depois as skills ficam disponíveis como `Titan:planejar`, `Titan:auto-prompt`, `Titan:handoff`.
+Depois as skills ficam disponíveis como `Titan:planejar`, `Titan:auto-worker`, `Titan:handoff`.
 
 ---
 
@@ -58,7 +58,7 @@ Depois as skills ficam disponíveis como `Titan:planejar`, `Titan:auto-prompt`, 
 |---|---|---|
 | **superpowers** (`brainstorming`, `writing-plans`) | `planejar` Fases 1 e 5 | `/plugin marketplace add obra/superpowers-marketplace`<br/>`/plugin install superpowers@superpowers-marketplace` |
 | **Taste Skill** (`design-taste-frontend`) | `planejar` Fase 4 (só se houver tela) | `npx skills add https://github.com/Leonxlnx/taste-skill --skill "design-taste-frontend"` |
-| **Codex CLI** (revisor/crítico GPT-5.5) | `auto-prompt` (crítico) e `planejar` (revisor do problema e da sanidade) | Instalar o Codex CLI da OpenAI e logar. Sem ele, o crítico cai pra um agente Claude separado (garantia menor); em risco alto, fica BLOQUEADO até voltar. |
+| **Codex CLI** (revisor/crítico GPT-5.5) | `auto-worker` (crítico) e `planejar` (revisor do problema e da sanidade) | Instalar o Codex CLI da OpenAI e logar. Sem ele, o crítico cai pra um agente Claude separado (garantia menor); em risco alto, fica BLOQUEADO até voltar. |
 
 ---
 

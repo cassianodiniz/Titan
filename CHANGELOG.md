@@ -1,5 +1,25 @@
 # Changelog — Titan
 
+## 1.6.1 — 2026-06-24
+
+### Mudado (auditoria do `gpt-optimizer`)
+- **Passo 5 (Apresentar) reescrito — a dor real do Cassiano.** O passo mandava "apresente curto / veredito numa linha / traduzido", o que fabricava a saída abstrata que ele não conseguia decidir. Agora o contrato é **decisão primeiro, concreto sempre**: a decisão em jogo + veredito com efeito prático + cada furo com a evidência específica e o "na prática" + decisão A/B quando é dele. Tamanho passa a servir o entendimento, não o aperto. Reforçado também no prompt do GPT: cada ponto exige QUAL premissa/linha/valor, proibido "premissa frágil" solto.
+- **Selo (impressão digital sha256) removido.** Era trava contra "GPT leu versão velha", mas o manifesto é escrito e enviado no mesmo fôlego — não há versão velha; o selo só pedia o GPT devolver uma string que a gente entregou. Removidos os passos de selar/conferir e o `scripts/verify-selo.sh`. (auto-worker mantém o selo no fluxo dele, com cópia própria.)
+- **Revisor agora é só-leitura.** `run-gpt.sh` trocou `--sandbox workspace-write` por `--sandbox read-only` — uma revisão recebe o alvo via stdin, não precisa nem pode escrever no workspace. Smoke-testado com codex real (read-only, exit 0).
+- **Erro do Codex não é mais escondido.** `run-gpt.sh` parou de mandar stderr pra `/dev/null`; agora **tenta 2x** (1ª falha costuma ser transitória) e, se falhar de vez, devolve `CODEX_FAILED` com o motivo real — pra avisar o usuário em vez de cair calado pro fallback fingindo que o GPT rodou.
+- **Gatilhos enxugados.** A descrição tinha ~17 frases-gatilho (várias genéricas como "reflete isso"/"contraponto" que disparavam em conversa normal e pisavam no `auto-think`). Agora a skill é **só sob invocação explícita** (comando `/gpt-optimizer` ou chamar pelo nome) — pedido do Cassiano: "essa skill não precisa de gatilhos, eu só uso pela barra".
+- **Fricção de setup limpa.** Tirada a cerimônia de `export TMP/GPT` e os caminhos de exemplo que nem existiam no Mac (`~/.claude/skills/Titan/...` minúsculo→maiúsculo).
+- **`_shared/confronto-codex.md`:** corrigido o ponteiro "reusa os scripts do gpt-optimizer" — agora avisa que o `run-gpt.sh` de lá é read-only/sem selo, e que o helper de selo vive em `auto-worker/scripts/`.
+- **NÃO mexido (decisão do Cassiano):** lentidão `xhigh + flex + 2 rodadas` fica como está.
+- **Item aberto:** `gpt-workspace/skill-snapshot/` na raiz do repo é artefato de uma rodada antiga de skill-creator — pode ser limpo numa passada futura.
+
+## 1.6.0 — 2026-06-19
+
+### Mudado
+- **Skill `gpt-refletir` renomeada para `gpt-optimizer`.** Acionamento agora `/Titan:gpt-optimizer` (gatilhos novos: "chama o optimizer", "roda o optimizer") — os de função seguem iguais ("reflete isso", "advogado do diabo", "contraponto", "acha o furo", "/gpt"). A função não mudou (o GPT continua tentando derrubar a decisão); só o nome mudou.
+- **Skill `auto-prompt` renomeada para `auto-worker`.** Acionamento agora `/Titan:auto-worker` (gatilhos novos: "liga o worker", "chama o worker", "manda o worker") — os de função seguem ("modo largar", "larga isso pros agentes", "roda isso sozinho"). Comportamento idêntico; só o nome mudou.
+- **Referências cruzadas atualizadas:** `auto-think` e `planejar` agora apontam pra `/Titan:auto-worker`; `gpt-optimizer` oferece execução via `/Titan:auto-worker`; `auto-think` cita `/Titan:gpt-optimizer` como a porta de parecer rápido. Manifesto (`plugin.json`), README, FLUXOGRAMA, INSTALL e install.sh refletem os nomes novos.
+
 ## 1.5.0 — 2026-06-18
 
 ### Mudado

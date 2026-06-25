@@ -1,9 +1,9 @@
 ---
-name: auto-prompt
-description: "Modo largar-e-esquecer: o Claude executa a tarefa com protocolo de segurança e verificação embutido, e o Codex confronta o trabalho antes de fechar. Acionar por comando: /auto-prompt <tarefa>, ou quando o usuário disser 'liga o auto-prompt', 'modo largar', 'larga isso pros agentes', 'deixa os agentes resolverem', 'roda isso sozinho e me mostra no fim'. NÃO acionar pra pergunta factual rápida nem tarefa de 1 passo que o Claude resolve direto. Quando a tarefa envolver produção, dado real de pessoa, credencial, dinheiro, envio/publicação, deploy, infra ou mudança destrutiva, roda só em modo investigação/preparação reversível até autorização explícita — não executa a ação sensível sozinha."
+name: auto-worker
+description: "Modo largar-e-esquecer: o Claude executa a tarefa com protocolo de segurança e verificação embutido, e o Codex confronta o trabalho antes de fechar. Acionar por comando: /auto-worker <tarefa>, ou quando o usuário disser 'liga o auto-worker', 'liga o worker', 'chama o worker', 'manda o worker', 'modo largar', 'larga isso pros agentes', 'deixa os agentes resolverem', 'roda isso sozinho e me mostra no fim'. NÃO acionar pra pergunta factual rápida nem tarefa de 1 passo que o Claude resolve direto. Quando a tarefa envolver produção, dado real de pessoa, credencial, dinheiro, envio/publicação, deploy, infra ou mudança destrutiva, roda só em modo investigação/preparação reversível até autorização explícita — não executa a ação sensível sozinha."
 ---
 
-# auto-prompt
+# auto-worker
 
 Modo de trabalho pro usuário **largar uma tarefa e sumir**. O trabalho é executado e
 conferido sozinho; ele só reaparece pra DECISÃO real ou pra escolher entre opções no fim.

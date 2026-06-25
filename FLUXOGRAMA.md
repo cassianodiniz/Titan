@@ -5,23 +5,23 @@ por qualquer uma:
 
 - **🧠 /planejar** — desenha um produto/software do zero, **descobre como o problema já foi resolvido lá fora** e **audita a planta** antes de construir.
 - **🔬 /auto-think** — você traz um **problema sem resposta**; ele **estuda a fundo** (vários ângulos em paralelo, confronta os achados com o Codex) e entrega **opções com veredito**. Gera caminhos — não executa, para na recomendação.
-- **⚙️ /auto-prompt** — executa uma tarefa do início ao fim, se corrigindo sozinho, e **verifica a casa** construída.
+- **⚙️ /auto-worker** — executa uma tarefa do início ao fim, se corrigindo sozinho, e **verifica a casa** construída.
 - **🪢 /handoff** — salva o ponto exato do trabalho e passa o bastão pra outra sessão.
-- **🛡️ /gpt-refletir** — **segunda opinião adversarial pra refletir antes de cravar**, no meio de qualquer conversa: sem precisar de plano nem código formal, ele monta o alvo sozinho, o Codex tenta derrubar, e devolve veredito **Seguir / Ajustar / Bloquear**. Se der **Seguir**, oferece executar com a `/auto-prompt`.
+- **🛡️ /gpt-optimizer** — **segunda opinião adversarial pra refletir antes de cravar**, no meio de qualquer conversa: sem precisar de plano nem código formal, ele monta o alvo sozinho, o Codex tenta derrubar, e devolve veredito **Seguir / Ajustar / Bloquear**. Se der **Seguir**, oferece executar com a `/auto-worker`.
 
 Elas também formam **um ciclo**: o plano sai do `planejar` (ou a solução escolhida sai do
-`auto-think`) e vai pro `auto-prompt` pra ser executado; se o trabalho fica longo e o contexto
-enche, o `auto-prompt` chama o `handoff`, e numa sessão nova você retoma de onde parou.
+`auto-think`) e vai pro `auto-worker` pra ser executado; se o trabalho fica longo e o contexto
+enche, o `auto-worker` chama o `handoff`, e numa sessão nova você retoma de onde parou.
 
 > A grande diferença que costuma confundir: **`planejar` revisa o PLANO** (a planta, antes de
-> existir código) e **`auto-prompt` revisa o que foi FEITO** (a casa pronta). Não é a mesma
+> existir código) e **`auto-worker` revisa o que foi FEITO** (a casa pronta). Não é a mesma
 > conferência duas vezes — são dois momentos diferentes.
 >
 > E entre os dois "pensadores": **`planejar` parte de uma IDEIA de produto** (desenha algo novo);
 > **`auto-think` parte de um PROBLEMA sem resposta** (investiga e recomenda opções). Os dois entregam pro
-> `auto-prompt` executar.
+> `auto-worker` executar.
 >
-> Já o **`gpt-refletir`** parte de uma **decisão que você JÁ tomou** — não gera opções, **testa a que você
+> Já o **`gpt-optimizer`** parte de uma **decisão que você JÁ tomou** — não gera opções, **testa a que você
 > escolheu** (o GPT tenta derrubar). É o **confronto avulso**, fora do ciclo, que você chama a
 > qualquer momento — o mesmo motor de confronto Codex que o
 > `planejar` e o `auto-think` usam por dentro, só que sob demanda e sem alvo pronto.
@@ -74,7 +74,7 @@ flowchart TD
         PINTRO --> P0 --> P1 --> P1B --> P2 --> P3 --> P4 --> P5 --> P6 --> P7 --> P8
     end
 
-    P8 --> PONTE{"Oferecer execução com a auto-prompt?<br/>opcional, só com seu OK"}
+    P8 --> PONTE{"Oferecer execução com a auto-worker?<br/>opcional, só com seu OK"}
     PONTE -->|"prefiro de outro jeito"| FIMP(["📄 Plano salvo em docs/"])
     PONTE -->|"você aceita"| CONTRATO["<b>📄 Contrato de execução</b><br/><i>trava o objetivo e o que NÃO reabrir</i>"]
     CONTRATO --> AINTRO
@@ -82,14 +82,15 @@ flowchart TD
     %% ───────── AUTO-THINK ─────────
     subgraph AUTOTHINK[" "]
         direction TB
-        TINTRO["<b>🔬 /auto-think</b> — você traz um PROBLEMA sem resposta; ele estuda a fundo e <b>entrega opções com veredito</b> (não executa)<br/>sempre fundo · gera caminhos, não testa um já escolhido (isso é o gpt-refletir)"]
+        TINTRO["<b>🔬 /auto-think</b> — você traz um PROBLEMA sem resposta; ele estuda a fundo e <b>entrega opções com veredito</b> (não executa)<br/>sempre fundo · gera caminhos, não testa um já escolhido (isso é o gpt-optimizer)"]
         T1["<b>1 · Enquadra o problema</b><br/><i>separa fato de suposição, delimita o que estudar</i>"]
         T2["<b>2 · Estuda vários ângulos EM PARALELO</b><br/><i>técnico · simplicidade · custo/risco · precedente · contexto interno</i><br/><i>se é de uma tecnologia com dono → puxa a <b>doc oficial</b> + sua <b>skill instalada</b></i>"]
         T3["<b>3 · Codex GPT confronta</b> — 1ª rodada<br/><i>tenta DERRUBAR cada candidata</i>"]
-        T4["<b>4 · Re-cava o que ficou aberto</b><br/><i>só dúvida que muda a decisão · teto duro contra espiral</i>"]
-        T5["<b>5 · Codex GPT confronta</b> — 2ª rodada<br/><i>escolhe entre as que sobraram</i>"]
-        T6["<b>6 · Entrega soluções com veredito</b><br/><i>a recomendada + alternativas reais + o que o confronto matou</i>"]
-        TINTRO --> T1 --> T2 --> T3 --> T4 --> T5 --> T6
+        TQ["<b>4 · Portão de qualidade</b> — 4 perguntas que toda candidata passa<br/><i>resolve a doença ou só o sintoma? · funciona com prova colada? · sobra incerteza que muda a decisão? · ou é lixo (fonte fraca/sem lastro)?</i>"]
+        T4["<b>5 · Re-cava o que ficou aberto</b><br/><i>só dúvida que muda a decisão · teto duro contra espiral</i>"]
+        T5["<b>6 · Codex GPT confronta</b> — 2ª rodada<br/><i>escolhe entre as que sobraram</i>"]
+        T6["<b>7 · Entrega soluções com veredito</b><br/><i>a recomendada + alternativas reais + o que o confronto matou</i>"]
+        TINTRO --> T1 --> T2 --> T3 --> TQ --> T4 --> T5 --> T6
     end
 
     T6 --> TPONTE{"Quer executar a escolhida?<br/>opcional, só com seu OK"}
@@ -99,12 +100,12 @@ flowchart TD
     %% ───────── AUTO-PROMPT ─────────
     subgraph AUTO[" "]
         direction TB
-        AINTRO["<b>⚙️ /auto-prompt</b> — executa até o fim, uma tarefa por vez, e <b>verifica a casa</b><br/>entra do plano (planejar) ou da solução (auto-think) acima, OU direto do zero · o esforço é seu"]
+        AINTRO["<b>⚙️ /auto-worker</b> — executa até o fim, uma tarefa por vez, e <b>verifica a casa</b><br/>entra do plano (planejar) ou da solução (auto-think) acima, OU direto do zero · o esforço é seu"]
         ARISK{"Qual o risco da tarefa?<br/>ele define quanto verificar"}
         NIVEL["<b>O nível define QUANTO verificar</b> — as travas duras valem em todos:<br/>🟢 <b>baixo</b> · faz e confere (sem crítico obrigatório)<br/>🟡 <b>médio</b> · + <b>Codex GPT</b> confronta antes de fechar<br/>🔴 <b>alto</b> · + testa o que machuca + travas + 1 revisão válida (sem revisor = BLOQUEADO)"]
         AEXE["<b>Claude executa a TAREFA ATUAL e PROVA cada passo</b><br/><i>uma tarefa por vez; o que não dá pra provar vira pendência marcada, nunca passa como pronto</i>"]
-        ACRIT["<b>Codex GPT confronta essa tarefa</b><br/><i>tenta refutar: funciona? não vazou? não quebrou?</i>"]
-        ADEC{"Tarefa fechou?<br/>até 3 rodadas"}
+        ACRIT["<b>Codex GPT confronta essa tarefa</b><br/><i>tenta refutar: funciona? não vazou? não quebrou?</i><br/><i>+ trava de versão: confere que o crítico leu a versão certa do arquivo</i>"]
+        ADEC{"Tarefa fechou?<br/>quantas rodadas = seu esforço"}
         AMORE{"Falta tarefa no plano?"}
         AINTRO --> ARISK --> NIVEL --> AEXE --> ACRIT --> ADEC
         ADEC -->|"ainda não → corrige e refaz"| AEXE
@@ -113,7 +114,7 @@ flowchart TD
     end
 
     AMORE -->|"não, plano completo → produto pronto"| BORDA{"Bateu numa borda dura?<br/>dinheiro · envio · deploy ·<br/>apagar dado real · credencial"}
-    ADEC -->|"sobrou risco na 3ª rodada<br/>ou revisão inválida"| BLOQ(["⛔ BLOQUEADO<br/>não fecha sozinho; chama você"])
+    ADEC -->|"sobrou risco na última rodada<br/>ou revisão inválida (risco alto)"| BLOQ(["⛔ BLOQUEADO<br/>não fecha sozinho; chama você"])
     AMORE -->|"ficou longo → passa o bastão"| HINTRO
     BORDA -->|"sim"| PARA(["⛔ Para e te chama<br/>pra decidir"])
     BORDA -->|"não"| ENTREGA(["✅ Entrega traduzida:<br/>o que PROVEI vs o que ASSUMI"])
@@ -134,7 +135,7 @@ flowchart TD
     %% ───────── GPT-BLINDAGEM ─────────
     subgraph GPTBLIND[" "]
         direction TB
-        GINTRO["<b>🛡️ /gpt-refletir</b> — você JÁ tem uma decisão; o GPT tenta derrubar pra você refletir antes de cravar<br/>monta o alvo sozinho · testa uma decisão pronta (≠ auto-think, que gera opções do zero)"]
+        GINTRO["<b>🛡️ /gpt-optimizer</b> — você JÁ tem uma decisão; o GPT tenta derrubar pra você refletir antes de cravar<br/>monta o alvo sozinho · testa uma decisão pronta (≠ auto-think, que gera opções do zero)"]
         G1["<b>Monta o ALVO na hora</b><br/><i>a decisão + plano + código que mexemos — sem precisar de PR</i>"]
         G2["<b>Codex GPT tenta DERRUBAR</b> — rodada 1<br/><i>advogado do diabo: caça o furo</i>"]
         G3["<b>Você filtra com prova</b><br/><i>descarta o que não procede; o GPT é insumo, não ordem</i>"]
@@ -150,7 +151,7 @@ flowchart TD
     GFIM -. "deu SEGUIR → quer executar agora?<br/>só com seu OK" .-> AINTRO
 
     %% ───────── cores (uma família por skill) ─────────
-    %% planejar=índigo · auto-think=teal · auto-prompt=verde · handoff=âmbar · estrutura=cinza
+    %% planejar=índigo · auto-think=teal · auto-worker=verde · handoff=âmbar · estrutura=cinza
     classDef cabP fill:#4338ca,color:#ffffff,stroke:#a5b4fc,stroke-width:1.5px;
     classDef cabT fill:#0f766e,color:#ffffff,stroke:#5eead4,stroke-width:1.5px;
     classDef cabA fill:#15803d,color:#ffffff,stroke:#86efac,stroke-width:1.5px;
@@ -178,7 +179,7 @@ flowchart TD
     class GINTRO cabG;
     %% passos (cartão branco, borda da cor da skill)
     class P0,P1,P1B,P2,P3,P4,P5,P6,P7,P8,CONTRATO stepP;
-    class T1,T2,T3,T4,T5,T6 stepT;
+    class T1,T2,T3,TQ,T4,T5,T6 stepT;
     class NIVEL,AEXE,ACRIT stepA;
     class H0,H1,H2 stepH;
     class G1,G2,G3,G4 stepG;

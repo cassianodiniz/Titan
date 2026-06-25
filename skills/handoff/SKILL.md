@@ -21,13 +21,20 @@ Antes de redigir, levante o estado real do projeto (se houver repositório). Rod
 
 ```bash
 pwd
-git rev-parse --show-toplevel 2>/dev/null && git branch --show-current
-git log -1 --oneline
-git status --short
-git diff --stat
+# Ancora em git SÓ se esta pasta for um repositório. Em pastas SEM git
+# (ex.: a pasta de skills do Cassiano, que roda sem git — versão é via cofre
+# ~/skills-repo + GitHub), pula silenciosamente, sem cuspir "not a git repository".
+if git rev-parse --git-dir >/dev/null 2>&1; then
+  git rev-parse --show-toplevel; git branch --show-current
+  git log -1 --oneline
+  git status --short
+  git diff --stat
+else
+  echo "(sem git nesta pasta — projeto não versionado aqui)"
+fi
 ```
 
-Esses dados viram a seção "ESTADO DO PROJETO (git)". Eles são a âncora de realidade: a sessão nova confere o texto contra o estado de verdade. Se não houver git, registre só o `pwd` e diga que o projeto não está versionado.
+Quando HÁ git, esses dados viram a seção "ESTADO DO PROJETO (git)" — a âncora de realidade: a sessão nova confere o texto contra o estado de verdade. Quando NÃO há git (caso da pasta de skills), pule essa seção e registre só o `pwd`, dizendo que esta pasta não é versionada localmente.
 
 ## As 9 regras de geração (é aqui que handoff falha)
 

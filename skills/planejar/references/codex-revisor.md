@@ -28,7 +28,7 @@ vs futuro, nome). Monte o input em `/tmp/confronto-input.md` = o prompt abaixo +
 ```bash
 perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-5.5 \
   -c model_reasoning_effort="high" \
-  --skip-git-repo-check --ignore-user-config --full-auto \
+  --skip-git-repo-check --ignore-user-config -c windows.sandbox="elevated" --full-auto \
   - < /tmp/confronto-input.md > docs/<nome>-revisao-problema.md 2>/dev/null
 ```
 
@@ -70,7 +70,7 @@ plano e do escopo (o Codex lê os dois). Depois:
 ```bash
 perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-5.5 \
   -c model_reasoning_effort="xhigh" \
-  --skip-git-repo-check --ignore-user-config --full-auto \
+  --skip-git-repo-check --ignore-user-config -c windows.sandbox="elevated" --full-auto \
   - < /tmp/confronto-input.md > docs/<nome>-revisao-sanidade.md 2>/dev/null
 ```
 

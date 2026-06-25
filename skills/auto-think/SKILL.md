@@ -1,6 +1,6 @@
 ---
 name: auto-think
-description: "Modo larga-e-some pra ESTUDAR um problema DIFÍCIL ou uma decisão que PESA — dispara vários ângulos EM PARALELO (agentes independentes), pesquisa o que o mundo e outras empresas já resolveram, levanta um LEQUE de candidatas, confronta cada uma com o Codex em mais de uma rodada, verifica o que se sustenta, re-cava o que ficou aberto, e entrega as soluções viáveis COM VEREDITO. Vai sempre fundo (estudo raso não é estudo): se você só quer uma resposta rápida sobre uma decisão que JÁ tem em mente, isso é a /Titan:gpt-refletir, não esta skill. NÃO executa a solução (quem executa é /auto-prompt) — para na recomendação. Acionar quando o usuário disser '/auto-think <problema>', 'auto-think', 'estuda isso a fundo', 'pesquisa e me traz a melhor forma de fazer X', 'investiga esse problema de vários ângulos', 'confronta as opções e decide', 'qual o melhor caminho pra <algo que exige estudo>', 'pensa nisso e volta com solução', 'larga isso pra estudar' — mesmo sem citar 'auto-think'. NÃO acionar pra pergunta factual rápida nem decisão pequena e reversível que dá pra responder direto sem estudo, nem pra EXECUTAR/implementar uma tarefa (isso é /auto-prompt), nem pra planejar um produto novo do zero (isso é /planejar)."
+description: "Modo larga-e-some pra ESTUDAR um problema DIFÍCIL ou uma decisão que PESA — dispara vários ângulos EM PARALELO (agentes independentes), pesquisa o que o mundo e outras empresas já resolveram, levanta um LEQUE de candidatas, confronta cada uma com o Codex em mais de uma rodada, verifica o que se sustenta, re-cava o que ficou aberto, e entrega as soluções viáveis COM VEREDITO. Vai sempre fundo (estudo raso não é estudo): se você só quer uma resposta rápida sobre uma decisão que JÁ tem em mente, isso é a /Titan:gpt-optimizer, não esta skill. NÃO executa a solução (quem executa é /auto-worker) — para na recomendação. Acionar quando o usuário disser '/auto-think <problema>', 'auto-think', 'estuda isso a fundo', 'pesquisa e me traz a melhor forma de fazer X', 'investiga esse problema de vários ângulos', 'confronta as opções e decide', 'qual o melhor caminho pra <algo que exige estudo>', 'pensa nisso e volta com solução', 'larga isso pra estudar' — mesmo sem citar 'auto-think'. NÃO acionar pra pergunta factual rápida nem decisão pequena e reversível que dá pra responder direto sem estudo, nem pra EXECUTAR/implementar uma tarefa (isso é /auto-worker), nem pra planejar um produto novo do zero (isso é /planejar)."
 ---
 
 # auto-think
@@ -9,7 +9,7 @@ Modo de trabalho pro usuário **largar um problema difícil e sumir** — e volt
 pronta pra decidir. O auto-think não executa nada: ele **estuda a fundo**. Pesquisa, ataca o
 problema por vários lados ao mesmo tempo, levanta um leque de candidatas, confronta cada uma
 até sobrar só o que aguenta porrada, e entrega as soluções viáveis **com veredito** (a
-recomendada + as alternativas reais). Quem executa a escolhida depois é o `/auto-prompt` —
+recomendada + as alternativas reais). Quem executa a escolhida depois é o `/auto-worker` —
 esta skill só pensa.
 
 Repo-agnóstica: serve pra problema técnico ("qual a melhor forma de fazer X no sistema"),
@@ -18,11 +18,11 @@ resolve"), ou de pesquisa pura ("o que o mundo já resolveu sobre isto").
 
 **A fronteira que define tudo:**
 - `/planejar` = desenhar um PRODUTO novo do zero antes de codar.
-- `/auto-prompt` = EXECUTAR uma tarefa e entregar feito.
+- `/auto-worker` = EXECUTAR uma tarefa e entregar feito.
 - `auto-think` = ESTUDAR um problema a fundo e entregar solução(ões) recomendada(s). Não executa.
 
 Se no fim o usuário quiser rodar a solução escolhida, o ponteiro é: "quer que eu execute a A?
-→ /auto-prompt". O auto-think nunca cruza essa linha sozinho.
+→ /auto-worker". O auto-think nunca cruza essa linha sozinho.
 
 ---
 
@@ -36,7 +36,7 @@ raso não é estudar.
 
 **É sempre fundo — não tem mais "modo rápido".** Antes existia um modo leve quando você pedia
 "rápido/só o essencial"; ele saiu. O motivo: quando o que você quer é uma resposta rápida sobre
-uma decisão que você JÁ tem em mente, o caminho é a `/Titan:gpt-refletir` (confronto avulso e
+uma decisão que você JÁ tem em mente, o caminho é a `/Titan:gpt-optimizer` (confronto avulso e
 direto) — não o auto-think. Aqui, se foi chamado, **vai fundo**. A skill nunca decide sozinha
 "acho que isso é simples, vou de raso" — na dúvida entre raso e fundo, vai fundo, porque foi
 pra isso que foi chamada.
@@ -60,7 +60,7 @@ sabendo que ela é a cara.
   ver passo 5), não enquanto "achar coisa nova".
 
 **Quer rápido? Use a outra skill.** O atalho pra "me dá um parecer rápido sobre isto" deixou de
-morar aqui — ele é a `/Titan:gpt-refletir`, que confronta uma decisão pronta sem o estudo de
+morar aqui — ele é a `/Titan:gpt-optimizer`, que confronta uma decisão pronta sem o estudo de
 vários ângulos. O auto-think é a ferramenta de **estudar a fundo**; pedir pra ele ser raso é
 pedir a coisa errada.
 
@@ -74,8 +74,8 @@ parte fácil; qualquer um junta links. O valor está em **atacar os próprios ac
 só o que se sustenta. Por isso o confronto é em mais de uma rodada, e a honestidade ("prova ou
 silêncio") vale igual aqui, mesmo sem dado real em risco.
 
-O contrato de honestidade e segurança é o mesmo do `/auto-prompt`:
-`../auto-prompt/references/protocolo.md`. Leia antes de começar. O resumo operacional do que
+O contrato de honestidade e segurança é o mesmo do `/auto-worker`:
+`../auto-worker/references/protocolo.md`. Leia antes de começar. O resumo operacional do que
 mais importa pro auto-think está abaixo.
 
 ---
@@ -144,7 +144,7 @@ Antes de cavar, separa o que é **fato** do que é **suposição** e decide o te
   se a suposição estiver errada, o usuário corrige cedo em vez de no fim.
 - **A profundidade é sempre fundo** (ver a Calibragem) — não há mais modo leve. **Nunca encolhe
   por chute** ("acho que isso é simples"): isso é o que fazia a skill trabalhar pouco. Se for um
-  parecer rápido sobre uma decisão pronta, o caminho é a `/Titan:gpt-refletir`, não esta skill.
+  parecer rápido sobre uma decisão pronta, o caminho é a `/Titan:gpt-optimizer`, não esta skill.
 - **Escape do trivial (única exceção ao fundo-por-padrão):** se ao enquadrar o problema ele se
   revelar trivial ou JÁ resolvido — e isso for **provável com evidência colada**, não com
   palpite — diz isso direto e não gasta o ciclo. "Já tem resposta pronta aqui: <prova>" é uma
@@ -235,7 +235,7 @@ radical) pra garantir que não é falta de imaginação, e não convergência re
 
 ### 3. Confrontar os achados (Codex tenta derrubar) — 1ª rodada
 Cada achado e cada candidata passa pelo Codex como **advogado do diabo** — o mesmo mecanismo do
-`/Titan:gpt-refletir`. O Codex tenta REFUTAR: isto resolve mesmo o problema ou só um sintoma? A premissa é fato
+`/Titan:gpt-optimizer`. O Codex tenta REFUTAR: isto resolve mesmo o problema ou só um sintoma? A premissa é fato
 ou foi vendida como fato? Tem caminho mais simples? A fonte sustenta a afirmação? O que
 sobrevive fica; o que é refutado cai (com o motivo registrado pra a entrega).
 
