@@ -45,6 +45,7 @@ flowchart TD
         E3(["⚙️ tarefa definida<br/>quero EXECUTAR até o fim"])
         E4(["🪢 recomeçar sessão<br/>reduzir contexto"])
         E5(["🛡️ já decidi algo<br/>quero TESTAR antes de cravar"])
+        E1 ~~~ E2 ~~~ E3 ~~~ E4 ~~~ E5
     end
     PORTAS --> E1
     PORTAS --> E2
@@ -83,7 +84,7 @@ flowchart TD
     subgraph AUTOTHINK[" "]
         direction TB
         TINTRO["<b>🔬 /auto-think</b> — você traz um PROBLEMA sem resposta; ele estuda a fundo e <b>entrega opções com veredito</b> (não executa)<br/>sempre fundo · gera caminhos, não testa um já escolhido (isso é o gpt-optimizer)"]
-        T1["<b>1 · Enquadra o problema</b><br/><i>separa fato de suposição, delimita o que estudar</i>"]
+        T1["<b>1 · Espelha o pedido e confirma o alvo</b><br/><i>problema, ideia ou decisão? confirma antes de gastar o estudo · depois separa fato de suposição</i>"]
         T2["<b>2 · Estuda vários ângulos EM PARALELO</b><br/><i>técnico · simplicidade · custo/risco · precedente · contexto interno</i><br/><i>se é de uma tecnologia com dono → puxa a <b>doc oficial</b> + sua <b>skill instalada</b></i>"]
         T3["<b>3 · Codex GPT confronta</b> — 1ª rodada<br/><i>tenta DERRUBAR cada candidata</i>"]
         TQ["<b>4 · Portão de qualidade</b> — 4 perguntas que toda candidata passa<br/><i>resolve a doença ou só o sintoma? · funciona com prova colada? · sobra incerteza que muda a decisão? · ou é lixo (fonte fraca/sem lastro)?</i>"]
@@ -125,8 +126,9 @@ flowchart TD
         HINTRO["<b>🪢 /handoff</b><br/>salva o ponto e passa o bastão"]
         H0["<b>Ancora no git</b><br/><i>branch, commit, o que mudou</i>"]
         H1["<b>Captura ESTADO + PONTEIROS</b><br/><i>fato vs suposição; não inventa regra</i>"]
-        H2["<b>💾 Salva o .md e abre na tela</b><br/><i>e te diz onde guardou</i>"]
-        HINTRO --> H0 --> H1 --> H2
+        H1B["<b>Leitor cego (Codex) testa o doc</b><br/><i>'só com isto, o que não daria pra continuar?' — buracos voltam pro doc</i>"]
+        H2["<b>💾 Salva o .md + entrega prompt colável</b><br/><i>pro próximo Claude continuar de onde parou</i>"]
+        HINTRO --> H0 --> H1 --> H1B --> H2
     end
 
     H2 --> NOVA(["🔄 Sessão nova lê o arquivo e retoma o trabalho"])
@@ -181,7 +183,7 @@ flowchart TD
     class P0,P1,P1B,P2,P3,P4,P5,P6,P7,P8,CONTRATO stepP;
     class T1,T2,T3,TQ,T4,T5,T6 stepT;
     class NIVEL,AEXE,ACRIT stepA;
-    class H0,H1,H2 stepH;
+    class H0,H1,H1B,H2 stepH;
     class G1,G2,G3,G4 stepG;
     %% decisões (losango forte na cor da skill)
     class PONTE decP;
