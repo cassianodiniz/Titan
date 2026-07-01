@@ -59,20 +59,47 @@ flowchart TD
     E5 --> GINTRO
 
     %% ───────── PLANEJAR ─────────
-    subgraph PLANEJAR[" "]
-        direction TB
-        PINTRO["<b>🧠 /planejar</b> — desenha o produto e <b>audita a planta</b> (antes de construir)<br/>você aprova entre quase todas as fases (7→8 segue direto)"]
-        P0["<b>Fase 0 · Preflight</b><br/><i>confere as ferramentas que vai precisar</i>"]
-        P1["<b>1 · Brainstorm</b><br/><i>define o problema e o escopo do MVP</i>"]
-        P1B["<b>1b · Como já resolveram isso</b> (prior art)<br/><i>busca soluções existentes, peneira pela sua realidade e compara com o jeito simples · recomendada, pulável</i>"]
-        P2["<b>2 · Discovery</b><br/><i>entende cliente, marca e mercado</i>"]
-        P3["<b>3 · Pesquisa técnica</b><br/><i>escolhe a stack com dados, não achismo</i>"]
-        P4["<b>4 · Design</b><br/><i>estilo, mockups e documento visual</i>"]
-        P5["<b>5 · Escreve o plano</b><br/><i>passos miúdos com o código já pronto</i>"]
-        P6["<b>6 · Auditoria do PLANO</b><br/><i>especialistas + <b>Codex GPT</b> revisam a planta</i>"]
-        P7["<b>7 · Correção</b><br/><i>aplica no plano tudo que a auditoria achou</i>"]
-        P8["<b>8 · Montagem</b><br/><i>plano final, limpo, pronto pra executar</i>"]
-        PINTRO --> P0 --> P1 --> P1B --> P2 --> P3 --> P4 --> P5 --> P6 --> P7 --> P8
+    subgraph THINKERS[" "]
+        direction LR
+        subgraph PLANEJAR[" "]
+            direction TB
+            PINTRO["<b>🧠 /planejar</b> — desenha o produto e <b>audita a planta</b> (antes de construir)<br/>você aprova entre quase todas as fases (7→8 segue direto)"]
+            P0["<b>Fase 0 · Preflight</b><br/><i>confere as ferramentas que vai precisar</i>"]
+            P1["<b>1 · Brainstorm</b><br/><i>define o problema e o escopo do MVP</i>"]
+            P1B["<b>1b · Como já resolveram isso</b> (prior art)<br/><i>busca soluções existentes, peneira pela sua realidade e compara com o jeito simples · recomendada, pulável</i>"]
+            P2["<b>2 · Discovery</b><br/><i>entende cliente, marca e mercado</i>"]
+            P3["<b>3 · Pesquisa técnica</b><br/><i>escolhe a stack com dados, não achismo</i>"]
+            P4["<b>4 · Design</b><br/><i>estilo, mockups e documento visual</i>"]
+            P5["<b>5 · Escreve o plano</b><br/><i>passos miúdos com o código já pronto</i>"]
+            P6["<b>6 · Auditoria do PLANO</b><br/><i>especialistas + <b>Codex GPT</b> revisam a planta</i>"]
+            P7["<b>7 · Correção</b><br/><i>aplica no plano tudo que a auditoria achou</i>"]
+            P8["<b>8 · Montagem</b><br/><i>plano final, limpo, pronto pra executar</i>"]
+            PINTRO --> P0 --> P1 --> P1B --> P2 --> P3 --> P4 --> P5 --> P6 --> P7 --> P8
+        end
+        subgraph AUTOTHINK[" "]
+            direction TB
+            TINTRO["<b>🔬 /auto-think</b> — você traz um PROBLEMA sem resposta; ele estuda a fundo e <b>entrega opções com veredito</b> (não executa)<br/>sempre fundo · gera caminhos, não testa um já escolhido (isso é o gpt-optimizer)"]
+            T1["<b>1 · Espelha o pedido e confirma o alvo</b><br/><i>problema, ideia ou decisão? confirma antes de gastar o estudo · depois separa fato de suposição</i>"]
+            T2["<b>2 · Estuda vários ângulos EM PARALELO</b><br/><i>técnico · simplicidade · custo/risco · precedente · contexto interno</i><br/><i>se é de uma tecnologia com dono → puxa a <b>doc oficial</b> + sua <b>skill instalada</b></i>"]
+            T3["<b>3 · Codex GPT confronta</b> — 1ª rodada<br/><i>tenta DERRUBAR cada candidata</i>"]
+            TQ["<b>4 · Portão de qualidade</b> — 4 perguntas que toda candidata passa<br/><i>resolve a doença ou só o sintoma? · funciona com prova colada? · sobra incerteza que muda a decisão? · ou é lixo (fonte fraca/sem lastro)?</i>"]
+            T4["<b>5 · Re-cava o que ficou aberto</b><br/><i>só dúvida que muda a decisão · teto duro contra espiral</i>"]
+            T5["<b>6 · Codex GPT confronta</b> — 2ª rodada<br/><i>escolhe entre as que sobraram</i>"]
+            T6["<b>7 · Entrega soluções com veredito</b><br/><i>a recomendada + alternativas reais + o que o confronto matou</i>"]
+            TINTRO --> T1 --> T2 --> T3 --> TQ --> T4 --> T5 --> T6
+        end
+        subgraph GPTBLIND[" "]
+            direction TB
+            GINTRO["<b>🛡️ /gpt-optimizer</b> — você JÁ tem uma decisão; o GPT tenta derrubar pra você refletir antes de cravar<br/>monta o alvo sozinho · testa uma decisão pronta (≠ auto-think, que gera opções do zero)"]
+            G1["<b>Monta o ALVO na hora</b><br/><i>a decisão + plano + código que mexemos — sem precisar de PR</i>"]
+            G2["<b>Codex GPT tenta DERRUBAR</b> — rodada 1<br/><i>advogado do diabo: caça o furo</i>"]
+            G3["<b>Você filtra com prova</b><br/><i>descarta o que não procede; o GPT é insumo, não ordem</i>"]
+            GDEC{"Contestou algum furo?<br/>teto duro: 2 rodadas"}
+            G4["<b>Codex audita o SEU filtro</b> — rodada 2<br/><i>descartou direito? a versão ajustada ainda fura?</i>"]
+            GINTRO --> G1 --> G2 --> G3 --> GDEC
+            GDEC -->|"sim, contestei um furo"| G4
+        end
+        PINTRO ~~~ TINTRO ~~~ GINTRO
     end
 
     P8 --> PONTE{"Oferecer execução com a auto-worker?<br/>opcional, só com seu OK"}
@@ -81,18 +108,6 @@ flowchart TD
     CONTRATO --> AINTRO
 
     %% ───────── AUTO-THINK ─────────
-    subgraph AUTOTHINK[" "]
-        direction TB
-        TINTRO["<b>🔬 /auto-think</b> — você traz um PROBLEMA sem resposta; ele estuda a fundo e <b>entrega opções com veredito</b> (não executa)<br/>sempre fundo · gera caminhos, não testa um já escolhido (isso é o gpt-optimizer)"]
-        T1["<b>1 · Espelha o pedido e confirma o alvo</b><br/><i>problema, ideia ou decisão? confirma antes de gastar o estudo · depois separa fato de suposição</i>"]
-        T2["<b>2 · Estuda vários ângulos EM PARALELO</b><br/><i>técnico · simplicidade · custo/risco · precedente · contexto interno</i><br/><i>se é de uma tecnologia com dono → puxa a <b>doc oficial</b> + sua <b>skill instalada</b></i>"]
-        T3["<b>3 · Codex GPT confronta</b> — 1ª rodada<br/><i>tenta DERRUBAR cada candidata</i>"]
-        TQ["<b>4 · Portão de qualidade</b> — 4 perguntas que toda candidata passa<br/><i>resolve a doença ou só o sintoma? · funciona com prova colada? · sobra incerteza que muda a decisão? · ou é lixo (fonte fraca/sem lastro)?</i>"]
-        T4["<b>5 · Re-cava o que ficou aberto</b><br/><i>só dúvida que muda a decisão · teto duro contra espiral</i>"]
-        T5["<b>6 · Codex GPT confronta</b> — 2ª rodada<br/><i>escolhe entre as que sobraram</i>"]
-        T6["<b>7 · Entrega soluções com veredito</b><br/><i>a recomendada + alternativas reais + o que o confronto matou</i>"]
-        TINTRO --> T1 --> T2 --> T3 --> TQ --> T4 --> T5 --> T6
-    end
 
     T6 --> TPONTE{"Quer executar a escolhida?<br/>opcional, só com seu OK"}
     TPONTE -->|"é só estudo"| FIMT(["📄 Soluções entregues + detalhe em .md"])
@@ -135,17 +150,6 @@ flowchart TD
     NOVA -. "volta ao ponto exato (aqui: a execução)" .-> AINTRO
 
     %% ───────── GPT-BLINDAGEM ─────────
-    subgraph GPTBLIND[" "]
-        direction TB
-        GINTRO["<b>🛡️ /gpt-optimizer</b> — você JÁ tem uma decisão; o GPT tenta derrubar pra você refletir antes de cravar<br/>monta o alvo sozinho · testa uma decisão pronta (≠ auto-think, que gera opções do zero)"]
-        G1["<b>Monta o ALVO na hora</b><br/><i>a decisão + plano + código que mexemos — sem precisar de PR</i>"]
-        G2["<b>Codex GPT tenta DERRUBAR</b> — rodada 1<br/><i>advogado do diabo: caça o furo</i>"]
-        G3["<b>Você filtra com prova</b><br/><i>descarta o que não procede; o GPT é insumo, não ordem</i>"]
-        GDEC{"Contestou algum furo?<br/>teto duro: 2 rodadas"}
-        G4["<b>Codex audita o SEU filtro</b> — rodada 2<br/><i>descartou direito? a versão ajustada ainda fura?</i>"]
-        GINTRO --> G1 --> G2 --> G3 --> GDEC
-        GDEC -->|"sim, contestei um furo"| G4
-    end
 
     GFIM(["🛡️ Veredito: Seguir · Ajustar · Bloquear"])
     GDEC -->|"aceitei tudo / sem furo"| GFIM
@@ -197,6 +201,7 @@ flowchart TD
     class FIMP,FIMT,PARA,ENTREGA,NOVA,BLOQ,GFIM fim;
 
     %% molduras — cor bem fraquinha em volta de cada skill
+    style THINKERS fill:none,stroke:none;
     style PLANEJAR fill:#f1f1fc,stroke:#6366f1,stroke-width:2px;
     style AUTOTHINK fill:#eef7f5,stroke:#14b8a6,stroke-width:2px;
     style AUTO fill:#f0f8f1,stroke:#1f6b4f,stroke-width:2px;
