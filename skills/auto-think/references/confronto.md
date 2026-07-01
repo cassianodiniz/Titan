@@ -41,7 +41,10 @@ raciocínio na via rápida; já vem assim no comando do motor (`../../_shared/co
 O prompt pede ao Codex pra DERRUBAR, não validar. As perguntas:
 
 ```
-Repita o hash do selo como primeira secao (## Selo). Voce e advogado do diabo: tente DERRUBAR
+Repita o hash do selo como primeira secao, EXATAMENTE neste formato literal:
+## Selo
+- Manifesto (sha256): <hash>
+Voce e advogado do diabo: tente DERRUBAR
 cada candidata, nao validar. Pra cada uma, responda com evidencia:
 1. Isso resolve MESMO o problema declarado, ou a coisa errada / so um sintoma?
 2. Tem furo de raciocinio, premissa fragil vendida como fato, ou risco/caso de erro ignorado?
@@ -50,7 +53,7 @@ cada candidata, nao validar. Pra cada uma, responda com evidencia:
 
 Formato:
 ## Selo
-<o hash>
+- Manifesto (sha256): <o hash>
 ## Veredito
 - (por candidata) SEGUIR | AJUSTAR | BLOQUEAR
 ## Pontos

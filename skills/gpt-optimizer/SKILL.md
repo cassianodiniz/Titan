@@ -1,6 +1,6 @@
 ---
 name: gpt-optimizer
-description: Revisor adversarial via Codex GPT-5.5 que pega uma decisão, um raciocínio ou um trecho de código que está em jogo na conversa e manda o GPT tentar DERRUBAR (advogado do diabo) — devolve um veredito Seguir/Ajustar/Bloquear com os furos que procedem, pra te proteger de decidir errado. Use SOMENTE quando o Cassiano invocar de propósito: o comando /gpt-optimizer (ou /gpt), ou pedir pelo nome ("chama o optimizer", "manda pro gpt", "o que o gpt acha disso"). NÃO dispare sozinho a partir de palavras soltas tipo "reflete", "contraponto" ou "advogado do diabo" no meio de uma conversa normal — esta skill é só sob invocação explícita. Não é pra revisar mensagem de WhatsApp nem código dentro de um fluxo de desenvolvimento dedicado a um projeto.
+description: Revisor adversarial via Codex GPT-5.5 que pega uma decisão, um raciocínio ou um trecho de código que está em jogo na conversa e manda o GPT tentar DERRUBAR (advogado do diabo) — devolve um veredito Seguir/Ajustar/Bloquear com os furos que procedem, pra te proteger de decidir errado. Use SOMENTE sob invocação explícita: o comando /gpt-optimizer (ou /gpt), ou pedir pelo nome ("chama o optimizer", "manda pro gpt", "o que o gpt acha disso"). NÃO dispare sozinho a partir de palavras soltas tipo "reflete", "contraponto" ou "advogado do diabo" no meio de uma conversa normal — esta skill é só sob invocação explícita. Não é pra revisar código dentro de um fluxo de desenvolvimento dedicado a um projeto.
 ---
 
 # Skill gpt-optimizer — segunda opinião adversarial do GPT pra você refletir, no meio da conversa
@@ -160,7 +160,7 @@ Filtra a rodada 2 pela mesma regra de ouro. Ponto novo que procede e é grave �
 
 ## Passo 5 — Apresentar (é aqui que a skill te serve)
 
-O objetivo único deste passo: **você sai sabendo exatamente o que decidir, sem ter que perguntar de novo.** Tamanho não é o problema — vagueza é. Não espreme em uma linha; explique o suficiente pra decisão ficar óbvia, e nem uma palavra a mais.
+O objetivo único deste passo: **você sai sabendo exatamente o que decidir, sem ter que perguntar de novo — e cabendo em 1 tela.** Veredito na 1ª linha. No chat vão **no máximo os 3 furos que MUDAM a decisão**; o resto (furos menores, o que você descartou, o raciocínio cru do GPT) vai pra `$TMP/gpt_detalhe.md` e você só aponta o caminho. **NUNCA cole o parecer cru do GPT no chat** — ele é insumo seu, vira veredito traduzido. Clareza é o alvo, não tamanho: o que a decisão exige fica no chat; o que não cabe vai pro arquivo. Vagueza é proibida tanto quanto o paredão.
 
 Três regras que valem pra cada coisa que você mostrar:
 
@@ -175,14 +175,17 @@ Formato (tom de diretor, sem jargão):
 
 **Veredito do GPT: SEGUIR | AJUSTAR | BLOQUEAR** — <o porquê em 1 frase, com o efeito prático> (rodou 1 ou 2 rodadas — 2 = houve furo contestado)
 
-**Os furos que procedem:**
+**Os furos que procedem (no máximo 3 — os que MUDAM a decisão):**
 1. <o furo, com a evidência específica que o sustenta> → na prática: <o que muda pra você se ignorar>
    O que fazer: <ação concreta>
 2. ...
+(furos menores além dos 3 → vão pro `$TMP/gpt_detalhe.md`, não pro chat)
 
-**O que descartei do GPT (e por quê):** <1 linha por ponto descartado — não esconda que filtrou. Se rodou a 2ª rodada, diga se o GPT bateu o martelo no seu descarte ou recuou.>
+**O que descartei (resumo):** <1 linha dizendo que filtrou e quantos pontos — o detalhe ponto a ponto vai pro arquivo. Se rodou a 2ª rodada, diga em 1 linha se o GPT bateu o martelo no seu descarte ou recuou.>
 
-**👉 Sua decisão:** <só quando for chamada SUA — grave, produto, risco ou dado. A) <faz X · ganha/perde>  B) <faz Y · ganha/perde>>
+**👉 Sua decisão:** <UMA só, e só quando for chamada SUA — grave, produto, risco ou dado. A) <faz X · ganha/perde>  B) <faz Y · ganha/perde>>
+
+**▸ Detalhe completo em:** `$TMP/gpt_detalhe.md` (os furos menores, cada ponto descartado com a prova, e o parecer cru do GPT — pra quem quiser cavar)
 ```
 
 Casos onde a clareza costuma se perder — trate cada um:

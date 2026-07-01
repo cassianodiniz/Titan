@@ -1,9 +1,16 @@
 # Confronto via Codex GPT-5.5 — motor compartilhado
 
-Usado por `/planejar` e `/auto-think`. Este arquivo é o ÚNICO lugar onde mora a mecânica de
-chamar o Codex como segundo par de olhos: como invocar sem travar, como não mandar dado real
-pra fora, como garantir que ele leu a versão certa, e a regra de ouro de filtrar o parecer.
-Cada skill mantém só o que é dela (o que mandar e o que fazer com a resposta) e aponta pra cá.
+Usado por `/planejar`, `/auto-think` e `/auto-worker`. Este arquivo é o ÚNICO lugar onde mora a
+mecânica de chamar o Codex como segundo par de olhos: como invocar sem travar, como não mandar
+dado real pra fora, como garantir que ele leu a versão certa, e a regra de ouro de filtrar o
+parecer. Cada skill mantém só o que é dela (o que mandar e o que fazer com a resposta) e aponta
+pra cá.
+
+**Variantes por skill** (o que cada uma muda no comando da seção 3, pra não divergirem por
+acidente): `/auto-think` roda `xhigh` + `service_tier="fast"` (estudo caro, máximo de
+raciocínio na via rápida); `/auto-worker` roda `high` **sem** `service_tier="fast"` (revisão de
+trabalho rotineira a cada passo); `/planejar` roda `high` na 1ª checagem. O teto `alarm 900`, o
+selo e o fallback são iguais pras três.
 
 > **Por que existe.** O Codex é um modelo DIFERENTE do que conduz o trabalho. A graça é a
 > divergência de opinião, não a confirmação — um segundo cérebro que tenta derrubar o
@@ -29,9 +36,18 @@ H=$( { command -v sha256sum >/dev/null 2>&1 && sha256sum /tmp/confronto-input.md
 ```
 
 Monte o input final = **prompt + a linha do selo com `H` + o material**. Peça ao Codex pra
-repetir o hash `H` como primeira seção (`## Selo`) da resposta. Ao receber, **confira que o
-hash bate**. Não bateu → o Codex leu versão velha → descarta o parecer e re-roda só esta
-chamada.
+repetir o hash `H` como primeira seção da resposta, **EXATAMENTE neste formato** — o
+verificador (`auto-worker/scripts/verify-selo.sh`) procura esta frase literal, e um carimbo
+em outro formato faz a conferência reportar "sem selo" mesmo o Codex tendo lido o pacote certo:
+
+```
+## Selo
+- Manifesto (sha256): <hash>
+```
+
+Se ele não conseguir carimbar, instrua-o a escrever a palavra literal `SELO INDISPONIVEL`. Ao
+receber, **confira que o hash bate**. Não bateu → o Codex leu versão velha → descarta o parecer
+e re-roda só esta chamada.
 
 ## 3. Como invocar (canônico — vale pras duas skills)
 

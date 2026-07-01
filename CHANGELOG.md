@@ -1,5 +1,17 @@
 # Changelog — Titan
 
+## 1.7.0 — 2026-07-01
+
+### Adicionado (sincroniza melhorias que estavam só na fonte local)
+- **handoff — teste do "leitor cego" (Codex).** Antes de salvar, o handoff pode ir pro Codex fingindo que é uma sessão nova ("só com isto, o que você NÃO conseguiria continuar?") e os buracos apontados voltam pro doc. Inclui o script `skills/handoff/scripts/cold-read.sh` (teto de 15 min + retry + falha graciosa se o Codex cair) — que não existia no repo público.
+- **handoff — âncora de validade + ficha de decisão + primeira ação obrigatória.** Seção de data/HEAD do momento, mini-ficha (ADR) pra decisão que só viveu no chat, e checagem obrigatória (confere git/arquivos) antes da sessão nova confiar no doc. Entrega no chat agora é um prompt colável que aponta pro arquivo.
+- **auto-worker — carimbo de versão (sha256).** O revisor Codex carimba o hash do pacote que leu, provando que revisou a versão certa e não uma velha; ligado ao motor compartilhado.
+- **auto-think — trava de entrada.** O ciclo espelha o pedido e confirma o alvo (problema / ideia / decisão) antes de gastar o estudo caro.
+- **_shared — motor do Codex com variantes por skill.** Tabela de configuração por skill (auto-think / auto-worker / planejar) numa fonte única.
+
+### Neutralização (white-label)
+- Removidas as menções pessoais que tinham entrado no corpo das skills (nome do autor no fluxo do `handoff`, comparação com skill privada no `auto-think`, exemplo de WhatsApp no `gpt-optimizer`). Autoria segue creditada no README e no manifesto.
+
 ## 1.6.1 — 2026-06-24
 
 ### Mudado (auditoria do `gpt-optimizer`)

@@ -21,10 +21,10 @@ fato. Prompt-modelo (adaptar ao problema real):
 > padrões de arquitetura ou ferramentas existentes atacam isso? Para cada um: o que é, quem usa,
 > por que escolheram, e em que contexto funciona melhor ou pior."
 
-- Se a `/pesquisa` estiver disponível (Perplexity ativo), usar o funil dela — traz fontes
+- Se a `/pesquisa` estiver disponível (Exa ativo), usar o funil dela — traz fontes
   verificadas e citações, que é o que deixa a "visão diferente" **auditável** pelo usuário.
-- **Fallback** (Perplexity fora, `/pesquisa` faz hard-stop): NÃO travar o planejamento. Cair pra
-  uma varredura leve (`perplexity_search` nível 1 se voltar, ou `WebSearch`/conhecimento próprio),
+- **Fallback** (Exa fora, `/pesquisa` faz hard-stop): NÃO travar o planejamento. Cair pra
+  uma varredura leve (`web_search_exa` se voltar, ou `WebSearch`/conhecimento próprio),
   e marcar no resultado "descoberta reduzida — sem verificação de fontes".
 
 Saída do Tempo 1: **2-4 caminhos reais**, cada um com: o que é · quem usa · por que · trade-off.

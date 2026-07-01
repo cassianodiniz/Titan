@@ -1,6 +1,6 @@
 ---
 name: auto-worker
-description: "Modo largar-e-esquecer: o Claude executa a tarefa com protocolo de segurança e verificação embutido, e o Codex confronta o trabalho antes de fechar. Acionar por comando: /auto-worker <tarefa>, ou quando o usuário disser 'liga o auto-worker', 'liga o worker', 'chama o worker', 'manda o worker', 'modo largar', 'larga isso pros agentes', 'deixa os agentes resolverem', 'roda isso sozinho e me mostra no fim'. NÃO acionar pra pergunta factual rápida nem tarefa de 1 passo que o Claude resolve direto. Quando a tarefa envolver produção, dado real de pessoa, credencial, dinheiro, envio/publicação, deploy, infra ou mudança destrutiva, roda só em modo investigação/preparação reversível até autorização explícita — não executa a ação sensível sozinha."
+description: "Modo largar-e-esquecer: o Claude EXECUTA a tarefa com protocolo de segurança e verificação embutido, e o Codex confronta o trabalho antes de fechar. Acionar por comando: /auto-worker <tarefa>. Quando a tarefa tocar produção, dado real de pessoa, credencial, dinheiro, envio/publicação, deploy, infra ou mudança destrutiva, prepara tudo de forma reversível e PARA na borda até autorização explícita — não executa a ação sensível sozinha. Fronteira: ESTUDAR um problema sem executar = /auto-think; planejar produto novo do zero = /planejar."
 ---
 
 # auto-worker
@@ -163,7 +163,15 @@ estado final BLOQUEADO até o Codex voltar ou o usuário autorizar explicitament
 
 ## Revisar com o crítico (Codex) + a TRAVA DE VERSÃO
 
-O crítico nunca é o próprio executor (não se auto-aprova). É o Codex, via Bash:
+O crítico nunca é o próprio executor (não se auto-aprova). É o Codex, via Bash.
+
+**A mecânica completa mora no motor compartilhado `../_shared/confronto-codex.md`** (por que
+stdin, o teto `alarm 900`, o selo de versão, o fallback se o Codex cair, o mascaramento de dado
+e a regra de ouro de filtrar com prova) — essa é a fonte única; se a mecânica mudar lá, esta
+seção acompanha. O comando abaixo é a **variante do auto-worker**, deliberadamente mais
+conservadora que a do `/auto-think`: `model_reasoning_effort="high"` (não `xhigh`) e **sem**
+`service_tier="fast"`, porque aqui é revisão de trabalho rotineira a cada passo, não o estudo
+caro de vários ângulos — não vale forçar a via paga rápida em toda entrega.
 
 ```bash
 perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-5.5 -c model_reasoning_effort="high" --skip-git-repo-check - < /tmp/critico-input.md
@@ -186,7 +194,16 @@ edita uma cópia velha. Três defesas, nenhuma presume nada:
    cópia defasada). Se o Claude corrigiu mas não salvou por cima → para aqui, antes de revisar.
 2. **O revisor SELA o PACOTE que leu:** o crítico recebe um manifesto (o diff + lista de
    arquivos + comandos + saídas) e carimba no topo a impressão digital (hash) do manifesto
-   inteiro — não de um arquivo só, senão não prova que leu o pacote certo. O script
+   inteiro — não de um arquivo só, senão não prova que leu o pacote certo. Instrua o crítico a
+   carimbar como PRIMEIRA seção, **EXATAMENTE neste formato literal** (o `scripts/verify-selo.sh`
+   procura esta frase; outro formato faz a conferência reportar "sem selo" mesmo com pacote certo):
+
+   ```
+   ## Selo
+   - Manifesto (sha256): <hash>
+   ```
+
+   Se não conseguir, escrever a palavra literal `SELO INDISPONIVEL`. O script
    `scripts/verify-selo.sh` confere se o hash bate com o manifesto que foi enviado. Não
    bateu → o Codex leu versão/pacote velho → DESCARTA o parecer e re-roda só ele, na mesma rodada.
 3. **O revisor falhou** (travou / sem resposta / não carimbou) → NUNCA presume "aprovado"

@@ -1,6 +1,6 @@
 ---
 name: auto-think
-description: "Modo larga-e-some pra ESTUDAR um problema DIFÍCIL ou uma decisão que PESA — dispara vários ângulos EM PARALELO (agentes independentes), pesquisa o que o mundo e outras empresas já resolveram, levanta um LEQUE de candidatas, confronta cada uma com o Codex em mais de uma rodada, verifica o que se sustenta, re-cava o que ficou aberto, e entrega as soluções viáveis COM VEREDITO. Vai sempre fundo (estudo raso não é estudo): se você só quer uma resposta rápida sobre uma decisão que JÁ tem em mente, isso é a /Titan:gpt-optimizer, não esta skill. NÃO executa a solução (quem executa é /auto-worker) — para na recomendação. Acionar quando o usuário disser '/auto-think <problema>', 'auto-think', 'estuda isso a fundo', 'pesquisa e me traz a melhor forma de fazer X', 'investiga esse problema de vários ângulos', 'confronta as opções e decide', 'qual o melhor caminho pra <algo que exige estudo>', 'pensa nisso e volta com solução', 'larga isso pra estudar' — mesmo sem citar 'auto-think'. NÃO acionar pra pergunta factual rápida nem decisão pequena e reversível que dá pra responder direto sem estudo, nem pra EXECUTAR/implementar uma tarefa (isso é /auto-worker), nem pra planejar um produto novo do zero (isso é /planejar)."
+description: "Estuda a fundo um problema difícil ou decisão que pesa e volta com recomendação + alternativas, COM VEREDITO — não executa (quem executa é /auto-worker). Ataca vários ângulos em paralelo, pesquisa o que o mundo já resolveu, confronta cada candidata com o Codex em 2 rodadas e re-cava o que fica aberto. Acionar por comando: /auto-think <problema>. Fronteira: parecer rápido sobre decisão já tomada = /Titan:gpt-optimizer; planejar produto novo do zero = /planejar; EXECUTAR uma tarefa = /auto-worker."
 ---
 
 # auto-think
@@ -134,14 +134,31 @@ o problema, não baixar a base.
 Executa este ciclo do começo ao fim sem devolver o controle, exceto nas paradas da lista
 fechada lá embaixo. Anuncia cada virada em uma linha, mas não pede licença pra seguir.
 
-### 1. Enquadrar o problema
-Antes de cavar, separa o que é **fato** do que é **suposição** e decide o terreno:
+### 1. Espelhar o pedido, confirmar o alvo, e enquadrar
+
+**Primeiro espelha e confirma — ANTES de cavar (trava de entrada).** O que chega nem sempre é um
+"erro" pra resolver: às vezes é uma IDEIA que o usuário quer ver investigada, uma decisão que ele
+já rascunhou, ou uma intuição que ele quer testar. Estudar a fundo a coisa errada custa caro
+(agentes paralelos, pesquisa, Codex em duas rodadas), então o ciclo abre confirmando o alvo —
+uma trava de confirmação de escopo antes de gastar o estudo caro:
+- **Reescreve o pedido com as palavras dele + PROPÕE o TIPO:** "Entendi que você quer estudar X —
+  e isto me parece [um problema a resolver / uma ideia a investigar / uma decisão a bater]. É isso,
+  ou é outra coisa?" O tipo é uma PROPOSTA pra ele confirmar, não um veredito seu — quem decide o
+  que é (erro, ideia ou decisão) é o usuário. Um exemplo concreto do que você entendeu ajuda.
+- **Espera SEMPRE o `isso` (ou a correção) — em toda situação, mesmo que o alvo pareça óbvio.**
+  A confirmação não tem exceção: achar "isso tá claro, posso seguir" é justamente tirar dele a
+  decisão que esta pergunta existe pra devolver. Se ele corrigir o alvo ou o tipo, é vitória, não
+  atraso — você ia gastar o estudo caro no lugar errado. Só passa pro enquadramento com o `isso`.
+- **Isto NÃO é pedir licença pra ir fundo** (fundo é o padrão — ver a Calibragem): é confirmar O
+  QUE estudar, e devolver pro usuário a decisão de o que é o pedido. Depois do `isso`, o ciclo vira
+  larga-e-some de verdade — não pergunta mais "sigo?".
+
+**Depois enquadra.** Separa o que é **fato** do que é **suposição** e decide o terreno:
 - O problema é interno (sobre o sistema/código/operação do usuário), externo (conhecimento do
   mundo lá fora), ou os dois? Lembrar: **pesquisa externa pode servir pra resolver um problema
   interno** quando não se sabe a melhor forma — esse é o caso de uso central.
-- **Escreve em 1-2 linhas o que assumiu** antes de sumir: qual o escopo, onde vai olhar, e o
-  que conta como "resolvido" (o critério de sucesso). Isso é o que protege o "larga e some":
-  se a suposição estiver errada, o usuário corrige cedo em vez de no fim.
+- **Fixa em 1-2 linhas o escopo confirmado:** onde vai olhar e o que conta como "resolvido" (o
+  critério de sucesso). Como o alvo já foi confirmado acima, agora é larga-e-some: não volta a perguntar.
 - **A profundidade é sempre fundo** (ver a Calibragem) — não há mais modo leve. **Nunca encolhe
   por chute** ("acho que isso é simples"): isso é o que fazia a skill trabalhar pouco. Se for um
   parecer rápido sobre uma decisão pronta, o caminho é a `/Titan:gpt-optimizer`, não esta skill.
@@ -150,8 +167,6 @@ Antes de cavar, separa o que é **fato** do que é **suposição** e decide o te
   palpite — diz isso direto e não gasta o ciclo. "Já tem resposta pronta aqui: <prova>" é uma
   entrega honesta; gastar 5 ângulos pra confirmar o óbvio não é fundo, é desperdício. O teste:
   só usa o escape se conseguir PROVAR que é trivial; não conseguiu provar → vai fundo.
-- Só **para e pergunta** se a intenção tiver **duas leituras plausíveis de verdade** que
-  mudem o que seria estudado. Ambiguidade rasa → segue com a suposição declarada, não trava.
 
 ### 2. Estudar de vários ângulos — EM PARALELO DE VERDADE
 Aqui mora a maior diferença entre "estudar a fundo" e "pensar um pouco". Não é refletir sobre
@@ -359,7 +374,9 @@ vez. Junto com o teto de rodadas (item 3) e o agente em background que não segu
 ## Quando PARAR (lista fechada) — fora disto, segue e anuncia
 
 O auto-think é larga-e-some. Só devolve o controle nestes casos:
-1. **Intenção ambígua de verdade** — 2+ leituras plausíveis do problema que mudam o que estudar.
+1. **Confirmação de entrada (Passo 1)** — SEMPRE espelha o alvo + propõe o TIPO (problema /
+   ideia / decisão) e espera o `isso` antes de cavar, em toda situação, sem exceção. Quem decide
+   o que é o pedido é o usuário, não o agente — por isso a confirmação não é pulável.
 2. **Trava de dado pra fora** — o confronto/pesquisa só faria sentido expondo dado real de
    pessoa ou credencial (ver a trava). Para e pede autorização específica.
 3. **Descobriu que o problema é outro** — a investigação mostrou que a pergunta real é

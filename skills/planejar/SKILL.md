@@ -49,18 +49,18 @@ Se faltar uma critica, NAO siga em silencio. Avise o usuario nominalmente, expli
 **Com fallback (degradam sozinhas — so informe):**
 - `firecrawl_scrape` → `curl r.jina.ai` → `WebFetch`
 - Nano Banana (`GEMINI_API_KEY`) + Stitch MCP → uma sozinha → HTML estatico via taste-skill → pular mockup
-- `context7` → confiar em perplexity/memoria (pior, mas roda)
-- skill `/pesquisa` + Perplexity (descoberta de prior art, Fase 1) → varredura leve (`perplexity_search` / `WebSearch`) → pular a descoberta
+- `context7` → confiar em memoria/Exa (pior, mas roda)
+- skill `/pesquisa` + Exa (descoberta de prior art, Fase 1) → varredura leve (`web_search_exa` / `WebSearch`) → pular a descoberta
 - Skills de auditoria por dominio (Fase 6) → `find-skills` → `context7` + boas praticas
 
 Liste o que esta indisponivel e qual fallback sera usado. Nao precisa pedir aprovacao — so transparencia.
 
 **Opcionais (perda silenciosa — mencione se faltar):**
-- `perplexity_*` → sem pesquisa de mercado/social/trade-offs; cai pra WebSearch/conhecimento proprio
+- `exa` (`web_search_exa`/`web_fetch_exa`) → sem pesquisa de mercado/trade-offs com fonte real; cai pra WebSearch/conhecimento proprio
 - `find-skills` → dominios sem skill local vao direto pro context7
 
 **Saida do preflight:** uma linha-resumo pro usuario, ex:
-> Preflight: criticas OK. Indisponiveis: `firecrawl` (uso jina.ai), `context7` (uso perplexity). Pesquisa de mercado reduzida (sem perplexity). Seguimos?
+> Preflight: criticas OK. Indisponiveis: `firecrawl` (uso jina.ai), `context7` (uso memoria/Exa). Pesquisa de mercado reduzida (sem Exa). Seguimos?
 
 Se tudo critico estiver presente e so faltarem itens com fallback, mencione e prossiga direto pro anuncio das fases. So pare e pergunte quando faltar uma dependencia critica.
 
@@ -127,7 +127,7 @@ Usar o mesmo fallback tanto no scrape do site do cliente (Fase 2) quanto nos art
    2-4 caminhos reais; depois apertar pelas 3 travas (o jeito simples SEMPRE na mesa · filtro da
    realidade do usuario · confronto adversarial do Codex) e apresentar comparacao honesta com
    veredito — a pesquisa informa, o usuario decide. Tarefa pequena/obvia: pular (informe e siga).
-   Metodo completo (prompt da `/pesquisa`, as 3 travas, fallback sem Perplexity, onde salvar) em
+   Metodo completo (prompt da `/pesquisa`, as 3 travas, fallback sem Exa, onde salvar) em
    `references/descoberta-prior-art.md` — ler antes de rodar.
 4. Definir escopo do MVP — o que entra, o que fica pra depois (ja considerando a direcao escolhida no passo 3)
 5. Nomear o produto (brainstorm de nomes se necessario)
@@ -148,7 +148,8 @@ Usar o mesmo fallback tanto no scrape do site do cliente (Fase 2) quanto nos art
 
 **Ferramentas:**
 - `firecrawl_scrape` (ou fallback jina.ai) — site do cliente/empresa
-- `perplexity_search` com sources `["social", "web"]` — redes sociais, presenca online
+- `web_search_exa` (ou `web_search_advanced_exa`, se existir) — presenca online geral (query semântica). No conector avancado da pra filtrar fonte oficial com `includeDomains`; passe `textMaxCharacters` (1500) pra nao estourar o limite de tokens
+- Apify — redes sociais específicas (Instagram, TikTok, LinkedIn) quando precisar do perfil/posts
 - Leitura de documentos existentes no projeto
 
 **Como executar:**
@@ -180,8 +181,7 @@ Usar o mesmo fallback tanto no scrape do site do cliente (Fase 2) quanto nos art
 **Quando pular:** Se o usuario ja definiu a stack completa e nao quer revisar, pule esta fase. Confirme antes.
 
 **Ferramentas:**
-- `perplexity_search` — varredura rapida de alternativas
-- `perplexity_reason` — comparativos e trade-offs
+- `web_search_exa` (ou `web_search_advanced_exa`, se existir) — varredura rapida de alternativas (busca; a comparacao/trade-off e minha, lendo as fontes com `web_fetch_exa`). No avancado, `includeDomains` so pra fonte oficial/primaria; descrever a fonte na query cobre o resto. Passe `textMaxCharacters` (1500)
 - `context7` (resolve-library-id + query-docs) — documentacao oficial atualizada
 - `firecrawl_scrape` (ou fallback jina.ai) — artigos tecnicos, benchmarks, issues (ver "Scraping com fallback" acima)
 - **Skills locais de plataforma** — quando uma candidata da comparacao tem skill instalada, consulte a skill ANTES da pesquisa web: ela e curada e mais confiavel que resultado de busca. Exemplos: `cloudflare` + plugins (`cloudflare:workers-best-practices`, `cloudflare:durable-objects`, `cloudflare:agents-sdk`) pra Workers/D1/R2/KV/Pages; `supabase` e `supabase-best-practices`; `vercel:nextjs` e afins. **Produto com feature de IA/LLM:** consultar `claude-api` e `gemini-api-dev` pra escolha de provider/modelo — modelos atuais, pricing, limites e capacidades mudam rapido demais pra confiar em memoria ou busca web. IMPORTANTE: a skill alimenta a avaliacao da candidata, nao decide por ela — a comparacao continua neutra, com 2-3 alternativas reais por componente.
@@ -464,8 +464,8 @@ Esta skill orquestra outras skills. Ela nao substitui nenhuma — ela define QUA
 | Fase | Skills / ferramentas invocadas |
 |------|-------------------------------|
 | 1. Brainstorm | `superpowers:brainstorming`, **descoberta de prior art via `/pesquisa`** (`references/descoberta-prior-art.md`, recomendada/pulavel), revisor do problema via Codex GPT-5.5 `high` (`references/codex-revisor.md`, uma vez) |
-| 2. Discovery | `firecrawl_scrape` (ou fallback jina.ai), `perplexity_search` (redes sociais) |
-| 3. Pesquisa Tecnica | `perplexity_search`, `perplexity_reason`, `context7`, `firecrawl_scrape` (ou fallback jina.ai), skills locais de plataforma (`cloudflare`+plugins, `supabase`, `vercel:*`), skills de API de IA (`claude-api`, `gemini-api-dev`) |
+| 2. Discovery | `firecrawl_scrape` (ou fallback jina.ai), `web_search_exa` (presenca online), Apify (redes sociais) |
+| 3. Pesquisa Tecnica | `web_search_exa` + `web_fetch_exa` (busca; comparativo/trade-off e meu), `context7`, `firecrawl_scrape` (ou fallback jina.ai), skills locais de plataforma (`cloudflare`+plugins, `supabase`, `vercel:*`), skills de API de IA (`claude-api`, `gemini-api-dev`) |
 | 4. Design | `taste-skill` (router de estilo); mockups complementares: Nano Banana Pro via `gemini-api-dev` (mood) + Stitch MCP (telas estruturadas, web e iOS) |
 | 5. Escrita | `superpowers:writing-plans` |
 | 6. Auditoria | Skills especializadas por dominio (ver `references/audit-skills.md`) — um subagent por dominio, em paralelo; `find-skills` pra dominios sem skill local, `context7` como fallback; + revisor de sanidade do plano via Codex GPT-5.5 `xhigh` (`references/codex-revisor.md`) |
