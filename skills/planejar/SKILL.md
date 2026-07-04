@@ -1,13 +1,6 @@
 ---
 name: planejar
-description: >
-  Metodologia completa para planejar produtos digitais antes de escrever uma linha de código.
-  Cobre desde brainstorm até plano de implementação auditado e corrigido.
-  Use quando o usuário quiser planejar um novo produto (web app, mobile, extensão, SaaS, API),
-  quando disser "vamos planejar", "quero construir X", "tenho uma ideia pra Y", "novo projeto",
-  "MVP", ou quando mencionar que precisa de um plano ou especificação antes de codar.
-  Também use quando o usuário pedir pra transformar uma ideia vaga em especificação técnica.
-  NÃO use para tarefas de implementação — esta skill produz o PLANO, não o código.
+description: 'Metodologia completa para planejar produtos digitais antes de escrever uma linha de código. Cobre desde brainstorm até plano de implementação auditado e corrigido. Use quando o usuário quiser planejar um novo produto (web app, mobile, extensão, SaaS, API), quando disser "vamos planejar", "quero construir X", "tenho uma ideia pra Y", "novo projeto", "MVP", ou quando mencionar que precisa de um plano ou especificação antes de codar. Também use quando o usuário pedir pra transformar uma ideia vaga em especificação técnica. NÃO use para tarefas de implementação — esta skill produz o PLANO, não o código.'
 ---
 
 # Planejar
