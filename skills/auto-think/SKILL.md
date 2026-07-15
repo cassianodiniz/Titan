@@ -1,6 +1,6 @@
 ---
 name: auto-think
-description: "Estuda a fundo um problema difícil ou decisão que pesa e volta com recomendação + alternativas, COM VEREDITO — não executa (quem executa é /auto-worker). Ataca vários ângulos em paralelo via GPT-5.6 (terra nos ângulos, sol na síntese), confronta cada candidata com Opus em high em 2 rodadas, e re-cava o que fica aberto. Acionar por comando: /auto-think <problema>. Fronteira: parecer rápido sobre decisão já tomada = /Titan:gpt-optimizer; planejar produto novo do zero = /planejar; EXECUTAR uma tarefa = /auto-worker."
+description: "Estuda a fundo um problema difícil ou decisão que pesa e volta com recomendação + alternativas, COM VEREDITO — não executa (quem executa é /auto-gptworker). Ataca vários ângulos em paralelo via GPT-5.6 (terra nos ângulos, sol na síntese), confronta cada candidata com Opus em high em 2 rodadas, e re-cava o que fica aberto. Acionar por comando: /auto-think <problema>. Fronteira: parecer rápido sobre decisão já tomada = /Titan:gpt-optimizer; planejar produto novo do zero = /planejar; EXECUTAR uma tarefa = /auto-gptworker."
 ---
 
 # auto-think
@@ -9,7 +9,7 @@ Modo de trabalho pro usuário **largar um problema difícil e sumir** — e volt
 pronta pra decidir. O auto-think não executa nada: ele **estuda a fundo**. Pesquisa, ataca o
 problema por vários lados ao mesmo tempo, levanta um leque de candidatas, confronta cada uma
 até sobrar só o que aguenta porrada, e entrega as soluções viáveis **com veredito** (a
-recomendada + as alternativas reais). Quem executa a escolhida depois é o `/auto-worker` —
+recomendada + as alternativas reais). Quem executa a escolhida depois é o `/auto-gptworker` —
 esta skill só pensa.
 
 Repo-agnóstica: serve pra problema técnico ("qual a melhor forma de fazer X no sistema"),
@@ -18,11 +18,11 @@ resolve"), ou de pesquisa pura ("o que o mundo já resolveu sobre isto").
 
 **A fronteira que define tudo:**
 - `/planejar` = desenhar um PRODUTO novo do zero antes de codar.
-- `/auto-worker` = EXECUTAR uma tarefa e entregar feito.
+- `/auto-gptworker` = EXECUTAR uma tarefa e entregar feito (Codex constrói, Claude revisa).
 - `auto-think` = ESTUDAR um problema a fundo e entregar solução(ões) recomendada(s). Não executa.
 
 Se no fim o usuário quiser rodar a solução escolhida, o ponteiro é: "quer que eu execute a A?
-→ /auto-worker". O auto-think nunca cruza essa linha sozinho.
+→ /auto-gptworker". O auto-think nunca cruza essa linha sozinho.
 
 ---
 
@@ -77,8 +77,8 @@ parte fácil; qualquer um junta links. O valor está em **atacar os próprios ac
 só o que se sustenta. Por isso o confronto é em mais de uma rodada, e a honestidade ("prova ou
 silêncio") vale igual aqui, mesmo sem dado real em risco.
 
-O contrato de honestidade e segurança é o mesmo do `/auto-worker`:
-`../auto-worker/references/protocolo.md`. Leia antes de começar. O resumo operacional do que
+O contrato de honestidade e segurança é o mesmo do `/auto-gptworker`:
+`../_shared/protocolo.md`. Leia antes de começar. O resumo operacional do que
 mais importa pro auto-think está abaixo.
 
 ---

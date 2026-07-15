@@ -1,6 +1,6 @@
 # Confronto via Codex GPT-5.5 — motor compartilhado
 
-Usado por `/planejar`, `/auto-think` e `/auto-worker`. Este arquivo é o ÚNICO lugar onde mora a
+Usado por `/planejar`, `/auto-think` e `/auto-gptworker`. Este arquivo é o ÚNICO lugar onde mora a
 mecânica de chamar o Codex como segundo par de olhos: como invocar sem travar, como não mandar
 dado real pra fora, como garantir que ele leu a versão certa, e a regra de ouro de filtrar o
 parecer. Cada skill mantém só o que é dela (o que mandar e o que fazer com a resposta) e aponta
@@ -8,7 +8,7 @@ pra cá.
 
 **Variantes por skill** (o que cada uma muda no comando da seção 3, pra não divergirem por
 acidente): `/auto-think` roda `xhigh` + `service_tier="fast"` (estudo caro, máximo de
-raciocínio na via rápida); `/auto-worker` roda `high` **sem** `service_tier="fast"` (revisão de
+raciocínio na via rápida); `/auto-gptworker` roda `high` **sem** `service_tier="fast"` (revisão de
 trabalho rotineira a cada passo); `/planejar` roda `high` na 1ª checagem. O teto `alarm 900`, o
 selo e o fallback são iguais pras três.
 
@@ -37,7 +37,7 @@ H=$( { command -v sha256sum >/dev/null 2>&1 && sha256sum /tmp/confronto-input.md
 
 Monte o input final = **prompt + a linha do selo com `H` + o material**. Peça ao Codex pra
 repetir o hash `H` como primeira seção da resposta, **EXATAMENTE neste formato** — o
-verificador (`auto-worker/scripts/verify-selo.sh`) procura esta frase literal, e um carimbo
+verificador (`_shared/scripts/verify-selo.sh`) procura esta frase literal, e um carimbo
 em outro formato faz a conferência reportar "sem selo" mesmo o Codex tendo lido o pacote certo:
 
 ```
@@ -87,7 +87,7 @@ perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-5.6-terra \
 - **Atalho:** a skill irmã `/Titan:gpt-optimizer` (no mesmo plugin) traz o `run-gpt.sh`,
   mas hoje ele roda afinado pro fluxo dela (**`--sandbox read-only`**, sem selo) — se o seu
   confronto precisa de outro sandbox ou da trava de selo, monte a chamada inline (acima). O
-  helper de selo continua em `auto-worker/scripts/verify-selo.sh`.
+  helper de selo continua em `_shared/scripts/verify-selo.sh`.
 
 ## 3b. Rodadas seguintes — MESMA sessão (o crítico lembra o que já apontou)
 

@@ -35,14 +35,14 @@ usar — a **/pesquisa + Perplexity** (a pesquisa web da planejar). Detalhe item
 
 | Comando | O que faz |
 |---|---|
-| `/Titan:planejar <ideia>` | Desenha um produto/software novo do zero antes de codar (8 fases: brainstorm → escopo → design → plano auditado). No fim, oferece executar com a auto-worker. |
+| `/Titan:planejar <ideia>` | Desenha um produto/software novo do zero antes de codar (8 fases: brainstorm → escopo → design → plano auditado). No fim, oferece executar com a auto-gptworker. |
 | `/Titan:auto-think <problema>` | Estuda a fundo um problema **sem resposta**: ataca de vários ângulos em paralelo, confronta com o Codex em 2 rodadas, e entrega **opções com veredito**. Gera caminhos — não executa. |
-| `/Titan:auto-worker <tarefa>` | Executa a tarefa do início ao fim e o crítico (Codex) confronta o trabalho antes de fechar. A verificação é calibrada pelo **risco** (trivial faz e entrega; sensível liga o protocolo completo). |
-| `/Titan:gpt-optimizer` | Segunda opinião adversarial pra **refletir sobre uma decisão que você JÁ tem** antes de cravar: o Codex (GPT-5.5) tenta derrubar e devolve veredito **Seguir / Ajustar / Bloquear**. Se der Seguir, oferece executar com a auto-worker. |
+| `/Titan:auto-gptworker <tarefa>` | Modo INVERTIDO: o **Codex constrói** a tarefa (mão na massa) e o **Claude revisa o diff** inteiro antes de fechar. Borda sensível (dado real, credencial, deploy, destrutivo) o Claude assume e para até autorização. |
+| `/Titan:gpt-optimizer` | Segunda opinião adversarial pra **refletir sobre uma decisão que você JÁ tem** antes de cravar: o Codex (GPT-5.6) tenta derrubar e devolve veredito **Seguir / Ajustar / Bloquear**. Se der Seguir, oferece executar com a auto-gptworker. |
 | `/Titan:handoff` | Gera um documento de passagem de bastão pra continuar o trabalho numa sessão nova, do zero. |
 
 **Como se encaixam:** `planejar` e `auto-think` são os dois pensadores (uma desenha um produto
-novo, a outra estuda um problema) e entregam pra `auto-worker` executar. `gpt-optimizer` é o
+novo, a outra estuda um problema) e entregam pra `auto-gptworker` executar. `gpt-optimizer` é o
 confronto avulso — fora do ciclo, testa uma decisão pronta a qualquer momento. `handoff` salva o
 ponto e passa pra próxima sessão.
 
@@ -98,7 +98,7 @@ flowchart TD
         PINTRO --> P0 --> P1 --> P1B --> P2 --> P3 --> P4 --> P5 --> P6 --> P7 --> P8
     end
 
-    P8 --> PONTE{"Oferecer execução com a auto-worker?<br/>opcional, só com seu OK"}
+    P8 --> PONTE{"Oferecer execução com a auto-gptworker?<br/>opcional, só com seu OK"}
     PONTE -->|"prefiro de outro jeito"| FIMP(["📄 Plano salvo em docs/"])
     PONTE -->|"você aceita"| CONTRATO["<b>📄 Contrato de execução</b><br/><i>trava o objetivo e o que NÃO reabrir</i>"]
     CONTRATO --> AINTRO
@@ -120,20 +120,20 @@ flowchart TD
     TPONTE -->|"é só estudo"| FIMT(["📄 Soluções entregues + detalhe em .md"])
     TPONTE -->|"executa a A"| AINTRO
 
-    %% ───────── AUTO-PROMPT ─────────
+    %% ───────── AUTO-GPTWORKER ─────────
     subgraph AUTO[" "]
         direction TB
-        AINTRO["<b>⚙️ /auto-worker</b> — executa até o fim, uma tarefa por vez, e <b>verifica a casa</b><br/>entra do plano (planejar) ou da solução (auto-think) acima, OU direto do zero · o esforço é seu"]
-        ARISK{"Qual o risco da tarefa?<br/>ele define quanto verificar"}
-        NIVEL["<b>O nível define QUANTO verificar</b> — as travas duras valem em todos:<br/>🟢 <b>baixo</b> · faz e confere (sem crítico obrigatório)<br/>🟡 <b>médio</b> · + <b>Codex GPT</b> confronta antes de fechar<br/>🔴 <b>alto</b> · + testa o que machuca + travas + 1 revisão válida (sem revisor = BLOQUEADO)"]
-        AEXE["<b>Claude executa a TAREFA ATUAL e PROVA cada passo</b><br/><i>uma tarefa por vez; o que não dá pra provar vira pendência marcada, nunca passa como pronto</i>"]
-        ACRIT["<b>Codex GPT confronta essa tarefa</b><br/><i>tenta refutar: funciona? não vazou? não quebrou?</i>"]
-        ADEC{"Tarefa fechou?<br/>até 3 rodadas"}
-        AMORE{"Falta tarefa no plano?"}
+        AINTRO["<b>⚙️ /auto-gptworker</b> — modo INVERTIDO: Codex constrói, Claude revisa o diff<br/>entra do plano (planejar) ou da solução (auto-think) acima, OU direto do zero · o esforço é seu"]
+        ARISK{"Qual o risco desta parte da tarefa?<br/>ele define QUEM constrói"}
+        NIVEL["<b>O risco define quem constrói</b> — as travas duras valem sempre:<br/>🟢🟡 <b>baixo/médio</b> · o <b>Codex constrói</b> (mão na massa, local e reversível)<br/>🔴 <b>alto/borda dura</b> · dado real, credencial, deploy, destrutivo — o <b>Claude assume</b> e PARA até autorização"]
+        AEXE["<b>Codex constrói essa parte</b> (acesso de escrita, `--yolo` só no trabalho seguro)<br/><i>uma parte por vez; nunca cruza a borda dura sozinho</i>"]
+        ACRIT["<b>Claude revisa o diff inteiro</b> como PR de contribuidor<br/><i>roda a PROVA ele mesmo — a saída colada pelo Codex não conta como prova</i>"]
+        ADEC{"Diff aprovado?<br/>fix-loop: teto de 2 rodadas"}
+        AMORE{"Falta parte no plano?"}
         AINTRO --> ARISK --> NIVEL --> AEXE --> ACRIT --> ADEC
-        ADEC -->|"ainda não → corrige e refaz"| AEXE
-        ADEC -->|"sim, fechou"| AMORE
-        AMORE -->|"sim → próxima tarefa"| AEXE
+        ADEC -->|"ainda não → Codex corrige e refaz"| AEXE
+        ADEC -->|"sim, aprovado"| AMORE
+        AMORE -->|"sim → próxima parte"| AEXE
     end
 
     AMORE -->|"não, plano completo → produto pronto"| BORDA{"Bateu numa borda dura?<br/>dinheiro · envio · deploy ·<br/>apagar dado real · credencial"}
@@ -174,7 +174,7 @@ flowchart TD
     GFIM -. "deu SEGUIR → quer executar agora?<br/>só com seu OK" .-> AINTRO
 
     %% ───────── cores (uma família por skill) ─────────
-    %% planejar=índigo · auto-think=teal · auto-worker=verde · handoff=âmbar · estrutura=cinza
+    %% planejar=índigo · auto-think=teal · auto-gptworker=verde · handoff=âmbar · estrutura=cinza
     classDef cabP fill:#4338ca,color:#ffffff,stroke:#a5b4fc,stroke-width:1.5px;
     classDef cabT fill:#0f766e,color:#ffffff,stroke:#5eead4,stroke-width:1.5px;
     classDef cabA fill:#15803d,color:#ffffff,stroke:#86efac,stroke-width:1.5px;

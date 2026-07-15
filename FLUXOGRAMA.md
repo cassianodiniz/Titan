@@ -5,21 +5,21 @@ por qualquer uma:
 
 - **🧠 /planejar** — desenha um produto/software do zero, **descobre como o problema já foi resolvido lá fora** e **audita a planta** antes de construir.
 - **🔬 /auto-think** — você traz um **problema sem resposta**; ele **estuda a fundo** (vários ângulos em paralelo, confronta os achados com o Codex) e entrega **opções com veredito**. Gera caminhos — não executa, para na recomendação.
-- **⚙️ /auto-worker** — executa uma tarefa do início ao fim, se corrigindo sozinho, e **verifica a casa** construída.
+- **⚙️ /auto-gptworker** — executa uma tarefa do início ao fim: o **Codex constrói** (mão na massa), o **Claude revisa o diff inteiro** antes de fechar. Borda sensível (dado real, credencial, deploy, destrutivo) o Claude assume e para.
 - **🪢 /handoff** — salva o ponto exato do trabalho e passa o bastão pra outra sessão.
-- **🛡️ /gpt-optimizer** — **segunda opinião adversarial pra refletir antes de cravar**, no meio de qualquer conversa: sem precisar de plano nem código formal, ele monta o alvo sozinho, o Codex tenta derrubar, e devolve veredito **Seguir / Ajustar / Bloquear**. Se der **Seguir**, oferece executar com a `/auto-worker`.
+- **🛡️ /gpt-optimizer** — **segunda opinião adversarial pra refletir antes de cravar**, no meio de qualquer conversa: sem precisar de plano nem código formal, ele monta o alvo sozinho, o Codex tenta derrubar, e devolve veredito **Seguir / Ajustar / Bloquear**. Se der **Seguir**, oferece executar com a `/auto-gptworker`.
 
 Elas também formam **um ciclo**: o plano sai do `planejar` (ou a solução escolhida sai do
-`auto-think`) e vai pro `auto-worker` pra ser executado; se o trabalho fica longo e o contexto
-enche, o `auto-worker` chama o `handoff`, e numa sessão nova você retoma de onde parou.
+`auto-think`) e vai pro `auto-gptworker` pra ser executado; se o trabalho fica longo e o contexto
+enche, o `auto-gptworker` chama o `handoff`, e numa sessão nova você retoma de onde parou.
 
 > A grande diferença que costuma confundir: **`planejar` revisa o PLANO** (a planta, antes de
-> existir código) e **`auto-worker` revisa o que foi FEITO** (a casa pronta). Não é a mesma
-> conferência duas vezes — são dois momentos diferentes.
+> existir código) e **`auto-gptworker` revisa o que o CODEX CONSTRUIU** (a casa pronta, feita por
+> outro par de mãos). Não é a mesma conferência duas vezes — são dois momentos diferentes.
 >
 > E entre os dois "pensadores": **`planejar` parte de uma IDEIA de produto** (desenha algo novo);
 > **`auto-think` parte de um PROBLEMA sem resposta** (investiga e recomenda opções). Os dois entregam pro
-> `auto-worker` executar.
+> `auto-gptworker` executar.
 >
 > Já o **`gpt-optimizer`** parte de uma **decisão que você JÁ tomou** — não gera opções, **testa a que você
 > escolheu** (o GPT tenta derrubar). É o **confronto avulso**, fora do ciclo, que você chama a
@@ -102,7 +102,7 @@ flowchart TD
         PINTRO ~~~ TINTRO ~~~ GINTRO
     end
 
-    P8 --> PONTE{"Oferecer execução com a auto-worker?<br/>opcional, só com seu OK"}
+    P8 --> PONTE{"Oferecer execução com a auto-gptworker?<br/>opcional, só com seu OK"}
     PONTE -->|"prefiro de outro jeito"| FIMP(["📄 Plano salvo em docs/"])
     PONTE -->|"você aceita"| CONTRATO["<b>📄 Contrato de execução</b><br/><i>trava o objetivo e o que NÃO reabrir</i>"]
     CONTRATO --> AINTRO
@@ -113,20 +113,20 @@ flowchart TD
     TPONTE -->|"é só estudo"| FIMT(["📄 Soluções entregues + detalhe em .md"])
     TPONTE -->|"executa a A"| AINTRO
 
-    %% ───────── AUTO-PROMPT ─────────
+    %% ───────── AUTO-GPTWORKER ─────────
     subgraph AUTO[" "]
         direction TB
-        AINTRO["<b>⚙️ /auto-worker</b> — executa até o fim, uma tarefa por vez, e <b>verifica a casa</b><br/>entra do plano (planejar) ou da solução (auto-think) acima, OU direto do zero · o esforço é seu"]
-        ARISK{"Qual o risco da tarefa?<br/>ele define quanto verificar"}
-        NIVEL["<b>O nível define QUANTO verificar</b> — as travas duras valem em todos:<br/>🟢 <b>baixo</b> · faz e confere (sem crítico obrigatório)<br/>🟡 <b>médio</b> · + <b>Codex GPT</b> confronta antes de fechar<br/>🔴 <b>alto</b> · + testa o que machuca + travas + 1 revisão válida (sem revisor = BLOQUEADO)"]
-        AEXE["<b>Claude executa a TAREFA ATUAL e PROVA cada passo</b><br/><i>uma tarefa por vez; o que não dá pra provar vira pendência marcada, nunca passa como pronto</i>"]
-        ACRIT["<b>Codex GPT confronta essa tarefa</b><br/><i>tenta refutar: funciona? não vazou? não quebrou?</i><br/><i>+ trava de versão: confere que o crítico leu a versão certa do arquivo</i>"]
-        ADEC{"Tarefa fechou?<br/>quantas rodadas = seu esforço"}
-        AMORE{"Falta tarefa no plano?"}
+        AINTRO["<b>⚙️ /auto-gptworker</b> — modo INVERTIDO: Codex constrói, Claude revisa o diff<br/>entra do plano (planejar) ou da solução (auto-think) acima, OU direto do zero · o esforço é seu"]
+        ARISK{"Qual o risco desta parte da tarefa?<br/>ele define QUEM constrói"}
+        NIVEL["<b>O risco define quem constrói</b> — as travas duras valem sempre:<br/>🟢🟡 <b>baixo/médio</b> · o <b>Codex constrói</b> (mão na massa, local e reversível)<br/>🔴 <b>alto/borda dura</b> · dado real, credencial, deploy, destrutivo — o <b>Claude assume</b> e PARA até autorização"]
+        AEXE["<b>Codex constrói essa parte</b> (acesso de escrita, `--yolo` só no trabalho seguro)<br/><i>uma parte por vez; nunca cruza a borda dura sozinho</i>"]
+        ACRIT["<b>Claude revisa o diff inteiro</b> como PR de contribuidor<br/><i>roda a PROVA ele mesmo — a saída colada pelo Codex não conta como prova</i><br/><i>+ trava de versão: confere que o diff revisado é o do HEAD atual, não um estado velho</i>"]
+        ADEC{"Diff aprovado?<br/>fix-loop: teto de 2 rodadas na MESMA sessão"}
+        AMORE{"Falta parte no plano?"}
         AINTRO --> ARISK --> NIVEL --> AEXE --> ACRIT --> ADEC
-        ADEC -->|"ainda não → corrige e refaz"| AEXE
-        ADEC -->|"sim, fechou"| AMORE
-        AMORE -->|"sim → próxima tarefa"| AEXE
+        ADEC -->|"ainda não → Codex corrige e refaz"| AEXE
+        ADEC -->|"sim, aprovado"| AMORE
+        AMORE -->|"sim → próxima parte"| AEXE
     end
 
     AMORE -->|"não, plano completo → produto pronto"| BORDA{"Bateu numa borda dura?<br/>dinheiro · envio · deploy ·<br/>apagar dado real · credencial"}
@@ -158,7 +158,7 @@ flowchart TD
     GFIM -. "deu SEGUIR → quer executar agora?<br/>só com seu OK" .-> AINTRO
 
     %% ───────── cores (uma família por skill) ─────────
-    %% planejar=índigo · auto-think=teal · auto-worker=verde · handoff=âmbar · estrutura=cinza
+    %% planejar=índigo · auto-think=teal · auto-gptworker=verde · handoff=âmbar · estrutura=cinza
     classDef cabP fill:#4338ca,color:#ffffff,stroke:#a5b4fc,stroke-width:1.5px;
     classDef cabT fill:#0f766e,color:#ffffff,stroke:#5eead4,stroke-width:1.5px;
     classDef cabA fill:#15803d,color:#ffffff,stroke:#86efac,stroke-width:1.5px;

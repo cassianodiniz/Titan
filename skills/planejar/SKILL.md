@@ -382,37 +382,40 @@ apontando para o plano.
 
 ---
 
-## Ponte com a auto-worker (executar o plano) — OPCIONAL, nunca automatico
+## Ponte com a auto-gptworker (executar o plano) — OPCIONAL, nunca automatico
 
-A `auto-worker` e a skill irma deste plugin (`Titan`): o modo "largar e esquecer" que executa
-sozinho, se confere e so chama o usuário nas decisoes reais. Quando o plano final estiver
-pronto e aprovado, OFERECA executar com ela — mas so OFERECA, nunca dispare sozinho:
+A `auto-gptworker` e a skill irma deste plugin (`Titan`): o modo "largar e esquecer" invertido
+em que o Claude planeja/orquestra/revisa e o **Codex constrói** (mão na massa), so chamando o
+usuário nas decisoes reais e na borda sensivel. Quando o plano final estiver pronto e aprovado,
+OFERECA executar com ela — mas so OFERECA, nunca dispare sozinho:
 
-> "Plano pronto. Quer que eu execute com a auto-worker? Ela toca sozinha, se confere com o
-> Codex e so te chama nas decisoes que importam. Ou prefere executar de outro jeito?"
+> "Plano pronto. Quer que eu execute com a auto-gptworker? O Codex constroi, eu reviso o diff
+> inteiro antes de fechar, e so te chamo nas decisoes que importam. Ou prefere executar de
+> outro jeito?"
 
 Se o usuário aceitar, **salve um CONTRATO DE EXECUCAO em arquivo** (`docs/<nome>-execution-contract.md`)
 — NUNCA passe o plano solto na conversa (ela perde premissa no caminho). O arquivo tem schema
-fixo e a auto-worker e chamada apontando pra ele. Isso impede a auto-worker de replanejar do
-zero ou perder as travas que voce ja definiu (a estrategia e desta skill; a execucao segura e
+fixo e a auto-gptworker e chamada apontando pra ele. Isso impede a auto-gptworker de replanejar
+do zero ou perder as travas que voce ja definiu (a estrategia e desta skill; a execucao segura e
 dela). Campos obrigatorios do contrato:
 
 - **Objetivo** — o problema que o plano resolve
 - **Fora de escopo** — o que NAO fazer
 - **Criterios de sucesso** — como saber que ficou pronto
-- **Decisoes ja tomadas** — premissas que a auto-worker NAO reabre
+- **Decisoes ja tomadas** — premissas que a auto-gptworker NAO reabre
 - **Decisoes proibidas ao executor** — o que ela tem que subir pro usuário
 - **Pontos de parada** — onde ela para e pergunta
-- **Permissoes concedidas** — o que ela pode fazer sozinha
+- **Permissoes concedidas** — o que o Codex pode construir sozinho, sem passar pela borda do Claude
 
-Chamada explicita (aponta pro arquivo, ordem clara): `/auto-worker executar docs/<nome>-execution-contract.md (sem replanejar)`.
+Chamada explicita (aponta pro arquivo, ordem clara): `/auto-gptworker executar docs/<nome>-execution-contract.md (sem replanejar)`.
 
-A auto-worker recebe isso como "plano vindo da planejar": ela EXECUTA, valida se esta
-executavel, aponta lacuna e pede autorizacao pra mudar premissa — mas NAO replaneja.
+A auto-gptworker recebe isso como "plano vindo da planejar": ela EXECUTA (Codex constroi, Claude
+revisa o diff), valida se esta executavel, aponta lacuna e pede autorizacao pra mudar premissa —
+mas NAO replaneja.
 
-**Ordem de execucao (resolve o caminho duplo):** o caminho PRIMARIO e a `auto-worker` (skill
+**Ordem de execucao (resolve o caminho duplo):** o caminho PRIMARIO e a `auto-gptworker` (skill
 irma deste plugin). `superpowers:subagent-driven-development` (citado no "Proximo passo" acima)
-e FALLBACK — so quando o usuário recusa a auto-worker ou ela nao esta disponivel.
+e FALLBACK — so quando o usuário recusa a auto-gptworker ou ela nao esta disponivel.
 
 ---
 

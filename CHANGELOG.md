@@ -1,5 +1,14 @@
 # Changelog — Titan
 
+## 1.9.0 — 2026-07-15
+
+Remove a skill `auto-worker` (Claude executa sozinho) — o plugin passa a ter **uma única skill executora**, a `auto-gptworker` (Codex constrói, Claude revisa o diff).
+
+- **`auto-worker` removida.** O contrato de segurança/verificação que ela trazia (`references/protocolo.md`) e o verificador de selo (`scripts/verify-selo.sh`) foram movidos pra `_shared/` — continuam usados por `auto-gptworker` e `auto-think`, agora como propriedade compartilhada do plugin, não de uma skill específica.
+- **Referências reescritas** em `auto-gptworker`, `auto-think`, `_shared/confronto-codex.md`, `gpt-optimizer` e `planejar` (a "ponte de execução" do fim do plano agora oferece `/auto-gptworker`, com a linguagem ajustada pro modelo invertido: Codex constrói, Claude audita o diff — não é mais "Claude executa sozinho").
+- **README.md e FLUXOGRAMA.md atualizados** (tabela de comandos, texto e os dois diagramas Mermaid) pra refletir `auto-gptworker` como a skill executora.
+- **Limite honesto:** os dois diagramas Mermaid (README e FLUXOGRAMA) já divergiam um pouco um do outro antes desta mudança (drift pré-existente, não introduzido aqui); ambos foram corrigidos de forma independente, mas não foram reconciliados entre si.
+
 ## 1.8.0 — 2026-07-15
 
 Sincroniza mecânica que estava só na fonte local desde a publicação da 1.7.0, e inclui uma skill nova (branch pública de uma skill interna, adaptada e renomeada).

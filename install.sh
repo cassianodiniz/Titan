@@ -61,7 +61,7 @@ if command -v codex >/dev/null 2>&1; then
   ok "Codex CLI já instalado"; say ""
 elif [ "$HAS_NPX" = "1" ]; then
   run "Codex CLI (@openai/codex)" npm install -g @openai/codex
-  warn "Falta logar uma vez: rode 'codex login' (interativo). Sem login, auto-think/gpt-optimizer/auto-worker caem pro modo reduzido."
+  warn "Falta logar uma vez: rode 'codex login' (interativo). Sem login, auto-think/gpt-optimizer/auto-gptworker caem pro modo reduzido."
   say ""
 fi
 

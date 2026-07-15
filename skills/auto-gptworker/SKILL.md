@@ -1,6 +1,6 @@
 ---
 name: auto-gptworker
-description: "Modo largar-e-esquecer INVERTIDO: o Claude planeja/orquestra/revisa e o CODEX CONSTRÓI (mão na massa, acesso total). O Codex segue como revisor só no planejamento. Padrão: Claude planeja → Codex revisa o plano · Claude orquestra → Codex constrói → Claude revisa o diff. Acionar por comando: /auto-gptworker <tarefa>. Codex só é solto no trabalho reversível e local; borda sensível (produção, dado real, credencial, dinheiro, envio/publicação, deploy, destrutivo) o Claude assume e PARA até autorização. Fronteira: quer o CLAUDE construindo = /auto-worker; ESTUDAR sem executar = /auto-think; planejar produto novo do zero = /planejar."
+description: "Modo largar-e-esquecer INVERTIDO: o Claude planeja/orquestra/revisa e o CODEX CONSTRÓI (mão na massa, acesso total). O Codex segue como revisor só no planejamento. Padrão: Claude planeja → Codex revisa o plano · Claude orquestra → Codex constrói → Claude revisa o diff. Acionar por comando: /auto-gptworker <tarefa>. Codex só é solto no trabalho reversível e local; borda sensível (produção, dado real, credencial, dinheiro, envio/publicação, deploy, destrutivo) o Claude assume e PARA até autorização. Fronteira: ESTUDAR sem executar = /auto-think; planejar produto novo do zero = /planejar."
 ---
 
 # auto-gptworker
@@ -23,7 +23,7 @@ tarefa rápida ou numa pesada — muda o esforço (dele), não o protocolo.
 Meta central: **some SEM dar erro**, porque a verificação é estrutural, não depende do usuário olhando. Se você se pegar querendo "encurtar a conferência pra ele pegar o erro",
 parou: a saída é fazer a verificação ser real, não chamar ele.
 
-`../auto-worker/references/protocolo.md` é o contrato de segurança e verificação — vale pro
+`../_shared/protocolo.md` é o contrato de segurança e verificação — vale pro
 trabalho todo (e, quando o trabalho for dividido entre vários agentes, vai embutido em cada um).
 Leia antes de começar.
 
@@ -129,7 +129,7 @@ fundamentada, não atrito a cada passo.
 
 ## Executar (verificação graduada)
 
-Cada executor segue `../auto-worker/references/protocolo.md`. Núcleo:
+Cada executor segue `../_shared/protocolo.md`. Núcleo:
 - **Prova ou silêncio:** nenhuma palavra de confiança ("pronto/100%/seguro/recupera") sem o
   comando + saída colados. Sem prova → "assumido, NÃO testado".
 - **Prova = corrente, não só output:** afirmação → teste → saída → conclusão. O teste tem
@@ -161,7 +161,7 @@ script pra ele rodar"), nunca mexe em credencial — sem autorização específi
 de serviço de risco **baixo/médio** — local, reversível, sem efeito externo. Toda ordem que toca
 uma trava dura (envio real, dado de pessoa, deploy, credencial, dinheiro, destrutivo real) **NÃO
 vai pro Codex**: o Claude assume essa parte, prepara 100% reversível e PARA na borda pedindo o "s"
-por ação (o protocolo de borda do auto-worker, sem mudança). Regra mecânica: antes de montar o
+por ação (o mesmo protocolo de borda de sempre, sem mudança). Regra mecânica: antes de montar o
 prompt do Codex, classifique o risco da ordem (a tabela de risco já existente); risco ALTO → não
 solta o Codex, é o Claude na borda. Na dúvida, sobe um nível.
 
@@ -184,7 +184,7 @@ Não trava o fluxo. No planejamento, o fallback do revisor é o do `confronto-co
 
 Quando o passo "Preciso planejar?" gerar um mini-plano/plano parcial com decisão de rumo, o
 Codex REVISA esse plano antes de construir — read-only, mecânica canônica em
-`../_shared/confronto-codex.md` (variante auto-worker: `high`, sem `service_tier="fast"`).
+`../_shared/confronto-codex.md` (variante auto-gptworker: `high`, sem `service_tier="fast"`).
 Aplique a regra de ouro (§4): cada ponto do Codex vira uma linha de veredito com prova.
 Critério explícito e tarefa trivial NÃO exigem revisão de plano — segue direto pra construção.
 
@@ -199,10 +199,10 @@ Codex". O motor já gera um caminho único por chamada (`mktemp`, seção 4) —
 `/tmp/auto-gptworker-build.txt` fixo (sessões paralelas sobrescreveriam o relatório uma da outra).
 
 ### A trava de versão (o selo), invertida
-No auto-worker o selo garantia que o Codex leu a versão certa do trabalho do Claude. Aqui é o
+Antes, o selo garantia que o Codex leu a versão certa do trabalho do Claude. Aqui é o
 CLAUDE que revisa o diff do Codex: a defesa é confirmar que o diff revisado é o do HEAD atual
 (o Codex acabou de escrever) e não um estado velho — `git diff` contra o working tree recém-escrito,
-não contra um arquivo em cache. `../auto-worker/scripts/verify-selo.sh` segue disponível para o
+não contra um arquivo em cache. `../_shared/scripts/verify-selo.sh` segue disponível para o
 caso de revisão de plano com selo.
 
 ---

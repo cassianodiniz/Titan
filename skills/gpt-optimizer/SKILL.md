@@ -197,7 +197,7 @@ Casos onde a clareza costuma se perder — trate cada um:
 - **Furos só menores:** mesmo corrigindo você mesmo, mostre o que era e o que mudou — uma linha cada, concreta. Não some com a informação.
 - **Nada procedeu:** diga "o GPT levantou X e Y; nenhum se sustenta porque <prova>". Não resuma pra "nada relevante".
 
-**Se o veredito final for SEGUIR** (a decisão passou no confronto): ofereça **levar pra execução** — pergunte se ele quer que a `/Titan:auto-worker` execute a decisão agora. É opcional e só com o OK dele; se aceitar, passe o alvo já refletido como objetivo pra `auto-worker`. Se for **AJUSTAR/BLOQUEAR**, não ofereça executar — primeiro resolve o que o confronto apontou.
+**Se o veredito final for SEGUIR** (a decisão passou no confronto): ofereça **levar pra execução** — pergunte se ele quer que a `/Titan:auto-gptworker` execute a decisão agora. É opcional e só com o OK dele; se aceitar, passe o alvo já refletido como objetivo pra `auto-gptworker`. Se for **AJUSTAR/BLOQUEAR**, não ofereça executar — primeiro resolve o que o confronto apontou.
 
 ## Fallback — quando o GPT não responde
 
