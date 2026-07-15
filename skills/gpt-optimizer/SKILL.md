@@ -1,11 +1,11 @@
 ---
 name: gpt-optimizer
-description: 'Revisor adversarial via Codex GPT-5.5 que pega uma decisão, um raciocínio ou um trecho de código que está em jogo na conversa e manda o GPT tentar DERRUBAR (advogado do diabo) — devolve um veredito Seguir/Ajustar/Bloquear com os furos que procedem, pra te proteger de decidir errado. Use SOMENTE sob invocação explícita: o comando /gpt-optimizer (ou /gpt), ou pedir pelo nome ("chama o optimizer", "manda pro gpt", "o que o gpt acha disso"). NÃO dispare sozinho a partir de palavras soltas tipo "reflete", "contraponto" ou "advogado do diabo" no meio de uma conversa normal — esta skill é só sob invocação explícita. Não é pra revisar código dentro de um fluxo de desenvolvimento dedicado a um projeto.'
+description: 'Revisor adversarial via Codex GPT-5.6 que pega uma decisão, um raciocínio ou um trecho de código que está em jogo na conversa e manda o GPT tentar DERRUBAR (advogado do diabo) — devolve um veredito Seguir/Ajustar/Bloquear com os furos que procedem, pra te proteger de decidir errado. Use SOMENTE sob invocação explícita: o comando /gpt-optimizer (ou /gpt), ou pedir pelo nome ("chama o optimizer", "manda pro gpt", "o que o gpt acha disso"). NÃO dispare sozinho a partir de palavras soltas tipo "reflete", "contraponto" ou "advogado do diabo" no meio de uma conversa normal — esta skill é só sob invocação explícita. Não é pra revisar código dentro de um fluxo de desenvolvimento dedicado a um projeto.'
 ---
 
 # Skill gpt-optimizer — segunda opinião adversarial do GPT pra você refletir, no meio da conversa
 
-Você (Claude) acabou de fazer ou propor alguma coisa — um raciocínio, um plano, um trecho de código — e o usuário quer que **o GPT-5.5 (via Codex) tente derrubar** antes de seguir. O GPT entra como **advogado do diabo**: não elogia, caça o furo.
+Você (Claude) acabou de fazer ou propor alguma coisa — um raciocínio, um plano, um trecho de código — e o usuário quer que **o GPT-5.6 (via Codex) tente derrubar** antes de seguir. O GPT entra como **advogado do diabo**: não elogia, caça o furo.
 
 O ponto que diferencia esta skill das outras de revisão: aqui **não existe um alvo pronto** (não é um PR, não é um `plano.md`). **Você monta o alvo na hora**, a partir do que está em jogo na conversa. A qualidade da revisão depende de você empacotar bem o que mandar.
 
@@ -23,7 +23,7 @@ Os comandos usam `$TMP` (arquivos temporários) e `$GPT` (a pasta desta skill, o
 - `$GPT` = a pasta desta skill.
 - `$TMP` = `/tmp` no Mac/Linux, `C:/temp` no Windows.
 
-> Pré-requisito: esta skill chama o **Codex CLI** (GPT-5.5). Sem o `codex` instalado, ela não roda o confronto externo — o Claude assume o papel do revisor sozinho e avisa que rodou sem o GPT (ver **Fallback** no fim).
+> Pré-requisito: esta skill chama o **Codex CLI** (GPT-5.6). Sem o `codex` instalado, ela não roda o confronto externo — o Claude assume o papel do revisor sozinho e avisa que rodou sem o GPT (ver **Fallback** no fim).
 
 ---
 
@@ -113,10 +113,13 @@ Critério do veredito:
 Dispare (síncrono, foreground — o usuário espera o resultado pronto, não vê "rodando"):
 
 ```bash
-bash "$GPT/scripts/run-gpt.sh" "$TMP/gpt_input.md" "$TMP/gpt_review.md" xhigh
+rm -f "$TMP/gpt_thread.txt"   # sessão nova a cada alvo
+bash "$GPT/scripts/run-gpt.sh" "$TMP/gpt_input.md" "$TMP/gpt_review.md" xhigh "$TMP/gpt_thread.txt"
 ```
 
-O `run-gpt.sh` roda **gpt-5.5 · `xhigh` · `service_tier="flex"`** — esforço máximo de raciocínio na via flex do gpt-5.5 (mais barata/lenta que a fast). Roda como **só-leitura** (`--sandbox read-only`): o revisor recebe o alvo inteiro via stdin, não precisa nem pode tocar em arquivo. Se o Codex falhar, o script **tenta de novo sozinho** e só então desiste com o motivo — você não fica sem aviso (ver **Fallback**).
+O 4º argumento (`gpt_thread.txt`) é a **memória do revisor**: na rodada 1 o script grava ali o número da sessão do GPT; na rodada 2 ele retoma essa MESMA sessão. Por isso o prompt da rodada 2 ("você é o MESMO revisor") passa a ser verdade — antes era simulado re-colando o histórico. O `resume` do Codex **não aceita `--sandbox`**: o script força `-c sandbox_mode="read-only"`, sem isso o revisor ganharia permissão de escrever. Verificado 09/07/2026.
+
+O `run-gpt.sh` roda **gpt-5.6-sol · `xhigh` · `service_tier="flex"`** — esforço máximo de raciocínio na via flex (mais barata/lenta que a fast). Modelo padrão fixado em gpt-5.6-sol (decisão de 10/07/2026); o erro 400 antigo com IDs 5.6 era CLI desatualizada. Roda como **só-leitura** (`--sandbox read-only`): o revisor recebe o alvo inteiro via stdin, não precisa nem pode tocar em arquivo. Se o Codex falhar, o script **tenta de novo sozinho** e só então desiste com o motivo — você não fica sem aviso (ver **Fallback**).
 
 ## Passo 3 — Regra de ouro (filtrar a rodada 1) e decidir se vale a rodada 2
 
@@ -153,7 +156,8 @@ SEGUIR | AJUSTAR | BLOQUEAR
 ```
 
 ```bash
-bash "$GPT/scripts/run-gpt.sh" "$TMP/gpt_input2.md" "$TMP/gpt_review2.md" xhigh
+# MESMO gpt_thread.txt = o GPT retoma a sessão da rodada 1 e lembra o que apontou
+bash "$GPT/scripts/run-gpt.sh" "$TMP/gpt_input2.md" "$TMP/gpt_review2.md" xhigh "$TMP/gpt_thread.txt"
 ```
 
 Filtra a rodada 2 pela mesma regra de ouro. Ponto novo que procede e é grave → sobe pro usuário em A/B. Se a rodada 2 confirmar que seu filtro se sustentou (pontos vazios), fecha com mais confiança.

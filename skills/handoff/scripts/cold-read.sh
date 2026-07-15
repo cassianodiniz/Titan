@@ -46,7 +46,7 @@ run_codex () {
   # perl -e 'alarm 900' = teto de 15 min direto no codex (timeout puro não existe
   # no Mac; perl existe nos dois SOs). Passou disso, o SO mata e a tentativa falha.
   perl -e 'alarm 900; exec @ARGV' codex exec \
-    --model gpt-5.5 \
+    --model gpt-5.6-terra \
     -c model_reasoning_effort="$EFFORT" \
     -c service_tier="flex" \
     --skip-git-repo-check \

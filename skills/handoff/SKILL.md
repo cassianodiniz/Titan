@@ -146,7 +146,7 @@ Por padrão, manda o handoff pronto pra um **leitor cego (Codex)** que só tem o
 
 ## Entrega
 
-O handoff é um **arquivo**; a entrega no chat é um **prompt colável** que aponta pra ele — pro usuário copiar e colar num Claude novo (quando ele prefere o prompt pronto a abrir o arquivo na tela). Nesta ordem:
+O handoff é um **arquivo**; a entrega no chat é um **prompt colável** que aponta pra ele — pro usuário copiar e colar num Claude novo (ele não quer abrir o arquivo na tela, quer o prompt pronto). Nesta ordem:
 
 1. **Salve o documento** num local previsível:
    - Se houver repositório git: `<raiz-do-repo>/.claude/handoffs/handoff-<branch>-AAAA-MM-DD-HHMMSS.md` (crie a pasta se não existir; sanitize a branch trocando `/` por `-`).

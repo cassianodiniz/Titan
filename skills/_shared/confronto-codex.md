@@ -55,13 +55,24 @@ O padrão é: o prompt vai por **stdin** (não como argumento), com **teto de 15
 resposta cai num arquivo de saída.
 
 ```bash
-perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-5.5 \
+perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-5.6-terra \
   -c model_reasoning_effort="xhigh" \
   -c service_tier="fast" \
-  --skip-git-repo-check --ignore-user-config --sandbox workspace-write \
+  --skip-git-repo-check --ignore-user-config --sandbox read-only \
   - < /tmp/confronto-input.md > /tmp/confronto-review.md 2>/dev/null
 ```
 
+- **`--sandbox read-only` NÃO é opcional.** O crítico lê e opina; ele nunca precisou escrever pra
+  criticar. Medido em 09/07/2026 (codex-cli 0.140), com o prompt "crie um arquivo e diga se conseguiu":
+  `--sandbox workspace-write` **escreveu**; `--full-auto` **escreveu**; `codex exec resume` sem forçar
+  sandbox **escreveu**; `--sandbox read-only` **não escreveu**. Sem flag nenhuma o `codex exec` também
+  **não escreveu** (o default não-interativo já é read-only) — mas não se confia em default que pode
+  mudar de versão: declare a flag.
+- **`read-only` não engessa o crítico.** Ele continua rodando comandos de leitura (`git rev-parse`,
+  `git diff`, `ls`) e continua gravando o parecer via `-o arquivo` — o `-o` é escrita do processo
+  `codex`, não do sandbox do agente. Ambos verificados em 09/07/2026. Portanto **todo** revisor,
+  fiscal ou gerador-que-devolve-texto roda em `read-only`: se o prompt dele diz "não modifique
+  arquivo do repo", a flag é só tornar isso verdade.
 - **`-` lê o prompt do stdin** (o `< arquivo`). Como o stdin já está redirecionado pro
   arquivo, NÃO precisa do `< /dev/null`. Só precisa dele se algum dia passar o prompt como
   ARGUMENTO em vez de stdin — aí termine a chamada com `< /dev/null` ou o `codex exec` trava
@@ -77,6 +88,50 @@ perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-5.5 \
   mas hoje ele roda afinado pro fluxo dela (**`--sandbox read-only`**, sem selo) — se o seu
   confronto precisa de outro sandbox ou da trava de selo, monte a chamada inline (acima). O
   helper de selo continua em `auto-worker/scripts/verify-selo.sh`.
+
+## 3b. Rodadas seguintes — MESMA sessão (o crítico lembra o que já apontou)
+
+Confronto de mais de uma rodada NÃO abre sessão nova a cada vez. Sessão nova faz o Codex reclamar
+de novo do que já foi corrigido e gastar a rodada re-litigando ponto morto. A partir da 2ª rodada,
+**retome a mesma conversa**: ele lembra as próprias críticas, confere o que foi atendido e ataca o
+que é novo.
+
+**Rodada 1** — capture o `thread_id` (o identificador da conversa) do stream JSON:
+
+```bash
+perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-5.6-terra \
+  -c model_reasoning_effort="xhigh" -c service_tier="fast" \
+  --skip-git-repo-check --ignore-user-config --sandbox read-only --json \
+  -o /tmp/confronto-review.md \
+  - < /tmp/confronto-input.md 2>/dev/null | grep '"type":"thread.started"'
+```
+Do JSON `{"type":"thread.started","thread_id":"..."}` extraia `THREAD_ID`. O parecer cai em
+`/tmp/confronto-review.md` (via `-o`) — leia esse arquivo, não o stream.
+
+**Rodadas 2..N** — retome:
+
+```bash
+# ⚠️ `codex exec resume` NÃO aceita -s/--sandbox (verificado 09/07/2026, codex-cli 0.140).
+# Sem o -c sandbox_mode abaixo ele herda config.toml e o crítico PASSA A ESCREVER ARQUIVOS.
+# ⚠️ `--model` e `--ignore-user-config` também são obrigatórios: a sessão retomada NÃO carrega
+# o modelo da rodada 1, e o app do Codex reescreve o `model` do config sozinho ao atualizar
+# (visto em 09/07/2026: virou "gpt-5.6-sol", que a CLI 0.140 recusa com HTTP 400).
+perl -e 'alarm 900; exec @ARGV' codex exec resume "$THREAD_ID" \
+  --model gpt-5.6-terra -c sandbox_mode="read-only" -c model_reasoning_effort="xhigh" \
+  --skip-git-repo-check --ignore-user-config --json -o /tmp/confronto-review.md \
+  - < /tmp/confronto-rodada-N.md 2>/dev/null >/dev/null
+```
+
+Regras da retomada:
+- **Nunca `--last`.** Ele pega a sessão mais recente da máquina — com duas skills rodando em
+  paralelo, é a conversa errada, e uma retomada no alvo errado se parece com uma bem-sucedida.
+  Use sempre o `THREAD_ID` explícito.
+- **Nunca `--dangerously-bypass-approvals-and-sandbox`** (a única flag de sandbox que o `resume`
+  aceita, e ela desliga tudo).
+- **O selo continua valendo** a cada rodada: novo material → novo hash → o Codex recarimba.
+- Sessão perdida ou `THREAD_ID` vazio → abre rodada 1 de novo (seção 3). Não improvisa.
+
+Confronto de rodada única (o caso comum do `/planejar`) ignora esta seção — usa a seção 3 e pronto.
 
 ## 4. Regra de ouro — o Claude filtra antes, COM PROVA
 

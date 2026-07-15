@@ -1,6 +1,6 @@
 ---
 name: auto-think
-description: "Estuda a fundo um problema difícil ou decisão que pesa e volta com recomendação + alternativas, COM VEREDITO — não executa (quem executa é /auto-worker). Ataca vários ângulos em paralelo, pesquisa o que o mundo já resolveu, confronta cada candidata com o Codex em 2 rodadas e re-cava o que fica aberto. Acionar por comando: /auto-think <problema>. Fronteira: parecer rápido sobre decisão já tomada = /Titan:gpt-optimizer; planejar produto novo do zero = /planejar; EXECUTAR uma tarefa = /auto-worker."
+description: "Estuda a fundo um problema difícil ou decisão que pesa e volta com recomendação + alternativas, COM VEREDITO — não executa (quem executa é /auto-worker). Ataca vários ângulos em paralelo via GPT-5.6 (terra nos ângulos, sol na síntese), confronta cada candidata com Opus em high em 2 rodadas, e re-cava o que fica aberto. Acionar por comando: /auto-think <problema>. Fronteira: parecer rápido sobre decisão já tomada = /Titan:gpt-optimizer; planejar produto novo do zero = /planejar; EXECUTAR uma tarefa = /auto-worker."
 ---
 
 # auto-think
@@ -55,7 +55,10 @@ sabendo que ela é a cara.
   contrário, passo 2) — não assumir que o que ele trouxe está certo.
 - **≥ 3 candidatas** levantadas antes de podar (poda escolhe entre opções reais, não settla na
   primeira).
-- **2 rodadas de confronto:** a primeira em todas as candidatas, a segunda nos sobreviventes.
+- **2 rodadas de confronto (Opus `high`):** a primeira em todas as candidatas, a segunda nos
+  sobreviventes. Cada rodada é um agente NOVO, independente (Opus via Agent tool não retoma
+  sessão como o Codex fazia) — a 2ª rodada recebe no prompt o que a 1ª já apontou, pra não
+  re-litigar o que já ficou resolvido, mas não é a mesma "conversa".
 - Re-cava enquanto houver **incerteza em aberto que mude a decisão** (o motor da profundidade —
   ver passo 5), não enquanto "achar coisa nova".
 
@@ -83,19 +86,29 @@ mais importa pro auto-think está abaixo.
 ## A TRAVA DE DADO PRA FORA (a única trava dura que pega aqui)
 
 O auto-think pode investigar o sistema do usuário — código, banco, arquivos — e isso pode
-esbarrar em dado real de paciente/aluno, em senha ou em chave. A etapa de confrontar manda o
-material pro **Codex (OpenAI, fornecedor externo)**, e a pesquisa pode mandar trechos pra
-**web**. Logo:
+esbarrar em dado real de paciente/aluno, em senha ou em chave. Os ângulos e a síntese (passos 2
+e 5) mandam material pro **Codex/GPT-5.6 (OpenAI, fornecedor externo)**, e a pesquisa pode
+mandar trechos pra **web**. O confronto (passos 3 e 6) NÃO sai pra fora — é agente Opus, mesmo
+fornecedor (Anthropic) da thread principal. Logo:
 
 > **Antes de qualquer coisa sair pro Codex ou pra web, mascarar dado real de pessoa
 > (nome, CPF, telefone, email, endereço) e qualquer credencial (token, senha, chave).**
 > Vai o RACIOCÍNIO do problema; não vai a identidade de quem quer que seja.
 
+**Risco aceito conscientemente (decisão registrada em 12/07/2026, via confronto `/gpt-optimizer`):**
+os ângulos/síntese (`codex exec --sandbox read-only`) rodam com leitura do diretório de trabalho
+real, não só do prompt mascarado — em tese o Codex poderia ler outro arquivo sensível da pasta
+além do que foi mandado no prompt. Decisão: NÃO isolar em diretório redigido, porque o
+`/auto-think` normalmente roda sobre um problema/decisão pontual, não de dentro de pasta cheia
+de dado sensível de terceiros. Se um dia isso rodar de uma pasta com dado sensível solto (ex.:
+um Drive com arquivos de clientes/alunos), reavaliar — a trava de mascarar o PROMPT continua
+obrigatória de qualquer forma.
+
 Como mascarar sem perder o sentido: troca por etiqueta estável (`PACIENTE_1`, `ALUNO_A`,
-`TELEFONE_X`, `TOKEN_***`), preservando a estrutura pra o confronto ainda fazer sentido. Se o
+`TELEFONE_X`, `TOKEN_***`), preservando a estrutura pra o estudo ainda fazer sentido. Se o
 problema SÓ faz sentido expondo o dado real → **para e pede autorização específica**, não
-manda mesmo assim. Isso vale tanto pro confronto (Codex) quanto pra busca na web. Vale também
-pros agentes paralelos: cada agente recebe o problema já mascarado.
+manda mesmo assim. Isso vale pros ângulos/síntese (Codex) e pra busca na web — o confronto
+(Opus) já está fora dessa trava, mas mesmo assim não recebe dado que os ângulos já mascararam.
 
 **A regra concreta do que sai:** o que vai pra fora é o **problema abstraído** (estrutura,
 padrão, raciocínio), **nunca o registro real verbatim**. Antes de salvar o arquivo que vai pro
@@ -103,7 +116,8 @@ Codex ou montar a busca, relê e confirma que nenhum campo cru passou. A pesquis
 enunciado genérico ("como resolver X nesse tipo de sistema"), nunca um dado interno colado.
 
 Fora isso, o auto-think é leitura: não escreve em banco, não envia mensagem, não mexe em
-arquivo do usuário (a não ser rascunho próprio em `/tmp`). Nenhuma trava dura de execução se
+arquivo do usuário — a única escrita própria é o `.md` de detalhe da entrega (item 6, abaixo),
+salvo em `docs/auto-think/`. Nenhuma trava dura de execução se
 aplica, porque ele nunca executa — só na borda de "mandar dado pra fora" é que ele para.
 
 **Leitura de dado sensível também é graduada** (do protocolo): consulta mínima e agregada,
@@ -124,8 +138,9 @@ o problema, não baixar a base.
 - **Fonte da web tem o mesmo rigor:** afirmação de blog/fórum vale menos que doc oficial. Cita
   a fonte e a data; marca como ASSUMIDO quando a fonte é fraca ou a versão não bate. Confrontar
   a pesquisa = checar se a fonte sustenta a afirmação, não só se "alguém disse na internet".
-- **Não se auto-aprova:** o confrontador é o Codex (outro modelo). O auto-think nunca aprova o
-  próprio raciocínio sozinho.
+- **Não se auto-aprova:** o confrontador é o Opus (fornecedor Anthropic, mas modelo diferente do
+  que produziu — os ângulos/síntese são GPT-5.6). O auto-think nunca aprova o próprio raciocínio
+  sozinho.
 
 ---
 
@@ -139,8 +154,8 @@ fechada lá embaixo. Anuncia cada virada em uma linha, mas não pede licença pr
 **Primeiro espelha e confirma — ANTES de cavar (trava de entrada).** O que chega nem sempre é um
 "erro" pra resolver: às vezes é uma IDEIA que o usuário quer ver investigada, uma decisão que ele
 já rascunhou, ou uma intuição que ele quer testar. Estudar a fundo a coisa errada custa caro
-(agentes paralelos, pesquisa, Codex em duas rodadas), então o ciclo abre confirmando o alvo —
-uma trava de confirmação de escopo antes de gastar o estudo caro:
+(chamadas GPT-5.6 paralelas, pesquisa, Opus em duas rodadas), então o ciclo abre confirmando o alvo —
+igual o `/zaprepair` faz no Passo 1 dele:
 - **Reescreve o pedido com as palavras dele + PROPÕE o TIPO:** "Entendi que você quer estudar X —
   e isto me parece [um problema a resolver / uma ideia a investigar / uma decisão a bater]. É isso,
   ou é outra coisa?" O tipo é uma PROPOSTA pra ele confirmar, não um veredito seu — quem decide o
@@ -174,11 +189,13 @@ vários lados na mesma cabeça — é **disparar agentes independentes**, um por
 cego pro que os outros acham. É a cegueira mútua que dá cobertura: dois agentes que conversam
 convergem cedo e perdem o ponto cego um do outro.
 
-**Como disparar:** um agente por ângulo via a Agent tool com `run_in_background` (até ~5 ao
-mesmo tempo), ou via Workflow quando o problema for grande e valer orquestrar leque + confronto
-junto. Os ângulos de coleta/leitura podem rodar em modelo mais leve (sonnet); a síntese e o
-confronto ficam no modelo forte (opus). A regra é não estudar em série na thread principal —
-era isso que fazia a skill "pesquisar pouco".
+**Como disparar (decisão 12/07/2026 — mecânica espelha o `/codex-build`):** cada ângulo é uma
+chamada `codex exec --model gpt-5.6-terra` própria, disparada em paralelo (uma por ângulo, até
+~5 ao mesmo tempo) via Bash com `run_in_background`. A síntese — juntar o que os ângulos
+acharam num leque de candidatas — é **outra** chamada, com `--model gpt-5.6-sol`, depois que os
+ângulos voltam. Mecânica exata (stdin, `--json -o arquivo`, `--sandbox read-only`, teto de 15
+min): `references/confronto.md`, seção "Ângulos e síntese". A regra é não estudar em série na
+thread principal — era isso que fazia a skill "pesquisar pouco".
 
 **Fallback se não houver paralelo** (Agent/Workflow indisponível, sem permissão, ou orçamento
 estourado): NÃO desiste de cobrir os ângulos — roda os mesmos ângulos **em série**, um de cada
@@ -248,18 +265,18 @@ sustenta. Junta tudo num leque — **mira ≥ 3 candidatas distintas** antes de 
 Se os ângulos convergiram todos na mesma candidata, dispara mais um ângulo (contrário ou
 radical) pra garantir que não é falta de imaginação, e não convergência real.
 
-### 3. Confrontar os achados (Codex tenta derrubar) — 1ª rodada
-Cada achado e cada candidata passa pelo Codex como **advogado do diabo** — o mesmo mecanismo do
-`/Titan:gpt-optimizer`. O Codex tenta REFUTAR: isto resolve mesmo o problema ou só um sintoma? A premissa é fato
-ou foi vendida como fato? Tem caminho mais simples? A fonte sustenta a afirmação? O que
+### 3. Confrontar os achados (Opus em `high` tenta derrubar) — 1ª rodada
+Cada achado e cada candidata passa por um agente **Claude Opus, `effort: high`** como
+**advogado do diabo** (decisão 12/07/2026 — antes era o Codex; agora o confronto é Opus e os
+ângulos/síntese são GPT-5.6, pra manter a checagem cruzada entre fornecedores diferentes, só que
+invertida). O Opus tenta REFUTAR: isto resolve mesmo o problema ou só um sintoma? A premissa é
+fato ou foi vendida como fato? Tem caminho mais simples? A fonte sustenta a afirmação? O que
 sobrevive fica; o que é refutado cai (com o motivo registrado pra a entrega).
 
-Como chamar o Codex (mascarando dado real ANTES — ver a trava acima): a mecânica exata é UMA SÓ
-e mora no motor compartilhado `../_shared/confronto-codex.md` (invocação com teto de 15 min, selo
-de versão, fallback) — não recopie o comando aqui. O auto-think roda **sempre em `xhigh` +
-`service_tier="fast"`** (gpt-5.5: máximo de raciocínio na via rápida, já no comando do motor);
-confronta em LOTE quando der (várias candidatas num input só) pra não estourar custo. Como montar
-o manifesto e os prompts adversariais das duas rodadas: `references/confronto.md`.
+Como chamar (mascarando dado real ANTES — ver a trava acima): via Agent tool, `model: opus`,
+`effort: high`, prompt adversarial + manifesto das candidatas. Mecânica e o prompt das duas
+rodadas: `references/confronto.md`, seção "Confronto (Opus high)". Confronta em LOTE quando der
+(várias candidatas num agente só) pra não multiplicar chamadas.
 
 ### 4. O PORTÃO DE QUALIDADE — 4 perguntas que toda candidata passa
 Achar uma solução não é o fim — é o gatilho pra interrogá-la. Nenhuma candidata vira "séria"
@@ -298,10 +315,10 @@ recomendação".)
 
 **Como roda:**
 - Cada re-cava ataca **uma incerteza decisiva aberta** — não reestuda tudo, dispara só o ângulo
-  que fecha aquela dúvida.
-- **Entre re-cavas, um check barato** (não um confronto Codex inteiro): "qual premissa, se for
+  que fecha aquela dúvida (mesma mecânica GPT-5.6-terra do passo 2, ver `references/confronto.md`).
+- **Entre re-cavas, um check barato** (não um confronto Opus inteiro): "qual premissa, se for
   falsa, derruba a direção atual?". Se achar uma, ela vira a próxima incerteza a cavar. O
-  confronto Codex caro fica nos passos 3 e 6 (no conjunto e nos finalistas) — crítico a cada
+  confronto Opus caro fica nos passos 3 e 6 (no conjunto e nos finalistas) — crítico a cada
   volta é caro e, pior, **circular** (um modelo julgando o outro ratifica o ponto cego em vez de
   achar).
 - **Achado que não toca nenhuma incerteza decisiva = ruído:** vira nota "🅿️ opcional" e é
@@ -322,10 +339,11 @@ ainda aberta**, NÃO para calado: entrega o que tem e **pergunta "ainda tem dúv
 decisão e bati o teto — continuo?"**. O teto é rede contra descontrole, não tesoura escondida.
 
 ### 6. Confrontar os sobreviventes — 2ª rodada
-Antes de entregar, os finalistas (a recomendada + as alternativas reais) voltam ao Codex **uma
-segunda vez**, agora com a pergunta afiada: *dessas que sobraram, qual escolher e por quê — e o
-que ainda fura na recomendada?* Essa segunda passada é o que separa "sobreviveu por sorte" de
-"sobreviveu de verdade", e costuma melhorar a justificativa do veredito.
+Antes de entregar, os finalistas (a recomendada + as alternativas reais) voltam a um agente
+**Opus, `effort: high`** — outro agente, não o mesmo da rodada 1 — agora com a pergunta afiada:
+*dessas que sobraram, qual escolher e por quê — e o que ainda fura na recomendada?* Essa segunda
+passada é o que separa "sobreviveu por sorte" de "sobreviveu de verdade", e costuma melhorar a
+justificativa do veredito.
 
 ### 7. Entregar
 Ver "Entrega final" abaixo.
@@ -334,16 +352,16 @@ Ver "Entrega final" abaixo.
 
 ## AS TRAVAS — anti-espiral e orçamento (o que segura a coleira de verdade)
 
-Ir fundo tem um perigo real: o confronto Codex↔Claude virar **espiral** — os dois discutindo
+Ir fundo tem um perigo real: o confronto Opus↔Claude virar **espiral** — os dois discutindo
 sem fim, ou litigando frivolidade, queimando dinheiro sem chegar a lugar nenhum. A coleira
 contra isso é **estrutural e contável**, não um cronômetro (texto de skill não mata processo).
 
-**1. O confronto NÃO é debate.** O Codex opina UMA vez por rodada; o Claude filtra cada ponto
-com prova e decide; acabou. **Não existe réplica-da-réplica** — Claude não reescreve pra
-rebater o Codex que reescreve pra rebater o Claude. Quem produziu não defende; quem confrontou
-não insiste. Uma passada, uma decisão.
+**1. O confronto NÃO é debate.** O agente Opus opina UMA vez por rodada; a thread principal
+filtra cada ponto com prova e decide; acabou. **Não existe réplica-da-réplica** — a thread
+principal não reescreve pra rebater o Opus que reescreve pra rebater ela. Quem produziu não
+defende; quem confrontou não insiste. Uma passada, uma decisão.
 
-**2. Filtro de frivolidade.** Pra cada ponto do Codex: ele muda QUAL candidata vence, ou muda se
+**2. Filtro de frivolidade.** Pra cada ponto do agente Opus: ele muda QUAL candidata vence, ou muda se
 ela funciona? **Sim** → conta, trata. **Não** (questão de estilo, de gosto, melhoria cosmética,
 "eu faria diferente") → **descarta na hora**, não litiga. O que não muda o veredito não merece
 uma segunda chamada.
@@ -353,12 +371,13 @@ gasta no máximo: **2 rodadas de confronto** (1ª em todas as candidatas, 2ª no
 **3 re-cavas**. Bateu o teto → para e entrega o que tem, com aviso. Contar chamada o modelo
 consegue cumprir; matar por relógio, não.
 
-**4. O GPT tem 15 min — passou disso, travou.** A chamada do Codex vai envelopada num teto de
-15 min que o SO mata sozinho (o `perl -e 'alarm 900'` do motor compartilhado — `timeout` puro não
-existe no Mac, `perl` existe no Mac e no Windows). O comando exato é o do
-`../_shared/confronto-codex.md`; aqui só a regra: rodou mais de 15 min = **travou**, ponto. O
-processo é morto. **Mata e refaz** — re-dispara a mesma chamada uma vez. Travou de novo → desiste
-dela e cai no fallback de confronto (ver composição), seguindo com o que tem.
+**4. O GPT (ângulos e síntese, passos 2 e 5) tem 15 min — passou disso, travou.** Cada chamada
+`codex exec --model gpt-5.6-terra/sol` vai envelopada num teto de 15 min que o SO mata sozinho
+(o `perl -e 'alarm 900'` — `timeout` puro não existe no Mac, `perl` existe no Mac e no Windows).
+Comando exato: `references/confronto.md`. Rodou mais de 15 min = **travou**, ponto. O processo é
+morto. **Mata e refaz** — re-dispara a mesma chamada uma vez. Travou de novo → desiste dela e cai
+no fallback (ver composição), seguindo com o que tem. O confronto Opus (passos 3 e 6) não usa
+este teto — é agente Claude nativo, sem processo externo pra travar.
 
 **5. Agente em background que não volta não trava o ciclo.** Dispara com `run_in_background`,
 faz um check-in; o ângulo que não retornou até o ponto de síntese **não segura o resto** —
@@ -407,7 +426,7 @@ errar". O padrão é desenhado pra entregar isso nos primeiros 5 segundos de lei
 ### A ordem fixa da entrega (6 blocos, nesta ordem)
 
 Curto é regra: o CHAT recebe só o enxuto; o aprofundamento vai pra um ARQUIVO que ele abre se
-quiser (igual o claudex faz com o plano). Nada de manchete subjetiva tipo "em que pé ficou" —
+quiser. Nada de manchete subjetiva tipo "em que pé ficou" —
 abre com o diagnóstico concreto. A ordem abaixo é fixa: o usuário decora o mapa uma vez.
 
 **1. 🧠 DIAGNÓSTICO — o que é, com prova.** Diz CLARAMENTE o que o estudo achou e de que TIPO é.
@@ -441,8 +460,10 @@ de desfazer"). É uma ESCOLHA ("A ou B", "me autoriza", "me dá o dado X"), não
 opção domina, "as outras eram piores, nem listo" — não fingir empate (falsa simetria paralisa).
 
 **6. ▸ DETALHE COMPLETO EM `<arquivo>`.** O fundo do estudo — as correções do confronto, o mapa
-completo, o que o Codex matou, raciocínio longo — vai pra um `.md` em disco; o chat mostra só a
-linha apontando. O usuário abre se quiser cavar. É isso que mantém o chat enxuto sem perder nada.
+completo, o que o Opus matou, raciocínio longo — vai pra um `.md` salvo em
+`docs/auto-think/auto-think-[tema-slug]-[YYYY-MM-DD].md`; o chat
+mostra só a linha apontando pro caminho. O usuário abre se quiser cavar. É isso que mantém o
+chat enxuto sem perder nada.
 
 ### Esqueleto (o que vai no CHAT)
 
@@ -472,14 +493,21 @@ qualitativo: escopo, reversível/destrutivo, dependência nova — nunca "leva X
 
 ## A mecânica de composição (provar numa fatia antes de cavar fundo)
 
-O auto-think depende de acionar outras peças: o Codex (via Bash, comprovado), `/pesquisa` e
-`deep-research` (via Skill), e agentes paralelos (via Agent/Workflow). Antes de montar um ciclo
-grande num problema novo, **prova numa fatia pequena que a peça que você vai usar responde**
-(uma chamada de Codex de teste, uma busca curta) — assim um problema de encaixe aparece cedo,
-não no fim de um ciclo caro. Se uma peça falhar (Codex fora, pesquisa sem resultado), o ciclo
-não trava: degrada com aviso (confronto vira um agente Claude separado e adversarial, marcado
-"revisão de menor garantia — mesmo modelo") e segue, dizendo na entrega o que rodou sem a peça.
+O auto-think depende de acionar outras peças: o Codex GPT-5.6 pra ângulos/síntese (via Bash,
+mecânica em `references/confronto.md`), agentes Opus `high` pra confronto (via Agent tool),
+`/pesquisa` e `deep-research` (via Skill), e agentes paralelos (via Agent/Workflow). Antes de
+montar um ciclo grande num problema novo, **prova numa fatia pequena que a peça que você vai
+usar responde** (uma chamada de Codex de teste, uma busca curta) — assim um problema de encaixe
+aparece cedo, não no fim de um ciclo caro. Se uma peça falhar (Codex fora, pesquisa sem
+resultado), o ciclo não trava: degrada com aviso — se for o Codex dos ângulos que falhou, os
+ângulos rodam em Sonnet/Opus via Agent tool como fallback, marcado "ângulos sem GPT-5.6 — rodou
+em Claude"; se for o confronto Opus que falhou (erro da ferramenta, não do fornecedor), **tenta
+de novo uma vez**; falhou de novo → a entrega NUNCA apresenta a candidata como confrontada —
+marca explícito "sem confronto independente nesta rodada" no bloco 🗺️ (rebaixa pra 🟡 Hipótese, nunca
+✅ Sólido) e diz isso alto na entrega. Confronto que falhou e o resultado segue mudo não é
+degradação aceitável — é apresentar palpite como verificado.
 
-Ir fundo com agentes paralelos é mais barato em tempo do que parece: 4-5 ângulos em background
-terminam quase juntos, não em fila. O gasto real é em tokens e em chamadas de Codex — e esse é
-o custo que o usuário aceitou ao chamar uma skill chamada "estudar a fundo".
+Ir fundo com agentes/chamadas paralelas é mais barato em tempo do que parece: 4-5 ângulos em
+background terminam quase juntos, não em fila. O gasto real é em tokens e em chamadas de
+Codex/Opus — e esse é o custo que o usuário aceitou ao chamar uma skill chamada "estudar a
+fundo".

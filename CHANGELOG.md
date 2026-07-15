@@ -1,16 +1,25 @@
 # Changelog — Titan
 
+## 1.8.0 — 2026-07-15
+
+Sincroniza mecânica que estava só na fonte local desde a publicação da 1.7.0, e inclui uma skill nova (branch pública de uma skill interna, adaptada e renomeada).
+
+- **auto-gptworker — skill nova.** Modo largar-e-esquecer invertido: o Claude planeja/orquestra/revisa e o **Codex constrói** (mão na massa, acesso total de escrita); Codex só é solto no trabalho reversível/local, a borda sensível fica com o Claude. Traz o motor compartilhado `_shared/codex-constroi.md` (contrato GOAL/SPEC/KEY PATHS/CONSTRAINTS/NON-GOALS/PROOF/OUTPUT, classificação de risco, fix-loop de 2 rodadas).
+- **auto-think — confrontador trocado de Codex pra Opus** nas 2 rodadas de confronto (os ângulos/síntese continuam via GPT-5.6); documenta uma decisão de risco aceito sobre o Codex ler o diretório de trabalho real nos ângulos/síntese; ajustado onde o `.md` de detalhe da entrega é salvo.
+- **gpt-optimizer — modelo bump pra GPT-5.6** (`gpt-5.6-sol`, era GPT-5.5); revisor ganhou memória de sessão (`THREAD_FILE`/`thread_id`) — a rodada 2 retoma a MESMA sessão do Codex em vez de simular histórico.
+- **auto-worker — esforço do revisor Codex ajustado** (herda o `medium` global em vez de forçar `high`, já que é revisão de trabalho rotineiro, não estudo de vários ângulos).
+- **handoff — script `cold-read.sh` também no modelo GPT-5.6.**
+
 ## 1.7.0 — 2026-07-01
 
-### Adicionado (sincroniza melhorias que estavam só na fonte local)
-- **handoff — teste do "leitor cego" (Codex).** Antes de salvar, o handoff pode ir pro Codex fingindo que é uma sessão nova ("só com isto, o que você NÃO conseguiria continuar?") e os buracos apontados voltam pro doc. Inclui o script `skills/handoff/scripts/cold-read.sh` (teto de 15 min + retry + falha graciosa se o Codex cair) — que não existia no repo público.
-- **handoff — âncora de validade + ficha de decisão + primeira ação obrigatória.** Seção de data/HEAD do momento, mini-ficha (ADR) pra decisão que só viveu no chat, e checagem obrigatória (confere git/arquivos) antes da sessão nova confiar no doc. Entrega no chat agora é um prompt colável que aponta pro arquivo.
-- **auto-worker — carimbo de versão (sha256).** O revisor Codex carimba o hash do pacote que leu, provando que revisou a versão certa e não uma velha; ligado ao motor compartilhado.
-- **auto-think — trava de entrada.** O ciclo espelha o pedido e confirma o alvo (problema / ideia / decisão) antes de gastar o estudo caro.
-- **_shared — motor do Codex com variantes por skill.** Tabela de configuração por skill (auto-think / auto-worker / planejar) numa fonte única.
+Versiona melhorias que já estavam na fonte local (pós-25/06) mas sem número de versão, e publica no repo público `cassianodiniz/Titan` (lá em versão neutralizada/white-label).
 
-### Neutralização (white-label)
-- Removidas as menções pessoais que tinham entrado no corpo das skills (nome do autor no fluxo do `handoff`, comparação com skill privada no `auto-think`, exemplo de WhatsApp no `gpt-optimizer`). Autoria segue creditada no README e no manifesto.
+- **handoff — teste do "leitor cego" (Codex)** + script `skills/handoff/scripts/cold-read.sh`, âncora de validade/HEAD, ficha de decisão (ADR) pra decisão de chat, primeira ação obrigatória de conferência, e entrega como prompt colável.
+- **auto-worker — carimbo de versão (sha256)** do pacote revisado, ligado ao motor compartilhado.
+- **auto-think — trava de entrada** (espelha o pedido, confirma o alvo antes de cavar).
+- **_shared — motor do Codex com variantes por skill** (fonte única) + `planejar` trocando Perplexity→Exa.
+
+> Nota: a versão local mantém as menções pessoais (nome, `/zaprepair`); no repo público esses trechos foram neutralizados. Local e público ficam no mesmo número (1.7.0), conteúdo idêntico exceto pela personalização.
 
 ## 1.6.1 — 2026-06-24
 

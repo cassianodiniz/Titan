@@ -1,13 +1,19 @@
 ---
-name: auto-worker
-description: "Modo largar-e-esquecer: o Claude EXECUTA a tarefa com protocolo de segurança e verificação embutido, e o Codex confronta o trabalho antes de fechar. Acionar por comando: /auto-worker <tarefa>. Quando a tarefa tocar produção, dado real de pessoa, credencial, dinheiro, envio/publicação, deploy, infra ou mudança destrutiva, prepara tudo de forma reversível e PARA na borda até autorização explícita — não executa a ação sensível sozinha. Fronteira: ESTUDAR um problema sem executar = /auto-think; planejar produto novo do zero = /planejar."
+name: auto-gptworker
+description: "Modo largar-e-esquecer INVERTIDO: o Claude planeja/orquestra/revisa e o CODEX CONSTRÓI (mão na massa, acesso total). O Codex segue como revisor só no planejamento. Padrão: Claude planeja → Codex revisa o plano · Claude orquestra → Codex constrói → Claude revisa o diff. Acionar por comando: /auto-gptworker <tarefa>. Codex só é solto no trabalho reversível e local; borda sensível (produção, dado real, credencial, dinheiro, envio/publicação, deploy, destrutivo) o Claude assume e PARA até autorização. Fronteira: quer o CLAUDE construindo = /auto-worker; ESTUDAR sem executar = /auto-think; planejar produto novo do zero = /planejar."
 ---
 
-# auto-worker
+# auto-gptworker
 
-Modo de trabalho pro usuário **largar uma tarefa e sumir**. O trabalho é executado e
-conferido sozinho; ele só reaparece pra DECISÃO real ou pra escolher entre opções no fim.
-Repo-agnóstica — serve pra qualquer tarefa, em qualquer projeto.
+Modo largar-e-esquecer **invertido**: o Claude planeja, orquestra e revisa; **o Codex é quem
+constrói** (mão na massa, acesso total de escrita). O Codex só continua no papel de revisor no
+PLANEJAMENTO. Fluxo:
+
+- **Claude planeja → Codex revisa o plano** (read-only, `../_shared/confronto-codex.md`).
+- **Claude orquestra → Codex constrói → Claude revisa o diff** (mecânica da `codex-build`).
+
+O trabalho é executado pelo Codex e conferido pelo Claude sozinho; o usuário só reaparece pra
+DECISÃO real, pra escolher entre opções no fim, ou na BORDA sensível. Repo-agnóstica.
 
 **Quem manda no esforço é o usuário, não a skill.** Quão fundo ir — quantas rodadas de revisão,
 quanto investigar — é decisão dele; a skill nunca escala isso sozinha. Esta skill é só o
@@ -17,8 +23,9 @@ tarefa rápida ou numa pesada — muda o esforço (dele), não o protocolo.
 Meta central: **some SEM dar erro**, porque a verificação é estrutural, não depende do usuário olhando. Se você se pegar querendo "encurtar a conferência pra ele pegar o erro",
 parou: a saída é fazer a verificação ser real, não chamar ele.
 
-`references/protocolo.md` é o contrato de segurança e verificação — vale pro trabalho todo (e,
-quando o trabalho for dividido entre vários agentes, vai embutido em cada um). Leia antes de começar.
+`../auto-worker/references/protocolo.md` é o contrato de segurança e verificação — vale pro
+trabalho todo (e, quando o trabalho for dividido entre vários agentes, vai embutido em cada um).
+Leia antes de começar.
 
 ---
 
@@ -122,7 +129,7 @@ fundamentada, não atrito a cada passo.
 
 ## Executar (verificação graduada)
 
-Cada executor segue `references/protocolo.md`. Núcleo:
+Cada executor segue `../auto-worker/references/protocolo.md`. Núcleo:
 - **Prova ou silêncio:** nenhuma palavra de confiança ("pronto/100%/seguro/recupera") sem o
   comando + saída colados. Sem prova → "assumido, NÃO testado".
 - **Prova = corrente, não só output:** afirmação → teste → saída → conclusão. O teste tem
@@ -148,86 +155,55 @@ script pra ele rodar"), nunca mexe em credencial — sem autorização específi
 
 ---
 
-## O executor e o crítico
+## Codex só no seguro (a inversão da borda)
 
-O Claude executa — numa sessão única, ou dividido entre vários agentes quando **o usuário**
-escolher ir mais fundo (a skill não escala isso sozinha). O **crítico do trabalho é o Codex**
-(outro modelo, nunca o próprio executor — ninguém se auto-aprova).
-
-**Fallback se o Codex não estiver disponível** (CLI ausente, erro, timeout repetido): o crítico
-vira um agente Claude SEPARADO e adversarial (NUNCA o mesmo que executou), com o parecer marcado
-"revisão de menor garantia — mesmo modelo". Em risco ALTO, revisão só do mesmo modelo NÃO basta:
-estado final BLOQUEADO até o Codex voltar ou o usuário autorizar explicitamente assumindo o risco.
+`--yolo` executa comandos de verdade sem pedir permissão. Por isso o Codex **só constrói** ordem
+de serviço de risco **baixo/médio** — local, reversível, sem efeito externo. Toda ordem que toca
+uma trava dura (envio real, dado de pessoa, deploy, credencial, dinheiro, destrutivo real) **NÃO
+vai pro Codex**: o Claude assume essa parte, prepara 100% reversível e PARA na borda pedindo o "s"
+por ação (o protocolo de borda do auto-worker, sem mudança). Regra mecânica: antes de montar o
+prompt do Codex, classifique o risco da ordem (a tabela de risco já existente); risco ALTO → não
+solta o Codex, é o Claude na borda. Na dúvida, sobe um nível.
 
 ---
 
-## Revisar com o crítico (Codex) + a TRAVA DE VERSÃO
+## O construtor (Codex) e o revisor (Claude)
 
-O crítico nunca é o próprio executor (não se auto-aprova). É o Codex, via Bash.
+O **Codex constrói** com acesso de escrita (nunca o Claude executa o trabalho aqui — essa é a
+inversão). O **revisor do trabalho é o Claude** (outro modelo que o construtor — ninguém se
+auto-aprova): lê o diff inteiro como um PR de contribuidor, exige prova, e itera correções na
+MESMA sessão do Codex.
 
-**A mecânica completa mora no motor compartilhado `../_shared/confronto-codex.md`** (por que
-stdin, o teto `alarm 900`, o selo de versão, o fallback se o Codex cair, o mascaramento de dado
-e a regra de ouro de filtrar com prova) — essa é a fonte única; se a mecânica mudar lá, esta
-seção acompanha. O comando abaixo é a **variante do auto-worker**, deliberadamente mais
-conservadora que a do `/auto-think`: sem effort fixado (herda o `medium` global do Codex) e
-**sem** `service_tier="fast"`, porque aqui é revisão de trabalho rotineira a cada passo, não o
-estudo caro de vários ângulos — não vale forçar a via paga rápida em toda entrega.
+**Fallback se o Codex-construtor cair** (CLI ausente, erro, timeout repetido): o Claude ASSUME a
+construção diretamente (ele sabe fazer) e marca a entrega "construído pelo Claude, sem o Codex".
+Não trava o fluxo. No planejamento, o fallback do revisor é o do `confronto-codex.md` §5.
 
-```bash
-perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-5.6-sol \
-  --skip-git-repo-check --ignore-user-config --sandbox read-only \
-  - < /tmp/critico-input.md > /tmp/critico-review.md 2>/dev/null
-```
+---
 
-**Achado do confronto `/gpt-optimizer` (13/07/2026):** esse comando estava sem captura de saída
-nenhuma — nem `-o`, nem `> arquivo`. `codex exec` ecoa o prompt + banner no **stderr** (testado
-ao vivo) antes de escrever a resposta; sem redirecionar, o que sobra pra ler é o retorno bruto da
-ferramenta Bash, misturando stdout+stderr — exatamente o risco de "raspar o último JSON válido"
-pegar o pedaço errado. Leia sempre `/tmp/critico-review.md` (nunca o retorno cru da tool Bash).
-O `perl -e 'alarm 900'` é o teto de 15 min: Codex que passa disso travou, o SO mata sozinho
-(`timeout` puro não existe no Mac, `perl` existe no Mac e no Windows). Travou → mata e refaz uma
-vez; travou de novo → cai no fallback (crítico vira agente Claude separado).
+## 1) Revisar o PLANO com o Codex (só quando há plano/decisão de rumo)
 
-`--sandbox read-only` não é opcional: sem ela o crítico herda o config do Codex da máquina e ganha
-permissão de ESCREVER nos arquivos que deveria só criticar.
+Quando o passo "Preciso planejar?" gerar um mini-plano/plano parcial com decisão de rumo, o
+Codex REVISA esse plano antes de construir — read-only, mecânica canônica em
+`../_shared/confronto-codex.md` (variante auto-worker: `high`, sem `service_tier="fast"`).
+Aplique a regra de ouro (§4): cada ponto do Codex vira uma linha de veredito com prova.
+Critério explícito e tarefa trivial NÃO exigem revisão de plano — segue direto pra construção.
 
-**Da 2ª rodada em diante, retome a MESMA sessão do Codex** (`codex exec resume` com o `thread_id`
-da 1ª) em vez de abrir uma nova — assim ele lembra o que já apontou, confere o que foi atendido e
-não re-litiga ponto morto. A mecânica (capturar o `thread_id`, e o cuidado de que o `resume` NÃO
-aceita `--sandbox` — força-se `-c sandbox_mode="read-only"`) está na **seção 3b** do motor.
+## 2) Codex constrói, Claude revisa o diff (a execução)
 
-**Quantas rodadas de revisão é decisão do usuário — dentro do teto de 3.** O piso e o teto são
-da skill; o meio é dele. Piso: risco ALTO exige pelo menos 1 revisão VÁLIDA antes de fechar —
-sem ela, BLOQUEADO. Teto anti-espiral: **máximo 3 rodadas de confronto** (`references/protocolo.md`,
-"Parada do loop"). Nenhum teto vira aprovação por cansaço: sobrou risco na última →
-BLOQUEADO, não "quase pronto". E o crítico só BLOQUEIA por segurança, objetivo não atendido
-ou prova quebrada; melhoria não-bloqueante vira "opcional", não trava.
+**Mecânica movida pro motor compartilhado (extraído daqui pra não divergir entre skills que
+usam o mesmo padrão): `../_shared/codex-constroi.md` — leia antes de lançar.** Cobre: pré-requisitos, classificação de risco (o que NUNCA vai pro Codex), o
+contrato (GOAL/SPEC/KEY PATHS/CONSTRAINTS/NON-GOALS/PROOF/OUTPUT), como lançar e retomar, como o
+Claude revisa o diff, o fix-loop de 2 rodadas, e — importante pra qualquer skill que dependa de
+ferramenta de sessão (MCP, Browser pane, aprovação visual) — a seção "O que NÃO delegar pro
+Codex". O motor já gera um caminho único por chamada (`mktemp`, seção 4) — nunca hardcode
+`/tmp/auto-gptworker-build.txt` fixo (sessões paralelas sobrescreveriam o relatório uma da outra).
 
-### A trava de versão (o selo) — pega "revisou/editou o arquivo errado"
-Erro recorrente: o Claude entrega a versão nova mas o Codex revisa a anterior; ou alguém
-edita uma cópia velha. Três defesas, nenhuma presume nada:
-
-1. **Antes de mandar:** confere que o arquivo que vai pro crítico é a última versão (não uma
-   cópia defasada). Se o Claude corrigiu mas não salvou por cima → para aqui, antes de revisar.
-2. **O revisor SELA o PACOTE que leu:** o crítico recebe um manifesto (o diff + lista de
-   arquivos + comandos + saídas) e carimba no topo a impressão digital (hash) do manifesto
-   inteiro — não de um arquivo só, senão não prova que leu o pacote certo. Instrua o crítico a
-   carimbar como PRIMEIRA seção, **EXATAMENTE neste formato literal** (o `scripts/verify-selo.sh`
-   procura esta frase; outro formato faz a conferência reportar "sem selo" mesmo com pacote certo):
-
-   ```
-   ## Selo
-   - Manifesto (sha256): <hash>
-   ```
-
-   Se não conseguir, escrever a palavra literal `SELO INDISPONIVEL`. O script
-   `scripts/verify-selo.sh` confere se o hash bate com o manifesto que foi enviado. Não
-   bateu → o Codex leu versão/pacote velho → DESCARTA o parecer e re-roda só ele, na mesma rodada.
-3. **O revisor falhou** (travou / sem resposta / não carimbou) → NUNCA presume "aprovado"
-   nem "reprovado". Classifica (lento / travou / sem output). O que fazer depende do risco:
-   risco **baixo** não exige crítico (não se aplica); **médio** pode seguir marcado "não
-   revisado" se não houver trava dura; **alto** NÃO pode seguir sem revisão válida → estado
-   final BLOQUEADO até re-rodar com sucesso ou o usuário autorizar explicitamente assumindo o risco.
+### A trava de versão (o selo), invertida
+No auto-worker o selo garantia que o Codex leu a versão certa do trabalho do Claude. Aqui é o
+CLAUDE que revisa o diff do Codex: a defesa é confirmar que o diff revisado é o do HEAD atual
+(o Codex acabou de escrever) e não um estado velho — `git diff` contra o working tree recém-escrito,
+não contra um arquivo em cache. `../auto-worker/scripts/verify-selo.sh` segue disponível para o
+caso de revisão de plano com selo.
 
 ---
 
@@ -255,6 +231,8 @@ O diário existe pra responder, sem o chat aberto: **o que já foi feito, o que 
 que ficou assumido, e onde parou.** Cada unidade de trabalho fechada acrescenta uma entrada com
 o que mudou, o comando + saída que provou aquilo (ou a marca `assumido, NÃO testado`), e o que
 o crítico apontou. Trava dura encontrada na borda entra também, com a autorização que falta.
+Cada unidade fechada registra também **o que o Codex construiu** (resumo do relatório dele) +
+**o veredito do Claude no diff** (o que passou/falhou na revisão) + rodadas de fix usadas.
 
 Regras do arquivo: uma lição por entrada, com resumo de 1 linha no topo; registra tanto correção
 quanto abordagem que se confirmou, sempre com o porquê; **não** duplica o que o repo, o diff ou
