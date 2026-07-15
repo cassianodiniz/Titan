@@ -1,12 +1,5 @@
 # Changelog — Titan
 
-## 1.9.0 — 2026-07-15
-
-Skill nova: `pesquisa`, com 2 confrontos via Codex enxertados no funil.
-
-- **pesquisa — skill nova.** Funil de pesquisa em 3 níveis (varredura → análise com fatos-chave → deep dive paralelo com CRAAP scoring e domain filters via Exa/WebSearch), com Phase Gate de evidência via subagent `Explore` independente e `validate-report.py` como hook de validação do relatório salvo.
-- **pesquisa — 2 confrontos com o Codex (novo, v3.4).** Reaproveita o motor `_shared/confronto-codex.md` (o mesmo do `/planejar`): Chamada 1 questiona o enquadramento (pergunta clara? sub-tópicos atacam ela?) antes do Nível 3 caro; Chamada 2 questiona a conclusão (resolve o problema? tem caminho mais simples?) antes da entrega final. Documentado em `skills/pesquisa/references/codex-revisor.md`.
-
 ## 1.8.0 — 2026-07-15
 
 Sincroniza mecânica que estava só na fonte local desde a publicação da 1.7.0, e inclui uma skill nova (branch pública de uma skill interna, adaptada e renomeada).
