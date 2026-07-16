@@ -46,6 +46,35 @@ novo, a outra estuda um problema) e entregam pra `auto-gptworker` executar. `gpt
 confronto avulso — fora do ciclo, testa uma decisão pronta a qualquer momento. `handoff` salva o
 ponto e passa pra próxima sessão.
 
+## Qual eu uso? — guia rápido pra quem tá começando
+
+Se os nomes ainda não dizem nada, comece pela **sua situação**. Ache a linha que
+descreve o seu momento e use o comando da direita:
+
+| Quando você... | Use | O que ganha no fim |
+|---|---|---|
+| tem uma **ideia de app/produto** e quer construir do zero | `/planejar` | um plano detalhado, já revisado, pronto pra executar |
+| tem um **problema difícil sem resposta pronta** e quer enxergar as saídas | `/auto-think` | 2–3 caminhos possíveis, com a recomendação e o porquê de cada um |
+| tem uma **tarefa clara** e quer que ela seja feita e conferida | `/auto-gptworker` | o trabalho pronto: o **Codex (GPT) constrói** e o **Claude revisa** antes de fechar |
+| **já decidiu algo** e quer testar se a decisão aguenta antes de cravar | `/gpt-optimizer` | um veredito claro: **Seguir**, **Ajustar** ou **Bloquear** |
+| vai **fechar a sessão** e quer continuar depois sem perder o fio | `/handoff` | um documento que a próxima sessão lê pra retomar do ponto exato |
+
+> Regra de bolso: **pensar** algo → `planejar` (produto novo) ou `auto-think` (problema aberto).
+> **Fazer** algo → `auto-gptworker` (o Codex constrói, o Claude revisa).
+> **Conferir** uma decisão pronta → `gpt-optimizer`. **Continuar depois** → `handoff`.
+
+### Por dentro: o que cada um faz, passo a passo
+
+O detalhe completo está no fluxograma abaixo. Em uma linha, o caminho de cada comando:
+
+| Comando | Como funciona por dentro |
+|---|---|
+| `/planejar` | brainstorm da ideia → pesquisa (como já resolveram + qual stack) → design e mockups → escreve o plano → **Codex (GPT) audita** → corrige → entrega o plano final |
+| `/auto-think` | **formula o problema** → estuda vários ângulos em paralelo (puxa a doc oficial quando é de uma tecnologia) → **Codex tenta derrubar** cada saída → re-cava o que ficou aberto → **Codex escolhe** entre as que sobraram → entrega as opções com veredito |
+| `/auto-gptworker` | mede o **risco** da tarefa → o **Codex (GPT) constrói** uma parte por vez → o **Claude revisa o diff** e roda a prova ele mesmo → repete até aprovar → **para na borda sensível** (dinheiro, envio, deploy, dado real) e chama você |
+| `/gpt-optimizer` | monta o alvo (a sua decisão) → **Codex tenta derrubar** → você filtra com prova o que não procede → **Codex audita o seu filtro** → veredito **Seguir / Ajustar / Bloquear** |
+| `/handoff` | ancora no git (branch, commit, o que mudou) → captura o estado e os ponteiros (fato vs suposição) → salva o documento e abre na tela |
+
 ## Fluxograma
 
 As 5 portas e o ciclo (detalhe em [FLUXOGRAMA.md](FLUXOGRAMA.md)):
