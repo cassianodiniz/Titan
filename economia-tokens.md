@@ -1,6 +1,10 @@
-# Economia de tokens no Claude Code — instalador
+# Claude Code mais leve — instalador (RTK + Ponytail)
 
 *Orientações e configuração de **Cassiano Diniz**.*
+
+> **Duas ferramentas com papéis diferentes — não confunda:**
+> - **RTK** é a que **economiza token de verdade**: ele corta o excesso de texto que os comandos cospem de volta antes de chegar no assistente. Roda o tempo todo, em qualquer tarefa.
+> - **Ponytail** **não economiza token** — ele é uma "disciplina de código": deixa o assistente escrever menos código e mais simples **quando você está programando ou construindo alguma coisa**. Não serve pra tarefa comum (escrever texto, responder pergunta, organizar arquivo). Por isso este instalador o deixa **desligado por padrão** — você liga na mão (`/ponytail`) quando for construir algo, e ele também traz ferramentas de revisão sob demanda (`/ponytail-review`, `/ponytail-audit`).
 
 **Como usar** — abra o Claude Code e cole isto:
 
@@ -18,10 +22,10 @@ Funciona em **Mac** e em **Windows**. Instala no **Claude Code** e no **Codex** 
 
 # INSTRUÇÕES PARA O CLAUDE — leia tudo antes de começar, depois execute na ordem
 
-Você vai instalar duas ferramentas de economia de token **na máquina de outra pessoa**. Não presuma que ela mexe com terminal, nem que vai saber consertar se você quebrar alguma coisa. Aja de acordo: prove cada passo, e quando não der, pare e explique — não improvise.
+Você vai instalar duas ferramentas **na máquina de outra pessoa**. Não presuma que ela mexe com terminal, nem que vai saber consertar se você quebrar alguma coisa. Aja de acordo: prove cada passo, e quando não der, pare e explique — não improvise.
 
-1. **Ponytail** — plugin que faz o assistente escrever menos código inútil (https://github.com/DietrichGebert/ponytail)
-2. **RTK** — programa que corta o excesso de texto que os comandos cospem de volta (https://www.rtk-ai.app)
+1. **RTK** — programa que corta o excesso de texto que os comandos cospem de volta. É a ferramenta que **economiza token**; roda o tempo todo (https://www.rtk-ai.app)
+2. **Ponytail** — plugin que faz o assistente escrever menos código inútil **quando a pessoa programa**. Não economiza token — ao contrário, custa um pouco de contexto por sessão, por isso vai instalado mas com o **modo automático desligado** (a pessoa liga na mão quando vai construir algo). Uma auditoria de 16/07/2026 mediu o modo sempre-ligado e não achou retorno que pague o custo (https://github.com/DietrichGebert/ponytail)
 
 ## Regras que valem para a execução inteira
 
@@ -113,6 +117,39 @@ codex plugin list
 > O mesmo arquivo de ganchos (`hooks/claude-codex-hooks.json`) serve o Claude e o Codex — é o próprio plugin que declara isso no `plugin.json`. Não há nada extra a configurar.
 
 **Restou uma coisa que só a pessoa faz** (isso vai para o relatório, não tente automatizar): na primeira vez que ela abrir o `codex`, precisa digitar `/hooks` e confiar nos ganchos do ponytail. É a trava de segurança do Codex perguntando se aquele plugin baixado da internet pode rodar. **Não pule por ela.**
+
+---
+
+## ETAPA 3.5 — Deixar o ponytail desligado por padrão
+
+**Por que isso importa:** sem config, o ponytail liga sozinho no modo "sempre-ligado" (`full`) e passa a injetar ~1,3k tokens de instrução em TODA sessão — inclusive nas que não têm nada a ver com programar. Auditoria de 16/07/2026 mediu isso e não achou retorno que pague o custo. A pessoa **liga na mão** (`/ponytail`) quando for construir algo, e usa `/ponytail-review` / `/ponytail-audit` sob demanda. As skills continuam 100% funcionais com o modo desligado.
+
+O plugin resolve o modo assim (visto no código dele, `hooks/ponytail-config.js`): primeiro a variável de ambiente `PONYTAIL_DEFAULT_MODE`, depois um arquivo de config, senão `full`. A gente grava o arquivo de config — vale pra Claude Code **e** Codex de uma vez.
+
+Caminho por sistema (não crave o do outro):
+- **Mac/Linux:** `~/.config/ponytail/config.json`
+- **Windows:** `%APPDATA%\ponytail\config.json` (normalmente `C:\Users\<nome>\AppData\Roaming\ponytail\config.json`)
+
+Conteúdo exato do arquivo (grave com a **sua ferramenta de escrever arquivo**, a Write — não pelo PowerShell, que mete marca invisível):
+
+```json
+{
+  "defaultMode": "off"
+}
+```
+
+> Se já existir um `config.json` do ponytail com outro modo, faça cópia `.bak` antes e avise no relatório. Não sobrescreva às cegas.
+
+**Verificar (obrigatório):**
+
+```bash
+# Mac/Linux
+cat ~/.config/ponytail/config.json
+# Windows (PowerShell)
+powershell.exe -NoProfile -Command "Get-Content \"$env:APPDATA\ponytail\config.json\""
+```
+
+Tem que mostrar `"defaultMode": "off"`. Se não gravou, é FALHOU.
 
 ---
 
@@ -232,6 +269,7 @@ enabled = false
 
 [hooks]
 exclude_commands = [
+  "rg",
   "git diff",
   "git show",
   "git blame",
@@ -258,9 +296,10 @@ status_max_untracked = 10
 passthrough_max_chars = 2000
 ```
 
-**Identidade obrigatória deste bloco:** 775 bytes · SHA-256 `14059ffbb9f6ae7155e570669b6bd2a292bfe492f61df6908750300d7a94b1b4`
+**Identidade obrigatória deste bloco:** 783 bytes · SHA-256 `b5129d076d65776d35379e8a0e245cf947cb3ccbacef5cfd799bfaa8201e62d8`
 
 > O `[tee]` precisa de `max_files` e `max_file_size`. Sem eles o arquivo quebra. Não remova.
+> O `"rg"` no topo do `exclude_commands` não é opcional: sem ele o RTK converte buscas `rg` pra `grep` mudando o resultado (o "OU" da busca vira texto literal e erro vira falso "não achei nada") — defeito comprovado em auditoria de 16/07/2026. Não remova.
 
 ### Como gravar
 
@@ -292,7 +331,7 @@ shasum -a 256 "<caminho>.novo"
 powershell.exe -NoProfile -Command "(Get-FileHash '<caminho>.novo' -Algorithm SHA256).Hash.ToLower()"
 ```
 
-Tem que dar exatamente `14059ffbb9f6ae7155e570669b6bd2a292bfe492f61df6908750300d7a94b1b4`.
+Tem que dar exatamente `b5129d076d65776d35379e8a0e245cf947cb3ccbacef5cfd799bfaa8201e62d8`.
 
 **Se não bater, é FALHOU** — não conserte no olho, não "ajuste", e **não mova o temporário por cima**. Reporte que a config não gravou idêntica.
 
@@ -440,11 +479,12 @@ Terreno
 Ponytail
   Claude Code ...................... [OK / FALHOU / não se aplica]
   Codex ............................ [OK / FALHOU / não se aplica]
+  modo desligado (defaultMode off) . [OK / FALHOU]
 
 RTK
   versão ........................... <versão>
   config gravada ................... <caminho>
-  SHA-256 confere (14059ff...) ..... [OK / FALHOU]
+  SHA-256 confere (b5129d0...) ..... [OK / FALHOU]
   rtk config sem erro .............. [OK / FALHOU]
   ligado no Claude Code ............ [OK / FALHOU]
   ligado no Codex .................. [OK / FALHOU / não se aplica]
@@ -456,8 +496,10 @@ Cópias de segurança que eu fiz: <caminhos, ou "nenhuma — não havia arquivo 
 
 FALTA VOCÊ FAZER:
   1. Feche e abra o Claude Code. (Nada liga na janela que instalou.)
-  2. Na janela nova, digite: /ponytail
-     Esperado: ele responde qual modo está ativo.
+  2. Na janela nova, digite: /ponytail-help
+     Esperado: ele mostra o cartão de comandos e diz que o modo padrão está "off" (desligado).
+     (O ponytail vem desligado de propósito — ele só serve quando você programa. Quando for
+      construir algo, ligue com /ponytail; pra revisar o que mudou, /ponytail-review.)
   3. Na janela nova, peça: "rode git status"
      Esperado: o comando sai como `rtk git status`.
   4. Na janela nova, peça: "mostre o diff atual"
