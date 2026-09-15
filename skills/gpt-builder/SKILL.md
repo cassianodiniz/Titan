@@ -114,6 +114,7 @@ Then ask: *"Codex built it, proof passes, fiscal PASS, diff reviewed. Commit?"*
 
 - Commit ONLY on yes — and Claude writes the commit, never Codex.
 - Rejected → ask what's wrong, route back to Step 4 (or take over directly if fix rounds are spent).
+- **Revisão mais profunda (opcional, fluxo):** ofereça `/build-review` — 3 revisores independentes sobre o diff + o `.checks/<feature>.md` que esta skill já escreveu. O fiscal daqui prova a aderência à spec; o build-review é o pente-fino de qualidade por cima.
 
 ## Hard rules
 

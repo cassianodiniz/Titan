@@ -7,6 +7,7 @@ por qualquer uma:
 - **📝 /spec-plan** — você traz um **plano/decisão/ideia**; ele **grelha até o entendimento comum** e escreve uma **spec congelada** pronta pra construir com IA. No fim, oferece mandar pra `/gpt-builder`.
 - **🔬 /auto-think** — você traz um **problema sem resposta**; ele **estuda a fundo** (vários ângulos em paralelo, confronta os achados com o Codex/GPT) e entrega **opções com veredito**. Gera caminhos — não executa, para na recomendação.
 - **⚙️ /gpt-builder** — recebe uma **spec congelada** e executa: o **Codex constrói** (mão na massa, acesso total), o **Claude lê o diff inteiro** e um **fiscal independente** prova cada item; **você assina** antes de qualquer commit.
+- **🕵️ /build-review** — depois de construído, junta **3 revisores independentes** sobre o diff (padrões da casa, aderência à spec, e um fiscal que prova cada item da checklist). Pente-fino final; roda depois da `gpt-builder`.
 - **🔎 /search** — **pesquisa profunda via Exa com procedência**: cada número volta com a página, a frase e a data em que foi lido. Alimenta os outros ou roda sozinha.
 - **🪢 /handoff** — salva o ponto exato do trabalho e passa o bastão pra outra sessão.
 - **🛡️ /gpt-optimizer** — **segunda opinião adversarial pra refletir antes de cravar**, no meio de qualquer conversa: sem precisar de plano nem código formal, ele monta o alvo sozinho, o Codex tenta derrubar, e devolve veredito **Seguir / Ajustar / Bloquear**.
@@ -146,7 +147,8 @@ flowchart TD
 
     AGATE -->|"você aprova"| COMMIT["<b>Claude comita</b> (nunca o Codex) — depois do seu OK"]
     AGATE -->|"algo errado"| AG1
-    COMMIT --> ENTREGA(["✅ Entrega traduzida:<br/>o que PROVEI (com evidência) vs o que ASSUMI"])
+    COMMIT --> BREV["<b>🕵️ /build-review</b> (opcional, pente-fino)<br/><i>3 revisores independentes sobre o diff + a checklist: padrões · aderência à spec · fiscal que prova cada item</i>"]
+    BREV --> ENTREGA(["✅ Entrega traduzida:<br/>o que PROVEI (com evidência) vs o que ASSUMI"])
     AGATE -.->|"ficou longo → passa o bastão"| HINTRO
 
     %% ───────── SEARCH ─────────
@@ -231,7 +233,7 @@ flowchart TD
     %% estrutura compartilhada (cinza neutro)
     class START start;
     class PORTAS hub;
-    class E1,E2,E3,E4,E5,E6,E7 porta;
+    class E1,E2,E3,E4,E5,E6,E7,BREV porta;
     class FIMP,FIMS,FIMT,FIMSE,STOPTREE,ENTREGA,NOVA,GFIM fim;
 
     %% molduras — cor bem fraquinha em volta de cada skill

@@ -1,5 +1,12 @@
 # Changelog — Titan
 
+## 2.1.0 — 2026-09-15
+
+Adiciona a `build-review` e liga o fluxo entre as skills. Aditivo, sem quebra.
+
+- **`build-review` — skill nova.** Maestro que dispara três revisores independentes sobre o mesmo diff — Standards (padrões da casa) + Spec (aderência ao pedido) + Fiscal (prova cada item da checklist rodando os testes e injetando defeito). Consome a checklist `.checks/<feature>.md` e o diff que a `gpt-builder` já deixa.
+- **Fluxo wired (ponteiro de "próximo passo", edição mínima):** `spec-plan` → `gpt-builder` → `build-review`. A `gpt-builder` passa a oferecer `/build-review` como pente-fino após a construção (complementar ao fiscal interno dela, que só prova aderência à spec).
+
 ## 2.0.0 — 2026-09-15
 
 Troca do executor e duas skills novas de especificação e pesquisa. **Quebra** (mudança de nome de skill): quem instalou a `auto-gptworker` precisa passar a chamar a `gpt-builder`.

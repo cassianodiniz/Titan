@@ -40,6 +40,7 @@ usar — a **/pesquisa + Perplexity** (a pesquisa web da planejar). Detalhe item
 | `/Titan:auto-think <problema>` | Estuda a fundo um problema **sem resposta**: ataca de vários ângulos em paralelo, confronta com o Codex/GPT em 2 rodadas, e entrega **opções com veredito**. Gera caminhos — não executa. |
 | `/Titan:gpt-builder <spec>` | Entrega uma **spec congelada** (ex.: `PLAN.md`) pro **Codex construir** com acesso total; o **Claude revisa o diff** inteiro como um PR, um **fiscal independente** prova cada item, e **você assina** antes de qualquer commit. Sem spec? Ela manda pra `/spec-plan` primeiro. |
 | `/Titan:search <pergunta>` | Pesquisa profunda via **Exa** com procedência: cada número volta com a página, a frase e a data em que foi lido. Precisa de conta Exa. |
+| `/Titan:build-review` | Junta **3 revisores independentes** sobre um diff já construído — padrões da casa, aderência à spec, e um fiscal que prova cada item da checklist. Roda **depois da `gpt-builder`**, como pente-fino. |
 | `/Titan:gpt-optimizer` | Segunda opinião adversarial pra **refletir sobre uma decisão que você JÁ tem** antes de cravar: o Codex (GPT-5.6) tenta derrubar e devolve veredito **Seguir / Ajustar / Bloquear**. |
 | `/Titan:handoff` | Gera um documento de passagem de bastão pra continuar o trabalho numa sessão nova, do zero. |
 
@@ -117,7 +118,8 @@ flowchart TD
     P -->|"o plano"| GB
     SP -->|"a spec"| GB
     AT -->|"a solução escolhida"| GB
-    GB --> DONE(["✅ Produto conferido:<br/>o que PROVEI vs o que ASSUMI"])
+    GB --> BR["<b>🕵️ build-review</b><br/><i>3 revisores sobre o diff — pente-fino (opcional)</i>"]
+    BR --> DONE(["✅ Produto conferido:<br/>o que PROVEI vs o que ASSUMI"])
     GB -. "ficou longo" .-> HO
     SE -. "alimenta" .-> PENSAR
 
@@ -128,7 +130,7 @@ flowchart TD
     classDef fim fill:#1e293b,color:#ffffff,stroke:#0f172a,stroke-width:1.5px;
     class P,SP,AT think;
     class GB build;
-    class SE,GO,HO help;
+    class SE,GO,HO,BR help;
     class START start;
     class DONE fim;
     style PENSAR fill:#eef7f5,stroke:#14b8a6,stroke-width:2px;
