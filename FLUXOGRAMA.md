@@ -1,25 +1,25 @@
 # Fluxograma — plugin `Titan`
 
-Plugin com **cinco skills**. Cada uma é uma **porta de entrada independente** — você pode começar
+Plugin com **sete skills**. Cada uma é uma **porta de entrada independente** — você pode começar
 por qualquer uma:
 
 - **🧠 /planejar** — desenha um produto/software do zero, **descobre como o problema já foi resolvido lá fora** e **audita a planta** antes de construir.
 - **🔬 /auto-think** — você traz um **problema sem resposta**; ele **estuda a fundo** (vários ângulos em paralelo, confronta os achados com o Codex) e entrega **opções com veredito**. Gera caminhos — não executa, para na recomendação.
-- **⚙️ /auto-gptworker** — executa uma tarefa do início ao fim: o **Codex constrói** (mão na massa), o **Claude revisa o diff inteiro** antes de fechar. Borda sensível (dado real, credencial, deploy, destrutivo) o Claude assume e para.
+- **⚙️ /gpt-builder** — executa uma tarefa do início ao fim: o **Codex constrói** (mão na massa), o **Claude revisa o diff inteiro** antes de fechar. Borda sensível (dado real, credencial, deploy, destrutivo) o Claude assume e para.
 - **🪢 /handoff** — salva o ponto exato do trabalho e passa o bastão pra outra sessão.
-- **🛡️ /gpt-optimizer** — **segunda opinião adversarial pra refletir antes de cravar**, no meio de qualquer conversa: sem precisar de plano nem código formal, ele monta o alvo sozinho, o Codex tenta derrubar, e devolve veredito **Seguir / Ajustar / Bloquear**. Se der **Seguir**, oferece executar com a `/auto-gptworker`.
+- **🛡️ /gpt-optimizer** — **segunda opinião adversarial pra refletir antes de cravar**, no meio de qualquer conversa: sem precisar de plano nem código formal, ele monta o alvo sozinho, o Codex tenta derrubar, e devolve veredito **Seguir / Ajustar / Bloquear**. Se der **Seguir**, oferece executar com a `/gpt-builder`.
 
 Elas também formam **um ciclo**: o plano sai do `planejar` (ou a solução escolhida sai do
-`auto-think`) e vai pro `auto-gptworker` pra ser executado; se o trabalho fica longo e o contexto
-enche, o `auto-gptworker` chama o `handoff`, e numa sessão nova você retoma de onde parou.
+`auto-think`) e vai pro `gpt-builder` pra ser executado; se o trabalho fica longo e o contexto
+enche, o `gpt-builder` chama o `handoff`, e numa sessão nova você retoma de onde parou.
 
 > A grande diferença que costuma confundir: **`planejar` revisa o PLANO** (a planta, antes de
-> existir código) e **`auto-gptworker` revisa o que o CODEX CONSTRUIU** (a casa pronta, feita por
+> existir código) e **`gpt-builder` revisa o que o CODEX CONSTRUIU** (a casa pronta, feita por
 > outro par de mãos). Não é a mesma conferência duas vezes — são dois momentos diferentes.
 >
 > E entre os dois "pensadores": **`planejar` parte de uma IDEIA de produto** (desenha algo novo);
 > **`auto-think` parte de um PROBLEMA sem resposta** (investiga e recomenda opções). Os dois entregam pro
-> `auto-gptworker` executar.
+> `gpt-builder` executar.
 >
 > Já o **`gpt-optimizer`** parte de uma **decisão que você JÁ tomou** — não gera opções, **testa a que você
 > escolheu** (o GPT tenta derrubar). É o **confronto avulso**, fora do ciclo, que você chama a
@@ -35,7 +35,7 @@ enche, o `auto-gptworker` chama o `handoff`, e numa sessão nova você retoma de
 }}}%%
 flowchart TD
     START(["💡 Você chega com algo pra fazer"])
-    PORTAS{"VOCÊ escolhe por onde começar<br/>as 5 portas são independentes"}
+    PORTAS{"VOCÊ escolhe por onde começar<br/>as portas são independentes"}
     START --> PORTAS
 
     subgraph PORTASROW[" "]
@@ -102,7 +102,7 @@ flowchart TD
         PINTRO ~~~ TINTRO ~~~ GINTRO
     end
 
-    P8 --> PONTE{"Oferecer execução com a auto-gptworker?<br/>opcional, só com seu OK"}
+    P8 --> PONTE{"Oferecer execução com a gpt-builder?<br/>opcional, só com seu OK"}
     PONTE -->|"prefiro de outro jeito"| FIMP(["📄 Plano salvo em docs/"])
     PONTE -->|"você aceita"| CONTRATO["<b>📄 Contrato de execução</b><br/><i>trava o objetivo e o que NÃO reabrir</i>"]
     CONTRATO --> AINTRO
@@ -113,10 +113,10 @@ flowchart TD
     TPONTE -->|"é só estudo"| FIMT(["📄 Soluções entregues + detalhe em .md"])
     TPONTE -->|"executa a A"| AINTRO
 
-    %% ───────── AUTO-GPTWORKER ─────────
+    %% ───────── GPT-BUILDER ─────────
     subgraph AUTO[" "]
         direction TB
-        AINTRO["<b>⚙️ /auto-gptworker</b> — modo INVERTIDO: Codex constrói, Claude revisa o diff<br/>entra do plano (planejar) ou da solução (auto-think) acima, OU direto do zero · o esforço é seu"]
+        AINTRO["<b>⚙️ /gpt-builder</b> — modo INVERTIDO: Codex constrói, Claude revisa o diff<br/>entra do plano (planejar) ou da solução (auto-think) acima, OU direto do zero · o esforço é seu"]
         ARISK{"Qual o risco desta parte da tarefa?<br/>ele define QUEM constrói"}
         NIVEL["<b>O risco define quem constrói</b> — as travas duras valem sempre:<br/>🟢🟡 <b>baixo/médio</b> · o <b>Codex constrói</b> (mão na massa, local e reversível)<br/>🔴 <b>alto/borda dura</b> · dado real, credencial, deploy, destrutivo — o <b>Claude assume</b> e PARA até autorização"]
         AEXE["<b>Codex constrói essa parte</b> (acesso de escrita, `--yolo` só no trabalho seguro)<br/><i>uma parte por vez; nunca cruza a borda dura sozinho</i>"]
@@ -158,7 +158,7 @@ flowchart TD
     GFIM -. "deu SEGUIR → quer executar agora?<br/>só com seu OK" .-> AINTRO
 
     %% ───────── cores (uma família por skill) ─────────
-    %% planejar=índigo · auto-think=teal · auto-gptworker=verde · handoff=âmbar · estrutura=cinza
+    %% planejar=índigo · auto-think=teal · gpt-builder=verde · handoff=âmbar · estrutura=cinza
     classDef cabP fill:#4338ca,color:#ffffff,stroke:#a5b4fc,stroke-width:1.5px;
     classDef cabT fill:#0f766e,color:#ffffff,stroke:#5eead4,stroke-width:1.5px;
     classDef cabA fill:#15803d,color:#ffffff,stroke:#86efac,stroke-width:1.5px;

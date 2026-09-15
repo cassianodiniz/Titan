@@ -1,6 +1,6 @@
 ---
 name: auto-think
-description: "Estuda a fundo um problema difícil ou decisão que pesa e volta com recomendação + alternativas, COM VEREDITO — não executa (quem executa é /auto-gptworker). Ataca vários ângulos em paralelo via GPT-5.6 (terra nos ângulos, sol na síntese), confronta cada candidata com Opus em high em 2 rodadas, e re-cava o que fica aberto. Acionar por comando: /auto-think <problema>. Fronteira: parecer rápido sobre decisão já tomada = /Titan:gpt-optimizer; planejar produto novo do zero = /planejar; EXECUTAR uma tarefa = /auto-gptworker."
+description: "Estuda a fundo um problema difícil ou decisão que pesa e volta com recomendação + alternativas, COM VEREDITO — não executa (quem executa é /gpt-builder). A própria sessão estuda os ângulos e pesquisa a web pela skill /search (com procedência por número), confronta cada candidata com GPT-sol como advogado do diabo em 2 rodadas, e re-cava o que fica aberto. Acionar por comando: /auto-think <problema>. Fronteira: parecer rápido sobre decisão já tomada = /Titan:gpt-optimizer; planejar produto novo do zero = /planejar; EXECUTAR uma tarefa = /gpt-builder."
 ---
 
 # auto-think
@@ -9,7 +9,7 @@ Modo de trabalho pro usuário **largar um problema difícil e sumir** — e volt
 pronta pra decidir. O auto-think não executa nada: ele **estuda a fundo**. Pesquisa, ataca o
 problema por vários lados ao mesmo tempo, levanta um leque de candidatas, confronta cada uma
 até sobrar só o que aguenta porrada, e entrega as soluções viáveis **com veredito** (a
-recomendada + as alternativas reais). Quem executa a escolhida depois é o `/auto-gptworker` —
+recomendada + as alternativas reais). Quem executa a escolhida depois é o `/gpt-builder` —
 esta skill só pensa.
 
 Repo-agnóstica: serve pra problema técnico ("qual a melhor forma de fazer X no sistema"),
@@ -18,19 +18,19 @@ resolve"), ou de pesquisa pura ("o que o mundo já resolveu sobre isto").
 
 **A fronteira que define tudo:**
 - `/planejar` = desenhar um PRODUTO novo do zero antes de codar.
-- `/auto-gptworker` = EXECUTAR uma tarefa e entregar feito (Codex constrói, Claude revisa).
+- `/gpt-builder` = EXECUTAR uma tarefa e entregar feito.
 - `auto-think` = ESTUDAR um problema a fundo e entregar solução(ões) recomendada(s). Não executa.
 
 Se no fim o usuário quiser rodar a solução escolhida, o ponteiro é: "quer que eu execute a A?
-→ /auto-gptworker". O auto-think nunca cruza essa linha sozinho.
+→ /gpt-builder". O auto-think nunca cruza essa linha sozinho.
 
 ---
 
 ## A CALIBRAGEM: fundo é o padrão (a regra que define o caráter da skill)
 
 Esta skill existe pra quando o problema é difícil e vale gastar pensamento de verdade. Por
-isso o padrão **não é meio-termo — é fundo**: muitos ângulos em paralelo, pesquisa externa,
-um leque de candidatas, confronto em mais de uma rodada. Um auto-think que entrega uma resposta
+isso o padrão **não é meio-termo — é fundo**: muitos ângulos, pesquisa externa via `/search`,
+um leque de candidatas, confronto GPT em mais de uma rodada. Um auto-think que entrega uma resposta
 rasa "falhou", mesmo que a resposta esteja certa — porque o pedido foi *estudar*, e estudar
 raso não é estudar.
 
@@ -41,13 +41,13 @@ direto) — não o auto-think. Aqui, se foi chamado, **vai fundo**. A skill nunc
 "acho que isso é simples, vou de raso" — na dúvida entre raso e fundo, vai fundo, porque foi
 pra isso que foi chamada.
 
-**O custo entra avisado, nunca como freio.** Ir fundo gasta mais (Codex em mais rodadas,
-pesquisa, agentes paralelos). Isso aparece na entrega como nota de transparência ("rodei N
-ângulos, M confrontos") — mas não é desculpa pra entregar menos. O usuário escolheu esta skill
-sabendo que ela é a cara.
+**O custo entra avisado, nunca como freio.** Ir fundo gasta mais (pesquisa via `/search`, confronto
+GPT em mais rodadas). Isso aparece na entrega como nota de transparência ("rodei N ângulos, M
+confrontos") — mas não é desculpa pra entregar menos. O usuário escolheu esta skill sabendo que ela
+é a cara.
 
 **Pisos concretos do modo fundo** (pra não recair no mínimo):
-- **≥ 4 ângulos** atacados em paralelo, cada um como agente independente (ver passo 2).
+- **≥ 4 ângulos** cobertos pela sessão (ver passo 2); paralelizar é opcional, via subagentes Claude.
 - **Pesquisa externa obrigatória** sempre que o problema for "qual a melhor forma de X" / "como
   os outros resolvem isto" / **uma decisão de produto** (aí inclui *o que outras empresas estão
   fazendo*) — nunca decidir só de cabeça.
@@ -55,10 +55,9 @@ sabendo que ela é a cara.
   contrário, passo 2) — não assumir que o que ele trouxe está certo.
 - **≥ 3 candidatas** levantadas antes de podar (poda escolhe entre opções reais, não settla na
   primeira).
-- **2 rodadas de confronto (Opus `high`):** a primeira em todas as candidatas, a segunda nos
-  sobreviventes. Cada rodada é um agente NOVO, independente (Opus via Agent tool não retoma
-  sessão como o Codex fazia) — a 2ª rodada recebe no prompt o que a 1ª já apontou, pra não
-  re-litigar o que já ficou resolvido, mas não é a mesma "conversa".
+- **2 rodadas de confronto (GPT-sol via Codex):** a primeira em todas as candidatas, a segunda nos
+  sobreviventes. A 2ª rodada retoma a MESMA sessão do Codex (resume), pra ele lembrar o que já
+  apontou e não re-litigar o que ficou resolvido.
 - Re-cava enquanto houver **incerteza em aberto que mude a decisão** (o motor da profundidade —
   ver passo 5), não enquanto "achar coisa nova".
 
@@ -77,7 +76,7 @@ parte fácil; qualquer um junta links. O valor está em **atacar os próprios ac
 só o que se sustenta. Por isso o confronto é em mais de uma rodada, e a honestidade ("prova ou
 silêncio") vale igual aqui, mesmo sem dado real em risco.
 
-O contrato de honestidade e segurança é o mesmo do `/auto-gptworker`:
+O contrato de honestidade e segurança é o mesmo do `/gpt-builder`:
 `../_shared/protocolo.md`. Leia antes de começar. O resumo operacional do que
 mais importa pro auto-think está abaixo.
 
@@ -86,29 +85,28 @@ mais importa pro auto-think está abaixo.
 ## A TRAVA DE DADO PRA FORA (a única trava dura que pega aqui)
 
 O auto-think pode investigar o sistema do usuário — código, banco, arquivos — e isso pode
-esbarrar em dado real de paciente/aluno, em senha ou em chave. Os ângulos e a síntese (passos 2
-e 5) mandam material pro **Codex/GPT-5.6 (OpenAI, fornecedor externo)**, e a pesquisa pode
-mandar trechos pra **web**. O confronto (passos 3 e 6) NÃO sai pra fora — é agente Opus, mesmo
-fornecedor (Anthropic) da thread principal. Logo:
+esbarrar em dado real de paciente/aluno, em senha ou em chave. Agora quem sai pra fora é **o
+confronto** (passos 3 e 6: as candidatas vão pro **Codex/GPT-5.6-sol, OpenAI, fornecedor
+externo**) e **a pesquisa web** (a query vai pro Exa, via `/search`). A produção — ângulos,
+síntese, re-cava — fica na **sessão atual (Anthropic)**, que também é quem lê o código/banco. Logo:
 
 > **Antes de qualquer coisa sair pro Codex ou pra web, mascarar dado real de pessoa
 > (nome, CPF, telefone, email, endereço) e qualquer credencial (token, senha, chave).**
 > Vai o RACIOCÍNIO do problema; não vai a identidade de quem quer que seja.
 
-**Risco aceito conscientemente (decisão registrada em 12/07/2026, via confronto `/gpt-optimizer`):**
-os ângulos/síntese (`codex exec --sandbox read-only`) rodam com leitura do diretório de trabalho
+**Risco aceito conscientemente (decisão Cassiano, revisada 12/09/2026):**
+o confronto (`codex exec --sandbox read-only`) roda com leitura do diretório de trabalho
 real, não só do prompt mascarado — em tese o Codex poderia ler outro arquivo sensível da pasta
-além do que foi mandado no prompt. Decisão: NÃO isolar em diretório redigido, porque o
+além do que foi mandado no prompt. Cassiano decidiu NÃO isolar em diretório redigido: o
 `/auto-think` normalmente roda sobre um problema/decisão pontual, não de dentro de pasta cheia
-de dado sensível de terceiros. Se um dia isso rodar de uma pasta com dado sensível solto (ex.:
-um Drive com arquivos de clientes/alunos), reavaliar — a trava de mascarar o PROMPT continua
-obrigatória de qualquer forma.
+de dado de aluno/paciente. Se um dia isso rodar de uma pasta com dado sensível solto (ex.: Drive
+da Mentoria), reavaliar — a trava de mascarar o PROMPT continua obrigatória de qualquer forma.
 
 Como mascarar sem perder o sentido: troca por etiqueta estável (`PACIENTE_1`, `ALUNO_A`,
 `TELEFONE_X`, `TOKEN_***`), preservando a estrutura pra o estudo ainda fazer sentido. Se o
 problema SÓ faz sentido expondo o dado real → **para e pede autorização específica**, não
-manda mesmo assim. Isso vale pros ângulos/síntese (Codex) e pra busca na web — o confronto
-(Opus) já está fora dessa trava, mas mesmo assim não recebe dado que os ângulos já mascararam.
+manda mesmo assim. Isso vale pro confronto (Codex/GPT) e pra busca na web (Exa via `/search`) — os
+dois únicos pontos que saem pra fora.
 
 **A regra concreta do que sai:** o que vai pra fora é o **problema abstraído** (estrutura,
 padrão, raciocínio), **nunca o registro real verbatim**. Antes de salvar o arquivo que vai pro
@@ -138,9 +136,9 @@ o problema, não baixar a base.
 - **Fonte da web tem o mesmo rigor:** afirmação de blog/fórum vale menos que doc oficial. Cita
   a fonte e a data; marca como ASSUMIDO quando a fonte é fraca ou a versão não bate. Confrontar
   a pesquisa = checar se a fonte sustenta a afirmação, não só se "alguém disse na internet".
-- **Não se auto-aprova:** o confrontador é o Opus (fornecedor Anthropic, mas modelo diferente do
-  que produziu — os ângulos/síntese são GPT-5.6). O auto-think nunca aprova o próprio raciocínio
-  sozinho.
+- **Não se auto-aprova:** o confrontador é o GPT-5.6-sol (fornecedor OpenAI, externo), enquanto
+  quem produz é a sessão (Anthropic). Fornecedores diferentes nas duas pontas — o auto-think nunca
+  aprova o próprio raciocínio sozinho.
 
 ---
 
@@ -154,8 +152,8 @@ fechada lá embaixo. Anuncia cada virada em uma linha, mas não pede licença pr
 **Primeiro espelha e confirma — ANTES de cavar (trava de entrada).** O que chega nem sempre é um
 "erro" pra resolver: às vezes é uma IDEIA que o usuário quer ver investigada, uma decisão que ele
 já rascunhou, ou uma intuição que ele quer testar. Estudar a fundo a coisa errada custa caro
-(chamadas GPT-5.6 paralelas, pesquisa, Opus em duas rodadas), então o ciclo abre confirmando o alvo —
-igual o `/zaprepair` faz no Passo 1 dele:
+(pesquisa via `/search` + confronto GPT em duas rodadas), então o ciclo abre confirmando o alvo,
+espelhando o pedido antes de cavar:
 - **Reescreve o pedido com as palavras dele + PROPÕE o TIPO:** "Entendi que você quer estudar X —
   e isto me parece [um problema a resolver / uma ideia a investigar / uma decisão a bater]. É isso,
   ou é outra coisa?" O tipo é uma PROPOSTA pra ele confirmar, não um veredito seu — quem decide o
@@ -183,26 +181,26 @@ igual o `/zaprepair` faz no Passo 1 dele:
   entrega honesta; gastar 5 ângulos pra confirmar o óbvio não é fundo, é desperdício. O teste:
   só usa o escape se conseguir PROVAR que é trivial; não conseguiu provar → vai fundo.
 
-### 2. Estudar de vários ângulos — EM PARALELO DE VERDADE
-Aqui mora a maior diferença entre "estudar a fundo" e "pensar um pouco". Não é refletir sobre
-vários lados na mesma cabeça — é **disparar agentes independentes**, um por ângulo, cada um
-cego pro que os outros acham. É a cegueira mútua que dá cobertura: dois agentes que conversam
-convergem cedo e perdem o ponto cego um do outro.
+### 2. Estudar de vários ângulos — a sessão conduz
+Aqui mora a maior diferença entre "estudar a fundo" e "pensar um pouco". Não é passar o olho —
+é atacar o problema por **vários ângulos independentes**, cada um levantando candidata(s) de
+solução com a evidência que a sustenta. Quem conduz isso é a **sessão atual** (o próprio Claude
+que roda o auto-think): ela tem as ferramentas certas — a skill `/search` pra pesquisa web com
+procedência, `context7` pra doc oficial, e leitura do código/banco pro contexto interno.
 
-**Como disparar (decisão 12/07/2026 — mecânica espelha o `/codex-build`):** cada ângulo é uma
-chamada `codex exec --model gpt-5.6-terra` própria, disparada em paralelo (uma por ângulo, até
-~5 ao mesmo tempo) via Bash com `run_in_background`. A síntese — juntar o que os ângulos
-acharam num leque de candidatas — é **outra** chamada, com `--model gpt-5.6-sol`, depois que os
-ângulos voltam. Mecânica exata (stdin, `--json -o arquivo`, `--sandbox read-only`, teto de 15
-min): `references/confronto.md`, seção "Ângulos e síntese". A regra é não estudar em série na
-thread principal — era isso que fazia a skill "pesquisar pouco".
+**A cobertura contra "pensar tudo na mesma cabeça" vem do CONFRONTO, não de agentes cegos.** O
+antídoto ao ponto cego é o advogado do diabo GPT-sol (passos 3 e 6), que é externo e independente
+de quem produziu. Se quiser paralelizar ângulos internos de raciocínio, pode usar subagentes
+**Claude** (Agent tool) — é opcional; o essencial é cobrir os ângulos, não a forma de disparar.
 
-**Fallback se não houver paralelo** (Agent/Workflow indisponível, sem permissão, ou orçamento
-estourado): NÃO desiste de cobrir os ângulos — roda os mesmos ângulos **em série**, um de cada
-vez na thread principal, e marca na entrega "rodou em série, sem paralelo". Série lenta cobrindo
-tudo é melhor que paralelo que não existe; o pecado é deixar ângulo sem estudar, não a forma de
-disparar. Antes de montar um leque grande, **prova numa fatia** que o disparo paralelo responde
-(um agente de teste) — se não responder, cai pro série desde já, não no meio do ciclo.
+**A pesquisa web é via skill `/search` (não pesquisador caseiro).** Sempre que um ângulo precisar
+de conhecimento de fora, a sessão invoca `/search` (Skill tool), passando a pergunta já específica
++ a profundidade — assim ele roda direto, sem parar (só para quando a pergunta é ambígua). O
+`/search` traz Exa + procedência por número (frase da página, data, fontes independentes), que é o
+padrão de honestidade que esta skill exige. Mecânica completa: `references/confronto.md`.
+
+**Timeout da ferramenta:** a única chamada Bash longa deste ciclo é o confronto GPT (passos 3 e 6);
+nela use `timeout >= 900000ms` na Bash tool. A pesquisa via `/search` roda dentro da sessão.
 
 Ângulos (no modo fundo, **≥ 4**; escolhe os que cabem, mas sem encolher por preguiça):
 - **Técnico:** qual a solução correta pelo mérito de engenharia.
@@ -227,9 +225,9 @@ disparar. Antes de montar um leque grande, **prova numa fatia** que o disparo pa
 - Outros ângulos extras quando o problema pedir: **escala** (e quando crescer 10x?),
   **alternativa radical** (e se não fizer nada / se resolver por fora?).
 
-Pra a parte web, **reusa o que já existe**: `/pesquisa` (funil com fontes/citações) ou
-`deep-research` (leque + verificação + síntese citada). Não reescreve um pesquisador do zero.
-Pra a parte interna, lê o código/banco/arquivos com a régua de leitura mínima de dado sensível.
+Pra a parte web, **usa a skill `/search`** (Exa + subagentes de busca + procedência por número).
+Não reescreve um pesquisador do zero. Pra a parte interna, lê o código/banco/arquivos com a régua
+de leitura mínima de dado sensível.
 
 **Fonte de domínio — só quando o problema é de uma tecnologia identificável.** Isto NÃO é um passo
 fixo: só dispara quando o enquadramento (passo 1) marcou o problema como "domínio técnico com dono
@@ -265,18 +263,17 @@ sustenta. Junta tudo num leque — **mira ≥ 3 candidatas distintas** antes de 
 Se os ângulos convergiram todos na mesma candidata, dispara mais um ângulo (contrário ou
 radical) pra garantir que não é falta de imaginação, e não convergência real.
 
-### 3. Confrontar os achados (Opus em `high` tenta derrubar) — 1ª rodada
-Cada achado e cada candidata passa por um agente **Claude Opus, `effort: high`** como
-**advogado do diabo** (decisão 12/07/2026 — antes era o Codex; agora o confronto é Opus e os
-ângulos/síntese são GPT-5.6, pra manter a checagem cruzada entre fornecedores diferentes, só que
-invertida). O Opus tenta REFUTAR: isto resolve mesmo o problema ou só um sintoma? A premissa é
+### 3. Confrontar os achados (GPT-5.6-sol tenta derrubar) — 1ª rodada
+Cada achado e cada candidata passa pelo **GPT-5.6-sol** (via Codex CLI) como **advogado do diabo**
+(decisão 12/09/2026 — quem produz é a sessão/Anthropic; quem confronta é o GPT/OpenAI, fornecedores
+diferentes). O GPT tenta REFUTAR: isto resolve mesmo o problema ou só um sintoma? A premissa é
 fato ou foi vendida como fato? Tem caminho mais simples? A fonte sustenta a afirmação? O que
 sobrevive fica; o que é refutado cai (com o motivo registrado pra a entrega).
 
-Como chamar (mascarando dado real ANTES — ver a trava acima): via Agent tool, `model: opus`,
-`effort: high`, prompt adversarial + manifesto das candidatas. Mecânica e o prompt das duas
-rodadas: `references/confronto.md`, seção "Confronto (Opus high)". Confronta em LOTE quando der
-(várias candidatas num agente só) pra não multiplicar chamadas.
+Como chamar (mascarando dado real ANTES — ver a trava acima): via Bash, `codex exec --model
+gpt-5.6-sol --sandbox read-only`, prompt adversarial + manifesto das candidatas. Mecânica e o
+prompt das duas rodadas: `references/confronto.md`, seção "Confronto (GPT-5.6-sol)". Confronta em
+LOTE (várias candidatas num prompt só) pra não multiplicar chamadas.
 
 ### 4. O PORTÃO DE QUALIDADE — 4 perguntas que toda candidata passa
 Achar uma solução não é o fim — é o gatilho pra interrogá-la. Nenhuma candidata vira "séria"
@@ -314,13 +311,13 @@ vence mas elimina um risco real continua valendo — por isso "muda a decisão",
 recomendação".)
 
 **Como roda:**
-- Cada re-cava ataca **uma incerteza decisiva aberta** — não reestuda tudo, dispara só o ângulo
-  que fecha aquela dúvida (mesma mecânica GPT-5.6-terra do passo 2, ver `references/confronto.md`).
-- **Entre re-cavas, um check barato** (não um confronto Opus inteiro): "qual premissa, se for
+- Cada re-cava ataca **uma incerteza decisiva aberta** — não reestuda tudo, a sessão cava só o
+  ângulo que fecha aquela dúvida (pesquisa via `/search` quando é externa, leitura do sistema
+  quando é interna; ver `references/confronto.md`).
+- **Entre re-cavas, um check barato** (não um confronto GPT inteiro): "qual premissa, se for
   falsa, derruba a direção atual?". Se achar uma, ela vira a próxima incerteza a cavar. O
-  confronto Opus caro fica nos passos 3 e 6 (no conjunto e nos finalistas) — crítico a cada
-  volta é caro e, pior, **circular** (um modelo julgando o outro ratifica o ponto cego em vez de
-  achar).
+  confronto GPT caro fica nos passos 3 e 6 (no conjunto e nos finalistas) — confrontar a cada
+  volta é caro e desnecessário.
 - **Achado que não toca nenhuma incerteza decisiva = ruído:** vira nota "🅿️ opcional" e é
   reportado no fim, **não compra rodada**. É isso que mata o lixo e o truque de inflar achado
   marginal pra justificar continuar — lixo não resolve incerteza decisiva.
@@ -339,11 +336,11 @@ ainda aberta**, NÃO para calado: entrega o que tem e **pergunta "ainda tem dúv
 decisão e bati o teto — continuo?"**. O teto é rede contra descontrole, não tesoura escondida.
 
 ### 6. Confrontar os sobreviventes — 2ª rodada
-Antes de entregar, os finalistas (a recomendada + as alternativas reais) voltam a um agente
-**Opus, `effort: high`** — outro agente, não o mesmo da rodada 1 — agora com a pergunta afiada:
-*dessas que sobraram, qual escolher e por quê — e o que ainda fura na recomendada?* Essa segunda
-passada é o que separa "sobreviveu por sorte" de "sobreviveu de verdade", e costuma melhorar a
-justificativa do veredito.
+Antes de entregar, os finalistas (a recomendada + as alternativas reais) voltam ao **GPT-5.6-sol** —
+retomando a MESMA sessão do Codex da 1ª rodada (resume), pra ele lembrar o que já apontou — agora
+com a pergunta afiada: *dessas que sobraram, qual escolher e por quê — e o que ainda fura na
+recomendada?* Essa segunda passada é o que separa "sobreviveu por sorte" de "sobreviveu de
+verdade", e costuma melhorar a justificativa do veredito.
 
 ### 7. Entregar
 Ver "Entrega final" abaixo.
@@ -352,16 +349,16 @@ Ver "Entrega final" abaixo.
 
 ## AS TRAVAS — anti-espiral e orçamento (o que segura a coleira de verdade)
 
-Ir fundo tem um perigo real: o confronto Opus↔Claude virar **espiral** — os dois discutindo
+Ir fundo tem um perigo real: o confronto GPT↔sessão virar **espiral** — os dois discutindo
 sem fim, ou litigando frivolidade, queimando dinheiro sem chegar a lugar nenhum. A coleira
 contra isso é **estrutural e contável**, não um cronômetro (texto de skill não mata processo).
 
-**1. O confronto NÃO é debate.** O agente Opus opina UMA vez por rodada; a thread principal
-filtra cada ponto com prova e decide; acabou. **Não existe réplica-da-réplica** — a thread
-principal não reescreve pra rebater o Opus que reescreve pra rebater ela. Quem produziu não
+**1. O confronto NÃO é debate.** O GPT opina UMA vez por rodada; a sessão
+filtra cada ponto com prova e decide; acabou. **Não existe réplica-da-réplica** — a sessão
+não reescreve pra rebater o GPT que reescreve pra rebater ela. Quem produziu não
 defende; quem confrontou não insiste. Uma passada, uma decisão.
 
-**2. Filtro de frivolidade.** Pra cada ponto do agente Opus: ele muda QUAL candidata vence, ou muda se
+**2. Filtro de frivolidade.** Pra cada ponto do GPT: ele muda QUAL candidata vence, ou muda se
 ela funciona? **Sim** → conta, trata. **Não** (questão de estilo, de gosto, melhoria cosmética,
 "eu faria diferente") → **descarta na hora**, não litiga. O que não muda o veredito não merece
 uma segunda chamada.
@@ -371,22 +368,22 @@ gasta no máximo: **2 rodadas de confronto** (1ª em todas as candidatas, 2ª no
 **3 re-cavas**. Bateu o teto → para e entrega o que tem, com aviso. Contar chamada o modelo
 consegue cumprir; matar por relógio, não.
 
-**4. O GPT (ângulos e síntese, passos 2 e 5) tem 15 min — passou disso, travou.** Cada chamada
-`codex exec --model gpt-5.6-terra/sol` vai envelopada num teto de 15 min que o SO mata sozinho
+**4. O confronto GPT (passos 3 e 6) tem 15 min — passou disso, travou.** Cada chamada
+`codex exec --model gpt-5.6-sol` vai envelopada num teto de 15 min que o SO mata sozinho
 (o `perl -e 'alarm 900'` — `timeout` puro não existe no Mac, `perl` existe no Mac e no Windows).
 Comando exato: `references/confronto.md`. Rodou mais de 15 min = **travou**, ponto. O processo é
-morto. **Mata e refaz** — re-dispara a mesma chamada uma vez. Travou de novo → desiste dela e cai
-no fallback (ver composição), seguindo com o que tem. O confronto Opus (passos 3 e 6) não usa
-este teto — é agente Claude nativo, sem processo externo pra travar.
+morto. **Mata e refaz** — re-dispara a mesma chamada uma vez. Travou de novo → o confronto ficou
+indisponível: entrega marcando "sem confronto independente nesta rodada" e rebaixa a confiança (ver
+composição). A pesquisa/estudo (passos 2 e 5) roda na sessão, sem processo externo pra travar. O
+`alarm 900` limita o processo filho; toda chamada longa da Bash tool precisa de
+`timeout >= 900000ms`, inclusive a que faz poll/check-in.
 
-**5. Agente em background que não volta não trava o ciclo.** Dispara com `run_in_background`,
-faz um check-in; o ângulo que não retornou até o ponto de síntese **não segura o resto** —
-entrega sem ele, marcado "ângulo X não retornou". O modelo não espera infinito: segue quando os
-que voltaram já dão pra decidir.
+**5. Pesquisa que não volta não trava o ciclo.** Se o `/search` falhar ou demorar demais numa
+rodada, o ciclo não segura: entrega o que tem, marcado "pesquisa web indisponível nesta rodada",
+e rebaixa a confiança do que dependia dela.
 
-O `alarm 900` do item 4 é a regra: GPT que roda mais de 15 min travou, o SO mata, refaz uma
-vez. Junto com o teto de rodadas (item 3) e o agente em background que não segura o ciclo (item
-5), nada fica pendurado.
+O `alarm 900` do item 4 é a regra: confronto GPT que roda mais de 15 min travou, o SO mata, refaz
+uma vez. Junto com o teto de rodadas (item 3), nada fica pendurado.
 
 ---
 
@@ -460,7 +457,7 @@ de desfazer"). É uma ESCOLHA ("A ou B", "me autoriza", "me dá o dado X"), não
 opção domina, "as outras eram piores, nem listo" — não fingir empate (falsa simetria paralisa).
 
 **6. ▸ DETALHE COMPLETO EM `<arquivo>`.** O fundo do estudo — as correções do confronto, o mapa
-completo, o que o Opus matou, raciocínio longo — vai pra um `.md` salvo em
+completo, o que o GPT matou, raciocínio longo — vai pra um `.md` salvo em
 `docs/auto-think/auto-think-[tema-slug]-[YYYY-MM-DD].md`; o chat
 mostra só a linha apontando pro caminho. O usuário abre se quiser cavar. É isso que mantém o
 chat enxuto sem perder nada.
@@ -493,21 +490,21 @@ qualitativo: escopo, reversível/destrutivo, dependência nova — nunca "leva X
 
 ## A mecânica de composição (provar numa fatia antes de cavar fundo)
 
-O auto-think depende de acionar outras peças: o Codex GPT-5.6 pra ângulos/síntese (via Bash,
-mecânica em `references/confronto.md`), agentes Opus `high` pra confronto (via Agent tool),
-`/pesquisa` e `deep-research` (via Skill), e agentes paralelos (via Agent/Workflow). Antes de
-montar um ciclo grande num problema novo, **prova numa fatia pequena que a peça que você vai
-usar responde** (uma chamada de Codex de teste, uma busca curta) — assim um problema de encaixe
-aparece cedo, não no fim de um ciclo caro. Se uma peça falhar (Codex fora, pesquisa sem
-resultado), o ciclo não trava: degrada com aviso — se for o Codex dos ângulos que falhou, os
-ângulos rodam em Sonnet/Opus via Agent tool como fallback, marcado "ângulos sem GPT-5.6 — rodou
-em Claude"; se for o confronto Opus que falhou (erro da ferramenta, não do fornecedor), **tenta
-de novo uma vez**; falhou de novo → a entrega NUNCA apresenta a candidata como confrontada —
-marca explícito "sem confronto independente nesta rodada" no bloco 🗺️ (rebaixa pra 🟡 Hipótese, nunca
-✅ Sólido) e diz isso alto na entrega. Confronto que falhou e o resultado segue mudo não é
-degradação aceitável — é apresentar palpite como verificado.
+O auto-think depende de acionar outras peças: a skill `/search` pra pesquisa web (via Skill tool),
+`context7` pra doc oficial, o Codex GPT-5.6-sol pro confronto (via Bash, mecânica em
+`references/confronto.md`), e leitura do sistema do usuário. Antes de montar um ciclo grande num
+problema novo, **prova numa fatia pequena que a peça que você vai usar responde** (uma busca curta
+via `/search`, uma chamada de Codex de teste) — assim um problema de encaixe aparece cedo, não no
+fim de um ciclo caro. Se uma peça falhar, o ciclo não trava: degrada com aviso — se o `/search`
+falhar (Exa fora, sem auth, sem resultado), segue com doc oficial / o que tem e rebaixa a confiança
+do que dependia da web; se o confronto GPT falhar (erro da ferramenta), **tenta de novo uma vez**;
+falhou de novo → a entrega NUNCA apresenta a candidata como confrontada — marca explícito "sem
+confronto independente nesta rodada" no bloco 🗺️ (rebaixa pra 🟡 Hipótese, nunca ✅ Sólido) e diz
+isso alto. Confronto que falhou e o resultado segue mudo não é degradação aceitável — é apresentar
+palpite como verificado.
 
-Ir fundo com agentes/chamadas paralelas é mais barato em tempo do que parece: 4-5 ângulos em
-background terminam quase juntos, não em fila. O gasto real é em tokens e em chamadas de
-Codex/Opus — e esse é o custo que o usuário aceitou ao chamar uma skill chamada "estudar a
-fundo".
+O confronto de Codex é chamada Bash longa: use `timeout >= 900000ms` na tool. Uma busca via
+`/search` roda dentro da sessão.
+
+O gasto real é em tokens e em chamadas de `/search` e de Codex — e esse é o custo que o usuário
+aceitou ao chamar uma skill chamada "estudar a fundo".

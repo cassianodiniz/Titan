@@ -1,6 +1,6 @@
 # Confronto via Codex GPT-5.5 — motor compartilhado
 
-Usado por `/planejar`, `/auto-think` e `/auto-gptworker`. Este arquivo é o ÚNICO lugar onde mora a
+Usado por `/planejar` e `/auto-think`. Este arquivo é o ÚNICO lugar onde mora a
 mecânica de chamar o Codex como segundo par de olhos: como invocar sem travar, como não mandar
 dado real pra fora, como garantir que ele leu a versão certa, e a regra de ouro de filtrar o
 parecer. Cada skill mantém só o que é dela (o que mandar e o que fazer com a resposta) e aponta
@@ -8,8 +8,7 @@ pra cá.
 
 **Variantes por skill** (o que cada uma muda no comando da seção 3, pra não divergirem por
 acidente): `/auto-think` roda `xhigh` + `service_tier="fast"` (estudo caro, máximo de
-raciocínio na via rápida); `/auto-gptworker` roda `high` **sem** `service_tier="fast"` (revisão de
-trabalho rotineira a cada passo); `/planejar` roda `high` na 1ª checagem. O teto `alarm 900`, o
+raciocínio na via rápida); `/planejar` roda `high` na 1ª checagem. O teto `alarm 900`, o
 selo e o fallback são iguais pras três.
 
 > **Por que existe.** O Codex é um modelo DIFERENTE do que conduz o trabalho. A graça é a

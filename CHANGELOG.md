@@ -1,5 +1,17 @@
 # Changelog — Titan
 
+## 2.0.0 — 2026-09-15
+
+Troca do executor e duas skills novas de especificação e pesquisa. **Quebra** (mudança de nome de skill): quem instalou a `auto-gptworker` precisa passar a chamar a `gpt-builder`.
+
+- **Executor trocado: `auto-gptworker` removida, `gpt-builder` no lugar.** A `gpt-builder` é a versão white-label da `codex-build` local: recebe uma **spec congelada** (ex.: `PLAN.md`), entrega pro Codex construir com acesso total (`--yolo`), o **Claude revisa o diff inteiro** como um PR, um **fiscal independente** prova cada item do checklist no HEAD, fix-loop limitado (2 rodadas) e **portão humano** antes de qualquer commit. É spec-driven — difere do protocolo graduado por risco da antiga `auto-gptworker`. Traz suas próprias referências em `references/` (`checklist.md`, `contrato.md`, `fiscal.md`, `relatorio.md`); não usa o `_shared`.
+- **`spec-plan` — skill nova.** Grelha um plano/decisão/ideia até o entendimento comum e produz uma **spec congelada** pra construir com IA. Fecha o ciclo com a `gpt-builder`: no fim da spec, oferece encaminhar pra `/gpt-builder` construir; e a `gpt-builder`, sem spec, aponta de volta pra `/spec-plan`.
+- **`search` — skill nova.** Pesquisa profunda via **Exa** com procedência: cada número volta com a página, a frase e a data em que foi lido. Requer conta Exa (OAuth ou `EXA_API_KEY`). O destino de arquivamento é uma pasta local `search-findings/` na pasta de trabalho.
+- **`auto-think` — confronto de volta pro Codex/GPT.** A v1.8.0 tinha trocado o confronto pra Opus (portabilidade); volta pro **Codex/GPT** (mecânica da fonte local), mantendo a trava de mascarar dado real antes de qualquer coisa sair pra fora.
+- **`gpt-optimizer`** — sem mudança de modelo (segue `gpt-5.6-sol`).
+- **`planejar` e `handoff`** — inalteradas, exceto a referência ao executor, que passou de `auto-gptworker` pra `gpt-builder`.
+- **Limpeza:** `_shared/codex-constroi.md` removido (só a `auto-gptworker` usava); referências cruzadas religadas.
+
 ## 1.9.0 — 2026-07-15
 
 Remove a skill `auto-worker` (Claude executa sozinho) — o plugin passa a ter **uma única skill executora**, a `auto-gptworker` (Codex constrói, Claude revisa o diff).

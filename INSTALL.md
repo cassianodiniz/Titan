@@ -1,6 +1,6 @@
 # Instalar o plugin `Titan` (e o que ele usa por fora)
 
-O plugin `Titan` (skills `planejar`, `auto-gptworker`, `auto-think`, `handoff`, `gpt-optimizer`) **orquestra** ferramentas externas —
+O plugin `Titan` (skills `planejar`, `spec-plan`, `auto-think`, `gpt-builder`, `search`, `handoff`, `gpt-optimizer`) **orquestra** ferramentas externas —
 ele não empacota elas. Este arquivo reúne tudo que precisa instalar pra ele rodar completo.
 
 A boa notícia: nada disso trava o plugin. A `planejar` tem um **preflight (Fase 0)** que confere
@@ -48,7 +48,7 @@ Pelo `/plugin`, adicione o marketplace e instale:
 /plugin install Titan@cassiano.diniz
 ```
 
-Depois as skills ficam disponíveis como `Titan:planejar`, `Titan:auto-gptworker`, `Titan:handoff`.
+Depois as skills ficam disponíveis como `Titan:planejar`, `Titan:gpt-builder`, `Titan:handoff`.
 
 ---
 
@@ -58,7 +58,8 @@ Depois as skills ficam disponíveis como `Titan:planejar`, `Titan:auto-gptworker
 |---|---|---|
 | **superpowers** (`brainstorming`, `writing-plans`) | `planejar` Fases 1 e 5 | `/plugin marketplace add obra/superpowers-marketplace`<br/>`/plugin install superpowers@superpowers-marketplace` |
 | **Taste Skill** (`design-taste-frontend`) | `planejar` Fase 4 (só se houver tela) | `npx skills add https://github.com/Leonxlnx/taste-skill --skill "design-taste-frontend"` |
-| **Codex CLI** (constrói + revisor GPT-5.6) | `auto-gptworker` (constrói a tarefa e revisa o plano) e `planejar` (revisor do problema e da sanidade) | Instalar o Codex CLI da OpenAI e logar. Sem ele, o Claude assume a construção sozinho (garantia menor, avisando que rodou sem o Codex); em risco alto, fica BLOQUEADO até voltar. |
+| **Codex CLI** (constrói + revisor GPT-5.6) | `gpt-builder` (constrói a partir da spec) e `planejar`/`auto-think` (confronto) | Instalar o Codex CLI da OpenAI e logar. Sem ele, o `gpt-builder` não constrói (o Claude assume, com garantia menor); em risco alto, fica BLOQUEADO até voltar. |
+| **Exa** (busca web com procedência) | `search` (pesquisa profunda) | Conta Exa: OAuth no MCP do Exa, ou variável `EXA_API_KEY` (chave grátis em https://dashboard.exa.ai/api-keys). Sem ela, a `search` não roda. |
 
 ---
 

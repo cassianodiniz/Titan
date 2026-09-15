@@ -1,6 +1,6 @@
 # Titan — pensar, fazer e passar o bastão
 
-Cinco skills de desenvolvimento, chamáveis individualmente — repo-agnóstico, serve pra qualquer
+Sete skills de desenvolvimento, chamáveis individualmente — repo-agnóstico, serve pra qualquer
 projeto: planejar um produto novo, estudar um problema a fundo, executar uma tarefa com crítico,
 refletir sobre uma decisão antes de cravar, e passar o bastão entre sessões.
 
@@ -35,16 +35,19 @@ usar — a **/pesquisa + Perplexity** (a pesquisa web da planejar). Detalhe item
 
 | Comando | O que faz |
 |---|---|
-| `/Titan:planejar <ideia>` | Desenha um produto/software novo do zero antes de codar (8 fases: brainstorm → escopo → design → plano auditado). No fim, oferece executar com a auto-gptworker. |
-| `/Titan:auto-think <problema>` | Estuda a fundo um problema **sem resposta**: ataca de vários ângulos em paralelo, confronta com o Codex em 2 rodadas, e entrega **opções com veredito**. Gera caminhos — não executa. |
-| `/Titan:auto-gptworker <tarefa>` | Modo INVERTIDO: o **Codex constrói** a tarefa (mão na massa) e o **Claude revisa o diff** inteiro antes de fechar. Borda sensível (dado real, credencial, deploy, destrutivo) o Claude assume e para até autorização. |
-| `/Titan:gpt-optimizer` | Segunda opinião adversarial pra **refletir sobre uma decisão que você JÁ tem** antes de cravar: o Codex (GPT-5.6) tenta derrubar e devolve veredito **Seguir / Ajustar / Bloquear**. Se der Seguir, oferece executar com a auto-gptworker. |
+| `/Titan:planejar <ideia>` | Desenha um produto/software novo do zero antes de codar (8 fases: brainstorm → escopo → design → plano auditado). No fim, oferece executar com a gpt-builder. |
+| `/Titan:spec-plan <ideia>` | Grelha um plano/decisão/ideia até o entendimento comum e escreve uma **spec congelada** pra construir com IA. No fim, oferece mandar pra `/gpt-builder` construir. |
+| `/Titan:auto-think <problema>` | Estuda a fundo um problema **sem resposta**: ataca de vários ângulos em paralelo, confronta com o Codex/GPT em 2 rodadas, e entrega **opções com veredito**. Gera caminhos — não executa. |
+| `/Titan:gpt-builder <spec>` | Entrega uma **spec congelada** (ex.: `PLAN.md`) pro **Codex construir** com acesso total; o **Claude revisa o diff** inteiro como um PR, um **fiscal independente** prova cada item, e **você assina** antes de qualquer commit. Sem spec? Ela manda pra `/spec-plan` primeiro. |
+| `/Titan:search <pergunta>` | Pesquisa profunda via **Exa** com procedência: cada número volta com a página, a frase e a data em que foi lido. Precisa de conta Exa. |
+| `/Titan:gpt-optimizer` | Segunda opinião adversarial pra **refletir sobre uma decisão que você JÁ tem** antes de cravar: o Codex (GPT-5.6) tenta derrubar e devolve veredito **Seguir / Ajustar / Bloquear**. |
 | `/Titan:handoff` | Gera um documento de passagem de bastão pra continuar o trabalho numa sessão nova, do zero. |
 
-**Como se encaixam:** `planejar` e `auto-think` são os dois pensadores (uma desenha um produto
-novo, a outra estuda um problema) e entregam pra `auto-gptworker` executar. `gpt-optimizer` é o
-confronto avulso — fora do ciclo, testa uma decisão pronta a qualquer momento. `handoff` salva o
-ponto e passa pra próxima sessão.
+**Como se encaixam:** `planejar`, `spec-plan` e `auto-think` são os pensadores (uma desenha um
+produto novo, outra grelha um plano até virar spec, a terceira estuda um problema aberto) e
+entregam a spec pra `gpt-builder` construir. `search` alimenta qualquer um deles com pesquisa de
+procedência. `gpt-optimizer` é o confronto avulso — fora do ciclo, testa uma decisão pronta a
+qualquer momento. `handoff` salva o ponto e passa pra próxima sessão.
 
 ## Qual eu uso? — guia rápido pra quem tá começando
 
@@ -54,13 +57,15 @@ descreve o seu momento e use o comando da direita:
 | Quando você... | Use | O que ganha no fim |
 |---|---|---|
 | tem uma **ideia de app/produto** e quer construir do zero | `/planejar` | um plano detalhado, já revisado, pronto pra executar |
+| tem um **plano/decisão** e quer virar uma spec sólida pra construir com IA | `/spec-plan` | uma spec congelada, grelhada até o entendimento comum |
 | tem um **problema difícil sem resposta pronta** e quer enxergar as saídas | `/auto-think` | 2–3 caminhos possíveis, com a recomendação e o porquê de cada um |
-| tem uma **tarefa clara** e quer que ela seja feita e conferida | `/auto-gptworker` | o trabalho pronto: o **Codex (GPT) constrói** e o **Claude revisa** antes de fechar |
+| tem uma **spec pronta** e quer que ela seja construída e conferida | `/gpt-builder` | o trabalho pronto: o **Codex constrói** a spec, o **Claude + um fiscal revisam** antes de fechar |
+| precisa de **pesquisa confiável** (dados, mercado, papers) com fonte de cada número | `/search` | achados com procedência: página, frase e data de cada número |
 | **já decidiu algo** e quer testar se a decisão aguenta antes de cravar | `/gpt-optimizer` | um veredito claro: **Seguir**, **Ajustar** ou **Bloquear** |
 | vai **fechar a sessão** e quer continuar depois sem perder o fio | `/handoff` | um documento que a próxima sessão lê pra retomar do ponto exato |
 
-> Regra de bolso: **pensar** algo → `planejar` (produto novo) ou `auto-think` (problema aberto).
-> **Fazer** algo → `auto-gptworker` (o Codex constrói, o Claude revisa).
+> Regra de bolso: **pensar** algo → `planejar` (produto novo), `spec-plan` (virar spec) ou `auto-think` (problema aberto).
+> **Pesquisar** com fonte → `search`. **Fazer** algo → `gpt-builder` (o Codex constrói, o Claude revisa).
 > **Conferir** uma decisão pronta → `gpt-optimizer`. **Continuar depois** → `handoff`.
 
 ### Por dentro: o que cada um faz, passo a passo
@@ -70,14 +75,16 @@ O detalhe completo está no fluxograma abaixo. Em uma linha, o caminho de cada c
 | Comando | Como funciona por dentro |
 |---|---|
 | `/planejar` | brainstorm da ideia → pesquisa (como já resolveram + qual stack) → design e mockups → escreve o plano → **Codex (GPT) audita** → corrige → entrega o plano final |
-| `/auto-think` | **formula o problema** → estuda vários ângulos em paralelo (puxa a doc oficial quando é de uma tecnologia) → **Codex tenta derrubar** cada saída → re-cava o que ficou aberto → **Codex escolhe** entre as que sobraram → entrega as opções com veredito |
-| `/auto-gptworker` | mede o **risco** da tarefa → o **Codex (GPT) constrói** uma parte por vez → o **Claude revisa o diff** e roda a prova ele mesmo → repete até aprovar → **para na borda sensível** (dinheiro, envio, deploy, dado real) e chama você |
+| `/spec-plan` | **Fase 1 investiga** (grelha até o entendimento comum, sem chutar) → **Fase 2 escreve a spec** (problema, cenários de comportamento, decisões) → oferece mandar pra `/gpt-builder` construir |
+| `/auto-think` | **formula o problema** → estuda vários ângulos em paralelo (puxa a doc oficial quando é de uma tecnologia) → **Codex/GPT tenta derrubar** cada saída → re-cava o que ficou aberto → escolhe entre as que sobraram → entrega as opções com veredito |
+| `/gpt-builder` | portão (spec + árvore limpa + checklist) → o **Codex constrói** a partir da spec congelada → o **Claude lê o diff inteiro** e roda a prova + um **fiscal independente** prova cada item no HEAD → fix-loop limitado → **você assina** antes do commit |
+| `/search` | planeja a busca → dispara subagentes no Exa → **checa os relatórios** antes de confiar → compila com procedência (página, frase, data por número) → arquiva em `search-findings/` |
 | `/gpt-optimizer` | monta o alvo (a sua decisão) → **Codex tenta derrubar** → você filtra com prova o que não procede → **Codex audita o seu filtro** → veredito **Seguir / Ajustar / Bloquear** |
 | `/handoff` | ancora no git (branch, commit, o que mudou) → captura o estado e os ponteiros (fato vs suposição) → salva o documento e abre na tela |
 
 ## Fluxograma
 
-As 5 portas e o ciclo (detalhe em [FLUXOGRAMA.md](FLUXOGRAMA.md)):
+As portas e o ciclo (detalhe em [FLUXOGRAMA.md](FLUXOGRAMA.md)):
 
 ```mermaid
 %%{init: {'theme':'base', 'themeVariables': {
@@ -88,7 +95,7 @@ As 5 portas e o ciclo (detalhe em [FLUXOGRAMA.md](FLUXOGRAMA.md)):
 }}}%%
 flowchart TD
     START(["💡 Você chega com algo pra fazer"])
-    PORTAS{"VOCÊ escolhe por onde começar<br/>as 5 portas são independentes"}
+    PORTAS{"VOCÊ escolhe por onde começar<br/>as portas são independentes"}
     START --> PORTAS
 
     subgraph PORTASROW[" "]
@@ -127,7 +134,7 @@ flowchart TD
         PINTRO --> P0 --> P1 --> P1B --> P2 --> P3 --> P4 --> P5 --> P6 --> P7 --> P8
     end
 
-    P8 --> PONTE{"Oferecer execução com a auto-gptworker?<br/>opcional, só com seu OK"}
+    P8 --> PONTE{"Oferecer execução com a gpt-builder?<br/>opcional, só com seu OK"}
     PONTE -->|"prefiro de outro jeito"| FIMP(["📄 Plano salvo em docs/"])
     PONTE -->|"você aceita"| CONTRATO["<b>📄 Contrato de execução</b><br/><i>trava o objetivo e o que NÃO reabrir</i>"]
     CONTRATO --> AINTRO
@@ -149,10 +156,10 @@ flowchart TD
     TPONTE -->|"é só estudo"| FIMT(["📄 Soluções entregues + detalhe em .md"])
     TPONTE -->|"executa a A"| AINTRO
 
-    %% ───────── AUTO-GPTWORKER ─────────
+    %% ───────── GPT-BUILDER ─────────
     subgraph AUTO[" "]
         direction TB
-        AINTRO["<b>⚙️ /auto-gptworker</b> — modo INVERTIDO: Codex constrói, Claude revisa o diff<br/>entra do plano (planejar) ou da solução (auto-think) acima, OU direto do zero · o esforço é seu"]
+        AINTRO["<b>⚙️ /gpt-builder</b> — modo INVERTIDO: Codex constrói, Claude revisa o diff<br/>entra do plano (planejar) ou da solução (auto-think) acima, OU direto do zero · o esforço é seu"]
         ARISK{"Qual o risco desta parte da tarefa?<br/>ele define QUEM constrói"}
         NIVEL["<b>O risco define quem constrói</b> — as travas duras valem sempre:<br/>🟢🟡 <b>baixo/médio</b> · o <b>Codex constrói</b> (mão na massa, local e reversível)<br/>🔴 <b>alto/borda dura</b> · dado real, credencial, deploy, destrutivo — o <b>Claude assume</b> e PARA até autorização"]
         AEXE["<b>Codex constrói essa parte</b> (acesso de escrita, `--yolo` só no trabalho seguro)<br/><i>uma parte por vez; nunca cruza a borda dura sozinho</i>"]
@@ -203,7 +210,7 @@ flowchart TD
     GFIM -. "deu SEGUIR → quer executar agora?<br/>só com seu OK" .-> AINTRO
 
     %% ───────── cores (uma família por skill) ─────────
-    %% planejar=índigo · auto-think=teal · auto-gptworker=verde · handoff=âmbar · estrutura=cinza
+    %% planejar=índigo · auto-think=teal · gpt-builder=verde · handoff=âmbar · estrutura=cinza
     classDef cabP fill:#4338ca,color:#ffffff,stroke:#a5b4fc,stroke-width:1.5px;
     classDef cabT fill:#0f766e,color:#ffffff,stroke:#5eead4,stroke-width:1.5px;
     classDef cabA fill:#15803d,color:#ffffff,stroke:#86efac,stroke-width:1.5px;
