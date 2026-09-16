@@ -63,4 +63,4 @@ Further Notes
 Any further notes about the feature.
 
 Handoff to build
-Once the spec is finalized and confirmed, offer to build it — do not implement it here (spec-plan designs; the build is a separate role). Save the finalized spec to a file at the repo root (e.g. `PLAN.md`) and offer `/gpt-builder`, which hands the frozen spec to Codex to implement while Claude reviews the diff. Pass the spec file as its `SPEC_FILE`. This is an offer, never automatic — wait for the user to choose.
+Once the spec is finalized and confirmed, offer to build it — do not implement it here (spec-plan designs; the build is a separate role). Save the finalized spec to a file at the repo root (e.g. `PLAN.md`) and offer to build it — `/implementar` (o Claude constrói) or `/gpt-builder` (o Codex constrói, o Claude revisa o diff). Pass the spec file as the build's `SPEC_FILE`. This is an offer, never automatic — wait for the user to choose.

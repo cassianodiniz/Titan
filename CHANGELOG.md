@@ -1,5 +1,12 @@
 # Changelog — Titan
 
+## 2.2.0 — 2026-09-15
+
+Adiciona a `implementar` como executor alternativo. Aditivo, sem quebra.
+
+- **`implementar` — skill nova.** Constrói uma spec já decidida com o **próprio Claude** (TDD nas junções pré-combinadas, checklist com prova por item, commits em pedaços coerentes na branch atual) — a alternativa à `gpt-builder`, que delega a construção ao Codex. O fluxo público passa a ser `spec-plan` → **`/implementar` ou `/gpt-builder`** → `build-review`.
+- Ponteiros alinhados: `spec-plan` oferece as duas; `build-review` entra depois de qualquer uma das duas.
+
 ## 2.1.0 — 2026-09-15
 
 Adiciona a `build-review` e liga o fluxo entre as skills. Aditivo, sem quebra.

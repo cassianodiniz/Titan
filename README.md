@@ -38,6 +38,7 @@ usar — a **/pesquisa + Perplexity** (a pesquisa web da planejar). Detalhe item
 | `/Titan:planejar <ideia>` | Desenha um produto/software novo do zero antes de codar (8 fases: brainstorm → escopo → design → plano auditado). No fim, oferece executar com a gpt-builder. |
 | `/Titan:spec-plan <ideia>` | Grelha um plano/decisão/ideia até o entendimento comum e escreve uma **spec congelada** pra construir com IA. No fim, oferece mandar pra `/gpt-builder` construir. |
 | `/Titan:auto-think <problema>` | Estuda a fundo um problema **sem resposta**: ataca de vários ângulos em paralelo, confronta com o Codex/GPT em 2 rodadas, e entrega **opções com veredito**. Gera caminhos — não executa. |
+| `/Titan:implementar <spec>` | Constrói uma **spec já decidida** com o **próprio Claude** — TDD nas junções combinadas, checklist com prova por item, commits na branch atual. É a alternativa à `gpt-builder` (que delega ao Codex). |
 | `/Titan:gpt-builder <spec>` | Entrega uma **spec congelada** (ex.: `PLAN.md`) pro **Codex construir** com acesso total; o **Claude revisa o diff** inteiro como um PR, um **fiscal independente** prova cada item, e **você assina** antes de qualquer commit. Sem spec? Ela manda pra `/spec-plan` primeiro. |
 | `/Titan:search <pergunta>` | Pesquisa profunda via **Exa** com procedência: cada número volta com a página, a frase e a data em que foi lido. Precisa de conta Exa. |
 | `/Titan:build-review` | Junta **3 revisores independentes** sobre um diff já construído — padrões da casa, aderência à spec, e um fiscal que prova cada item da checklist. Roda **depois da `gpt-builder`**, como pente-fino. |
@@ -104,7 +105,7 @@ flowchart TD
         AT["<b>🔬 auto-think</b><br/><i>estuda um problema → opções com veredito</i>"]
     end
 
-    GB["<b>⚙️ gpt-builder</b><br/><i>a SPEC entra: o Codex constrói, o Claude + um fiscal revisam o diff, você assina antes do commit</i>"]
+    GB["<b>⚙️ gpt-builder</b> / <b>🔨 implementar</b><br/><i>a SPEC entra: o Codex (gpt-builder) ou o Claude (implementar) constrói; o Claude + um fiscal revisam o diff, você assina antes do commit</i>"]
 
     subgraph APOIO["apoio — a qualquer momento"]
         direction TB

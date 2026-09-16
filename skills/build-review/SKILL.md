@@ -7,7 +7,7 @@ license: os textos em references/ são cópias verbatim — Matt Pocock (CC-BY-4
 
 # Build Review — três revisores sobre o mesmo diff
 
-**Onde entra no fluxo:** roda depois de `/gpt-builder` — que já deixa a checklist `.checks/<feature>.md` e o diff prontos. É o pente-fino final; não planeja nem constrói.
+**Onde entra no fluxo:** roda depois de `/implementar` ou `/gpt-builder` — que já deixam a checklist `.checks/<feature>.md` e o diff prontos. É o pente-fino final; não planeja nem constrói.
 
 ## O que é
 

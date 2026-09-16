@@ -7,7 +7,8 @@ por qualquer uma:
 - **📝 /spec-plan** — você traz um **plano/decisão/ideia**; ele **grelha até o entendimento comum** e escreve uma **spec congelada** pronta pra construir com IA. No fim, oferece mandar pra `/gpt-builder`.
 - **🔬 /auto-think** — você traz um **problema sem resposta**; ele **estuda a fundo** (vários ângulos em paralelo, confronta os achados com o Codex/GPT) e entrega **opções com veredito**. Gera caminhos — não executa, para na recomendação.
 - **⚙️ /gpt-builder** — recebe uma **spec congelada** e executa: o **Codex constrói** (mão na massa, acesso total), o **Claude lê o diff inteiro** e um **fiscal independente** prova cada item; **você assina** antes de qualquer commit.
-- **🕵️ /build-review** — depois de construído, junta **3 revisores independentes** sobre o diff (padrões da casa, aderência à spec, e um fiscal que prova cada item da checklist). Pente-fino final; roda depois da `gpt-builder`.
+- **🔨 /implementar** — constrói uma **spec já decidida** com o **próprio Claude** (TDD nas junções combinadas, checklist com prova por item, commits na branch atual). É a alternativa à `gpt-builder`: mesmo lugar no fluxo, só que quem constrói é o Claude, não o Codex.
+- **🕵️ /build-review** — depois de construído (por `/implementar` ou `/gpt-builder`), junta **3 revisores independentes** sobre o diff (padrões da casa, aderência à spec, e um fiscal que prova cada item da checklist). Pente-fino final.
 - **🔎 /search** — **pesquisa profunda via Exa com procedência**: cada número volta com a página, a frase e a data em que foi lido. Alimenta os outros ou roda sozinha.
 - **🪢 /handoff** — salva o ponto exato do trabalho e passa o bastão pra outra sessão.
 - **🛡️ /gpt-optimizer** — **segunda opinião adversarial pra refletir antes de cravar**, no meio de qualquer conversa: sem precisar de plano nem código formal, ele monta o alvo sozinho, o Codex tenta derrubar, e devolve veredito **Seguir / Ajustar / Bloquear**.
@@ -128,7 +129,7 @@ flowchart TD
     %% ───────── GPT-BUILDER (spec-driven) ─────────
     subgraph AUTO[" "]
         direction TB
-        AINTRO["<b>⚙️ /gpt-builder</b> — spec congelada entra, produto conferido sai<br/>o Codex constrói, o Claude + um fiscal revisam · você entra só no arranque e na assinatura do diff"]
+        AINTRO["<b>⚙️ /gpt-builder</b> — spec congelada entra, produto conferido sai<br/>o Codex constrói, o Claude + um fiscal revisam · você entra só no arranque e na assinatura do diff<br/><i>alternativa: <b>/implementar</b> — mesmo lugar no fluxo, mas quem constrói é o próprio Claude</i>"]
         AG0{"<b>Portão</b> · antes de qualquer código<br/>spec existe? · árvore git limpa? · checklist escrito (1 prova por item)?"}
         AG1["<b>Codex constrói a partir da spec</b> (sessão fresca, acesso de escrita `--yolo`)<br/><i>uma entrega inteira por contrato — não fatia pra 'paralelizar'</i>"]
         AG2["<b>Claude lê o diff INTEIRO</b> como PR de contribuidor + roda a PROVA ele mesmo<br/><i>a saída colada pelo Codex NÃO conta como prova · confere que o diff é o do HEAD atual</i>"]
