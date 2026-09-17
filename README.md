@@ -1,6 +1,6 @@
 # Titan — pensar, fazer e passar o bastão
 
-Sete skills de desenvolvimento, chamáveis individualmente — repo-agnóstico, serve pra qualquer
+Nove skills de desenvolvimento, chamáveis individualmente — repo-agnóstico, serve pra qualquer
 projeto: planejar um produto novo, estudar um problema a fundo, executar uma tarefa com crítico,
 refletir sobre uma decisão antes de cravar, e passar o bastão entre sessões.
 
@@ -36,7 +36,7 @@ usar — a **/pesquisa + Perplexity** (a pesquisa web da planejar). Detalhe item
 | Comando | O que faz |
 |---|---|
 | `/Titan:planejar <ideia>` | Desenha um produto/software novo do zero antes de codar (8 fases: brainstorm → escopo → design → plano auditado). No fim, oferece executar com a gpt-builder. |
-| `/Titan:spec-plan <ideia>` | Grelha um plano/decisão/ideia até o entendimento comum e escreve uma **spec congelada** pra construir com IA. No fim, oferece mandar pra `/gpt-builder` construir. |
+| `/Titan:spec-plan <ideia>` | Sabatina um plano/decisão/ideia até o entendimento comum e escreve uma **spec congelada** pra construir com IA. No fim, oferece construir com `/implementar` (Claude) ou `/gpt-builder` (subagente GPT). |
 | `/Titan:auto-think <problema>` | Estuda a fundo um problema **sem resposta**: ataca de vários ângulos em paralelo, confronta com o Codex/GPT em 2 rodadas, e entrega **opções com veredito**. Gera caminhos — não executa. |
 | `/Titan:implementar <spec>` | Constrói uma **spec já decidida** com o **próprio Claude** — TDD nas junções combinadas, checklist com prova por item, commits na branch atual. É a alternativa à `gpt-builder` (que delega ao Codex). |
 | `/Titan:gpt-builder <spec>` | Entrega uma **spec congelada** (ex.: `PLAN.md`) pro **Codex construir** com acesso total; o **Claude revisa o diff** inteiro como um PR, um **fiscal independente** prova cada item, e **você assina** antes de qualquer commit. Sem spec? Ela manda pra `/spec-plan` primeiro. |
@@ -46,7 +46,7 @@ usar — a **/pesquisa + Perplexity** (a pesquisa web da planejar). Detalhe item
 | `/Titan:handoff` | Gera um documento de passagem de bastão pra continuar o trabalho numa sessão nova, do zero. |
 
 **Como se encaixam:** `planejar`, `spec-plan` e `auto-think` são os pensadores (uma desenha um
-produto novo, outra grelha um plano até virar spec, a terceira estuda um problema aberto) e
+produto novo, outra sabatina um plano até virar spec, a terceira estuda um problema aberto) e
 entregam a spec pra `gpt-builder` construir. `search` alimenta qualquer um deles com pesquisa de
 procedência. `gpt-optimizer` é o confronto avulso — fora do ciclo, testa uma decisão pronta a
 qualquer momento. `handoff` salva o ponto e passa pra próxima sessão.
@@ -59,7 +59,7 @@ descreve o seu momento e use o comando da direita:
 | Quando você... | Use | O que ganha no fim |
 |---|---|---|
 | tem uma **ideia de app/produto** e quer construir do zero | `/planejar` | um plano detalhado, já revisado, pronto pra executar |
-| tem um **plano/decisão** e quer virar uma spec sólida pra construir com IA | `/spec-plan` | uma spec congelada, grelhada até o entendimento comum |
+| tem um **plano/decisão** e quer virar uma spec sólida pra construir com IA | `/spec-plan` | uma spec congelada, sabatinada até o entendimento comum |
 | tem um **problema difícil sem resposta pronta** e quer enxergar as saídas | `/auto-think` | 2–3 caminhos possíveis, com a recomendação e o porquê de cada um |
 | tem uma **spec pronta** e quer que ela seja construída e conferida | `/gpt-builder` | o trabalho pronto: o **Codex constrói** a spec, o **Claude + um fiscal revisam** antes de fechar |
 | precisa de **pesquisa confiável** (dados, mercado, papers) com fonte de cada número | `/search` | achados com procedência: página, frase e data de cada número |
@@ -77,7 +77,7 @@ O detalhe completo está no fluxograma abaixo. Em uma linha, o caminho de cada c
 | Comando | Como funciona por dentro |
 |---|---|
 | `/planejar` | brainstorm da ideia → pesquisa (como já resolveram + qual stack) → design e mockups → escreve o plano → **Codex (GPT) audita** → corrige → entrega o plano final |
-| `/spec-plan` | **Fase 1 investiga** (grelha até o entendimento comum, sem chutar) → **Fase 2 escreve a spec** (problema, cenários de comportamento, decisões) → oferece mandar pra `/gpt-builder` construir |
+| `/spec-plan` | **Fase 1 investiga** (sabatina até o entendimento comum, sem chutar) → **Fase 2 escreve a spec e fatia em issues** (problema, cenários de comportamento, decisões) → oferece construir com `/implementar` (Claude) ou `/gpt-builder` (subagente GPT) |
 | `/auto-think` | **formula o problema** → estuda vários ângulos em paralelo (puxa a doc oficial quando é de uma tecnologia) → **Codex/GPT tenta derrubar** cada saída → re-cava o que ficou aberto → escolhe entre as que sobraram → entrega as opções com veredito |
 | `/gpt-builder` | portão (spec + árvore limpa + checklist) → o **Codex constrói** a partir da spec congelada → o **Claude lê o diff inteiro** e roda a prova + um **fiscal independente** prova cada item no HEAD → fix-loop limitado → **você assina** antes do commit |
 | `/search` | planeja a busca → dispara subagentes no Exa → **checa os relatórios** antes de confiar → compila com procedência (página, frase, data por número) → arquiva em `search-findings/` |
@@ -101,7 +101,7 @@ flowchart TD
     subgraph PENSAR["pensar / especificar — produzem uma SPEC"]
         direction TB
         P["<b>🧠 planejar</b><br/><i>produto novo do zero → plano auditado</i>"]
-        SP["<b>📝 spec-plan</b><br/><i>grelha um plano/decisão → spec congelada</i>"]
+        SP["<b>📝 spec-plan</b><br/><i>sabatina um plano/decisão → spec congelada</i>"]
         AT["<b>🔬 auto-think</b><br/><i>estuda um problema → opções com veredito</i>"]
     end
 
