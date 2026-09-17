@@ -10,6 +10,7 @@ Sincroniza `spec-plan` e `implementar` com as versões locais evoluídas, remove
 - **Legado "grelhar" removido** de `plugin.json`, README, FLUXOGRAMA, da descrição do `spec-plan` e do corpo do `gpt-builder` (resquício da skill de origem). No lugar: "sabatina até o entendimento comum".
 - **Documentação corrigida:** README e FLUXOGRAMA diziam "sete skills" — são **nove**. Descrição do `auto-think` passa a apontar os dois executores.
 - Removido resíduo `/setup-matt-pocock-skills` em `spec-plan/references/rules-phase-2-spec.md`.
+- **`planejar` substituída pela versão do mentor (Thales) por inteiro** — traz a leva de endurecimento das Fases 2A/4/6/7/8/9 (busca em tiers, realidade do plano Cloudflare, `Falha se:`, `Recursos nomeados`, correção serial com auditoria de costuras, `prova` no features.json + portão `validar-features.js`) e a expansão de `auth-multitenancy.md`. Consequência: sai o caminho de design **Claude Design** (a versão do mentor tem só `design-lab` e `design-taste-frontend`) e as referências `codex-revisor.md`/`descoberta-prior-art.md`, que não existem na versão dele. O `evals/evals.json` foi mantido, mas é da versão anterior.
 
 ## 2.2.0 — 2026-09-15
 
