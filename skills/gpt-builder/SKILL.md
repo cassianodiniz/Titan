@@ -41,7 +41,7 @@ Echo resolved values before starting.
 
 ## Step 1 — The build prompt (contract, via temp file)
 
-Never inline-quote the prompt — write it to a temp file. Fill this contract completely; when chained from a grill/review skill, derive it from the plan's sections:
+Never inline-quote the prompt — write it to a temp file. Fill this contract completely; when chained from a spec/review skill, derive it from the plan's sections:
 
 ```bash
 P=$(mktemp)
@@ -123,7 +123,7 @@ Then ask: *"Codex built it, proof passes, fiscal PASS, diff reviewed. Commit?"*
 - No code before the checklist; no checklist item without a named proof.
 - Fix loop terminates at `MAX_FIX_ROUNDS` — then Claude takes over. No unbounded delegation ping-pong.
 - Commits, pushes, releases, GitHub mutations: Claude-side only, after the human gate. Codex never commits.
-- `LOG_FILE` is the deliverable — with Acts 1/2 it tells the whole story: grilled → reviewed → built → verified.
+- `LOG_FILE` is the deliverable — with Acts 1/2 it tells the whole story: specced → reviewed → built → verified.
 
 ## What NOT to do
 

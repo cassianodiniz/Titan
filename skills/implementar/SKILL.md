@@ -8,6 +8,16 @@ disable-model-invocation: true
 
 Implement the work described by the user in the spec or tickets.
 
+## Source contract for spec-plan
+
+When `SPEC_FILE` comes from `$spec-plan`, it must identify exactly one approved issue file under the plan's `issues/` directory.
+
+- Implement only the target issue. Sibling issues and the parent `index.md` are context, not authorization.
+- Read the parent index when linked, but do not absorb its other issues into scope.
+- If `SPEC_FILE` is an index, a directory, or a document containing multiple implementation issues without one explicit target, stop and ask which issue to implement.
+- Use an issue-specific checklist path such as `.checks/<plan-id>-<issue-key>-<slug>.md` so concurrent plans do not share a checklist.
+- Preserve the approved issue as the original source for `$build-review`; do not rewrite it during implementation.
+
 Use /tdd where possible, at pre-agreed seams.
 
 Run typechecking regularly, single test files regularly, and the full test suite once at the end. You decide how. Write the tests from the checklist, implement, run each proof, commit in coherent pieces with Conventional Commits to the current branch..
@@ -39,7 +49,7 @@ Lazy code without its check is unfinished. Non-trivial logic (a branch, a loop, 
 
 ## Required references
 
-Before implementing, read [Checklist](references/checklist.md). Reuse the existing `.checks/<feature>.md` when there is one; otherwise write it from the approved source before any code. Confirm any test seam not already approved before writing tests at it.
+Before implementing, read [Checklist](references/checklist.md). Reuse the existing issue-specific checklist when there is one; otherwise write it from the approved source before any code. When the source comes from `$spec-plan`, use `.checks/<plan-id>-<issue-key>-<slug>.md`; for other sources, keep the checklist naming appropriate to that source. Confirm any test seam not already approved before writing tests at it.
 
 Before the final response, read [Final report](references/relatorio.md). Report only the observed implementation state and the actual results this session obtained. State implementation status and independent-review status separately: local proofs run and passed here, `build-review` still pending.
 
@@ -47,4 +57,6 @@ Before the final response, read [Final report](references/relatorio.md). Report 
 
 Fluxo: `/spec-plan` → **`/implementar`** (você está aqui) → `/build-review`.
 
-Terminada a construção, ofereça `/build-review` (opcional, só com o OK do usuário): 3 revisores independentes sobre o diff + a checklist `.checks/<feature>.md`.
+`/implementar` é uma das duas formas de construir uma spec: aqui quem constrói é o **próprio Claude**. A alternativa é `/gpt-builder`, em que um **subagente GPT (Codex)** constrói com acesso total e o Claude revisa o diff — use aquela quando quiser delegar a construção ao GPT. As duas ocupam o mesmo lugar no fluxo e entregam o mesmo par (checklist + diff) para o `/build-review`.
+
+Terminada a construção, ofereça `/build-review` (opcional, só com o OK do usuário): 3 revisores independentes sobre o diff + a checklist exclusiva da issue (`.checks/<plan-id>-<issue-key>-<slug>.md`, ou o caminho de checklist apropriado quando a fonte não vem do `/spec-plan`).

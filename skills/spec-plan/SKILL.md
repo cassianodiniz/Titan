@@ -1,11 +1,21 @@
 ---
 name: spec-plan
-description: Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking and make a spec to build with AI.
+description: Use quando o usuário invocar explicitamente /spec-plan, $spec-plan ou @spec-plan para transformar uma ideia ou mudança ainda não fechada em um plano executável. Não use quando o trabalho já estiver decidido nem para implementar.
 disable-model-invocation: true
 ---
 
-Two phases, in this order. Read each phase file only when that phase begins; do not read the spec template while still investigating.
+# Spec Plan
 
-Phase 1 — Investigate: read `references/phase-1-investigate.md` and follow it. Do not proceed until the user confirms you have reached a shared understanding.
+Transforme a ideia em issues aprovadas, cada uma autocontida e pronta para uma sessão separada de `$implementar`.
 
-Phase 2 — Spec: read `references/phase-2-spec.md` and follow it. Do NOT reopen settled design decisions. Do not implement the feature.
+Siga duas fases, nesta ordem. Leia cada referência somente quando a fase começar:
+
+1. **Investigar:** leia `references/phase-1-investigate.md`. Feche escopo, decisões e seams de teste antes de pedir a confirmação de entendimento compartilhado.
+2. **Planejar e fatiar:** depois da confirmação, leia `references/phase-2-spec.md`. Produza a spec e as issues, mostre tudo ao usuário e espere aprovação antes de gravar ou publicar.
+
+Invariantes:
+
+- Nunca implemente a feature.
+- Nunca publique externamente sem autorização explícita para o destino exato.
+- Nunca use um `PLAN.md` compartilhado. Cada plano tem diretório próprio e cada issue tem um único arquivo de implementação.
+- O handoff aponta para exatamente um arquivo de issue, nunca para o índice ou para o diretório inteiro. Construir é escolha do usuário: `$implementar` (o próprio Claude constrói) ou `$gpt-builder` (um subagente GPT/Codex constrói e o Claude revisa o diff).

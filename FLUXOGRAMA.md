@@ -1,10 +1,10 @@
 # Fluxograma — plugin `Titan`
 
-Plugin com **sete skills**. Cada uma é uma **porta de entrada independente** — você pode começar
+Plugin com **nove skills**. Cada uma é uma **porta de entrada independente** — você pode começar
 por qualquer uma:
 
 - **🧠 /planejar** — desenha um produto/software do zero, **descobre como o problema já foi resolvido lá fora** e **audita a planta** antes de construir.
-- **📝 /spec-plan** — você traz um **plano/decisão/ideia**; ele **grelha até o entendimento comum** e escreve uma **spec congelada** pronta pra construir com IA. No fim, oferece mandar pra `/gpt-builder`.
+- **📝 /spec-plan** — você traz um **plano/decisão/ideia**; ele **sabatina até o entendimento comum** e escreve uma **spec congelada** pronta pra construir com IA. No fim, oferece mandar pra `/gpt-builder`.
 - **🔬 /auto-think** — você traz um **problema sem resposta**; ele **estuda a fundo** (vários ângulos em paralelo, confronta os achados com o Codex/GPT) e entrega **opções com veredito**. Gera caminhos — não executa, para na recomendação.
 - **⚙️ /gpt-builder** — recebe uma **spec congelada** e executa: o **Codex constrói** (mão na massa, acesso total), o **Claude lê o diff inteiro** e um **fiscal independente** prova cada item; **você assina** antes de qualquer commit.
 - **🔨 /implementar** — constrói uma **spec já decidida** com o **próprio Claude** (TDD nas junções combinadas, checklist com prova por item, commits na branch atual). É a alternativa à `gpt-builder`: mesmo lugar no fluxo, só que quem constrói é o Claude, não o Codex.
@@ -13,7 +13,7 @@ por qualquer uma:
 - **🪢 /handoff** — salva o ponto exato do trabalho e passa o bastão pra outra sessão.
 - **🛡️ /gpt-optimizer** — **segunda opinião adversarial pra refletir antes de cravar**, no meio de qualquer conversa: sem precisar de plano nem código formal, ele monta o alvo sozinho, o Codex tenta derrubar, e devolve veredito **Seguir / Ajustar / Bloquear**.
 
-Elas também formam **um ciclo**: a spec sai do `planejar` (a planta), do `spec-plan` (grelhada) ou
+Elas também formam **um ciclo**: a spec sai do `planejar` (a planta), do `spec-plan` (sabatinada) ou
 a solução escolhida sai do `auto-think`, e vai pro `gpt-builder` pra ser construída; se o trabalho
 fica longo e o contexto enche, você chama o `handoff` e numa sessão nova retoma de onde parou.
 
@@ -22,7 +22,7 @@ fica longo e o contexto enche, você chama o `handoff` e numa sessão nova retom
 > outro par de mãos). Não é a mesma conferência duas vezes — são dois momentos diferentes.
 >
 > E entre os "pensadores": **`planejar` parte de uma IDEIA de produto** (desenha algo novo);
-> **`spec-plan` parte de um PLANO/DECISÃO** (grelha até virar spec); **`auto-think` parte de um
+> **`spec-plan` parte de um PLANO/DECISÃO** (sabatina até virar spec); **`auto-think` parte de um
 > PROBLEMA sem resposta** (investiga e recomenda opções). Os três alimentam o `gpt-builder`.
 >
 > Já o **`gpt-optimizer`** parte de uma **decisão que você JÁ tomou** — não gera opções, **testa a que você
@@ -81,8 +81,8 @@ flowchart TD
         end
         subgraph SPECPLAN[" "]
             direction TB
-            SINTRO["<b>📝 /spec-plan</b> — grelha um plano/decisão/ideia e escreve uma <b>spec congelada</b> pra construir com IA<br/>duas fases, em ordem · não implementa nada"]
-            S1["<b>Fase 1 · Investiga</b><br/><i>grelha em rodadas até o entendimento comum · fato se confere (subagente), decisão é sua · não avança sem seu aceite</i>"]
+            SINTRO["<b>📝 /spec-plan</b> — sabatina um plano/decisão/ideia e escreve uma <b>spec congelada</b> pra construir com IA<br/>duas fases, em ordem · não implementa nada"]
+            S1["<b>Fase 1 · Investiga</b><br/><i>sabatina em rodadas até o entendimento comum · fato se confere (subagente), decisão é sua · não avança sem seu aceite</i>"]
             S2["<b>Fase 2 · Escreve a spec</b><br/><i>problema, solução, user stories, cenários de comportamento (given/when/then), decisões · NÃO reabre o que já fechou</i>"]
             SINTRO --> S1 --> S2
         end

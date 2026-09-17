@@ -1,5 +1,5 @@
 Phase 2 — Spec
-Take the current conversation context and available codebase understanding and produce a spec. The issue tracker and triage label vocabulary should have been provided to you. If not, ask the user for the issue tracker and its triage/label vocabulary before writing the spec.
+Take the current conversation context and available codebase understanding and produce a spec. The issue tracker and triage label vocabulary should have been provided to you. If not, ask the user for the issue tracker and its triage/label vocabulary before writing the spec. Do not invent project conventions.
 
 Do NOT reopen settled design decisions or repeat questions already answered during investigation. Synthesize what you already know.
 
