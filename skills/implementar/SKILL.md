@@ -8,6 +8,12 @@ disable-model-invocation: true
 
 Implement the work described by the user in the spec or tickets.
 
+## Clean tree first
+
+Before anything else, run `git status --porcelain`. Every path it lists must be inside the plan directory of `SPEC_FILE` or inside `.checks/`. Any other path is someone's unfinished work sitting in the tree: stop and ask the user to commit it or set it aside. Work started on top of loose changes cannot be told apart from them later - the start marker only fences what is committed, and `$build-review` would review those changes as if they belonged to this task.
+
+With the tree clean and nothing staged, make the start marker right away, before writing the checklist: `git commit --allow-empty -m "chore(checks): start <checklist file name, without .md>"`. It carries no code; it is the stake that says where the work began - `$build-review` finds it by that message and reviews everything after it. Right after the marker, run the full test suite once and record the result in the checklist's `Suite before start` line. A test already failing there goes to the final report as pre-existing; the recorded line is what proves it, so nothing has to be stashed or checked out later to find out.
+
 ## Source contract for spec-plan
 
 When `SPEC_FILE` comes from `$spec-plan`, it must identify exactly one approved issue file under the plan's `issues/` directory.
@@ -18,9 +24,9 @@ When `SPEC_FILE` comes from `$spec-plan`, it must identify exactly one approved 
 - Use an issue-specific checklist path such as `.checks/<plan-id>-<issue-key>-<slug>.md` so concurrent plans do not share a checklist.
 - Preserve the approved issue as the original source for `$build-review`; do not rewrite it during implementation.
 
-Use /tdd where possible, at pre-agreed seams.
+Before writing the first test, read [TDD](references/tdd/tdd.md). It is the reference for the red → green loop: what a good test is, where tests go, and the rules of the loop. Use TDD where possible, at pre-agreed seams.
 
-Run typechecking regularly, single test files regularly, and the full test suite once at the end. You decide how. Write the tests from the checklist, implement, run each proof, commit in coherent pieces with Conventional Commits to the current branch..
+Run typechecking regularly, single test files regularly, and the full test suite once at the end. You decide how. Work the checklist one check at a time: write its test, watch it fail, implement just enough to pass it, run its proof - then the next check. Commit in coherent pieces with Conventional Commits to the current branch, staging each file by name (`git add <path>`) so every commit holds only what that piece changed. The start marker above is the first commit of the work.
 
 Two boundaries, and they are about scope rather than care. New capability nobody asked for and unrelated refactors are not yours to add - surface them and move on. Everything else inside the work at hand is the work: a guard clause, a log line, a clear error message, a test beyond the proofs when you can say what *should* happen at an edge the checklist did not name. Extra tests are welcome and there is no quota.
 
@@ -41,9 +47,7 @@ A red proof blocks completion and must be fixed, not merely noted. An expected R
 
 Never simplify away: input validation at trust boundaries, error handling that prevents data loss, security measures, accessibility basics, anything explicitly requested. User insists on the full version → build it, no re-arguing.
 
-Never lazy about understanding the problem. The ladder shortens the solution, never the reading. Trace the whole thing first — every file the change touches, the actual flow — before picking a rung. Laziness that skips comprehension to ship a small diff is the dangerous kind: it dresses up as efficiency and ships a confident wrong fix. Read fully, then be lazy.
-
-Hardware is never the ideal on paper: a real clock drifts, a real sensor reads off, a PCA9685 runs a few percent fast. Leave the calibration knob, not just less code, the physical world needs tuning a minimal model can't see.
+Never lazy about understanding the problem. Trace the whole thing first — every file the change touches, the actual flow — before writing the fix. Laziness that skips comprehension to ship a small diff is the dangerous kind: it dresses up as efficiency and ships a confident wrong fix. Read fully, then be lazy.
 
 Lazy code without its check is unfinished. Non-trivial logic (a branch, a loop, a parser, a money/security path) leaves at least one runnable check behind, the smallest thing that fails if the logic breaks: an `assert`-based `demo()`/`__main__` self-check or one small `test_*.py`. Reuse the repo's existing test setup and the commands that already run in CI; do not add a new framework or extra fixtures beyond what that setup needs, unless asked. Trivial one-liners need no test, YAGNI applies to tests too.
 
@@ -53,10 +57,8 @@ Before implementing, read [Checklist](references/checklist.md). Reuse the existi
 
 Before the final response, read [Final report](references/relatorio.md). Report only the observed implementation state and the actual results this session obtained. State implementation status and independent-review status separately: local proofs run and passed here, `build-review` still pending.
 
-## Próximo passo (fluxo)
+## Next step (flow)
 
-Fluxo: `/spec-plan` → **`/implementar`** (você está aqui) → `/build-review`.
+Flow: `/spec-plan` → **`/implementar`** (you are here) → `/build-review`.
 
-`/implementar` é uma das duas formas de construir uma spec: aqui quem constrói é o **próprio Claude**. A alternativa é `/gpt-builder`, em que um **subagente GPT (Codex)** constrói com acesso total e o Claude revisa o diff — use aquela quando quiser delegar a construção ao GPT. As duas ocupam o mesmo lugar no fluxo e entregam o mesmo par (checklist + diff) para o `/build-review`.
-
-Terminada a construção, ofereça `/build-review` (opcional, só com o OK do usuário): 3 revisores independentes sobre o diff + a checklist exclusiva da issue (`.checks/<plan-id>-<issue-key>-<slug>.md`, ou o caminho de checklist apropriado quando a fonte não vem do `/spec-plan`).
+Once the build is complete, `/build-review` is presented (optional, requires user approval): 3 independent reviewers for the diff + a `.checks/<feature>.md` checklist.

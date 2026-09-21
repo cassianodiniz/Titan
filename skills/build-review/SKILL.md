@@ -31,7 +31,7 @@ Reúna uma vez, e reparta pra cada revisor a fatia que o texto dele pede:
 
 | Entrada | Quem usa | Como obter |
 |---|---|---|
-| Ponto fixo `<base>..HEAD` | os três | `git log --oneline`; confirme com `git rev-parse` |
+| Ponto fixo `<base>..HEAD` | os três | o commit-marco que a construção deixou: `git log --format=%H --grep="^chore(checks): start <nome do checklist, sem .md>"`. A base é esse commit; confirme com `git rev-parse`. Nenhum marco, ou mais de um → pare e pergunte a base ao usuário. Não deduza pelo histórico: três leituras do mesmo `git log` dão três bases |
 | Issue / spec original | Spec, Fiscal | o caminho que o usuário deu, ou a referência no commit |
 | Docs de padrão da casa | Standards | `CODING_STANDARDS.md`, `CONTRIBUTING.md`, `CLAUDE.md`/`AGENTS.md` |
 | Checklist `.checks/<feature>.md` | Fiscal | a checklist que a construção deixou |
@@ -88,5 +88,6 @@ Regras da junção, que vêm dos próprios textos-fonte:
 
 - "Vou juntar tudo num relatório só pra ficar mais limpo"
 - "Os testes já passam, não preciso injetar defeito"
+- "Não tem commit-marco, mas dá pra deduzir a base pelo git log"
 - "Não tem checklist, mas dá pra o Fiscal revisar mesmo assim"
 - "Rodo os três em sequência, um de cada vez" (são paralelos, e na sessão principal)

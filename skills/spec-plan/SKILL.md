@@ -18,4 +18,4 @@ Invariantes:
 - Nunca implemente a feature.
 - Nunca publique externamente sem autorização explícita para o destino exato.
 - Nunca use um `PLAN.md` compartilhado. Cada plano tem diretório próprio e cada issue tem um único arquivo de implementação.
-- O handoff aponta para exatamente um arquivo de issue, nunca para o índice ou para o diretório inteiro. Construir é escolha do usuário: `$implementar` (o próprio Claude constrói) ou `$gpt-builder` (um subagente GPT/Codex constrói e o Claude revisa o diff).
+- O handoff para `$implementar` aponta para exatamente um arquivo de issue, nunca para o índice ou para o diretório inteiro.

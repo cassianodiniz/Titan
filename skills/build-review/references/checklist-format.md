@@ -16,6 +16,8 @@ Sources:
 - <ticket URL, document path, or "conversation"> - <what it settles>
 - <design / screens> - **binding for the interface**: screens <ids>
 
+Suite before start: `<command>` → <N passed, M failed>; already failing: <test names, or "none">
+
 ## Out of scope
 
 - <excluded capability> - <why>
@@ -37,14 +39,17 @@ Sources:
 
 **C1** - A failed charge sets status to Suspended, never Cancelled
 Proof: `pytest tests/billing/test_dunning.py::test_failed_charge_suspends`
+Red: <left empty when the checklist is written; filled in while building with the assertion failure seen when this test first failed, or the line broken to make it fail>
 
 **C2** - Every provider status maps to exactly one local status
 Proof: `pytest tests/billing/test_status_map.py::test_every_provider_status_maps`
+Red: `AssertionError: 'past_due' has no local status`
 
 ### S2 - Webhook ingest · 9 files · 140 KB · ~35k
 
 **C3** - Retrying the same webhook delivery id changes nothing
 Proof: `npm test -- -t "retry is idempotent"`
+Red: passed on first run; removed the delivery-id lookup in `ingest()` → `expected 1 row, received 2`; restored
 
 ## Swept
 

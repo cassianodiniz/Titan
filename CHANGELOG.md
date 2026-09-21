@@ -1,5 +1,17 @@
 # Changelog — Titan
 
+## 2.4.0 — 2026-09-20
+
+Re-sincroniza `spec-plan`, `build-review` e `implementar` com as versões locais evoluídas. Espelho completo (a versão local é a verdade): o conteúdo novo entra e o que a versão local não tem é removido. Aditivo no todo, com uma remoção de referência cruzada anotada abaixo.
+
+- **`implementar` ganha TDD embutido.** Nova pasta `references/tdd/` (`tdd.md`, `tests.md`, `mocking.md`) com o laço vermelho → verde: o que é um bom teste, onde os testes moram e as regras do loop. O SKILL.md manda lê-la antes do primeiro teste e agora trabalha a checklist **um item por vez** (escreve o teste, vê falhar, implementa o mínimo, roda a prova), com stage por nome (`git add <caminho>`) pra cada commit conter só o que aquela peça mudou.
+- **`implementar`: árvore limpa + marca de início.** Antes de tudo, `git status --porcelain` tem que estar limpo (só caminhos do plano ou de `.checks/`); qualquer outra coisa é trabalho inacabado de alguém e a skill para e pergunta. Com a árvore limpa, cria o **commit-marco** `chore(checks): start <nome do checklist>` **antes** de escrever a checklist — é a estaca que diz onde o trabalho começou. Logo após, roda a suíte inteira uma vez e registra o resultado na linha `Suite before start` (teste já vermelho ali vira pré-existente no relatório).
+- **`build-review` acha a base pela marca, não deduzindo.** O ponto fixo `<base>..HEAD` agora é o commit-marco que a construção deixou (`git log --grep="^chore(checks): start …"`), não mais uma leitura do `git log` (três leituras davam três bases). Sem marco, ou mais de um → para e pergunta. Novo sinal de alerta na lista de "nunca".
+- **`implementar/checklist.md` enxuto.** O formato longo saiu; agora delega ao formato canônico único que o `$build-review` lê (`build-review/references/checklist-format.md`) e parte da `Varredura (decidida na entrevista)` da issue quando ela existe.
+- **`spec-plan` limpa resíduo.** Removido o `references/rules-phase-2-spec.md` (versão antiga em inglês; o conteúdo já vive no `phase-2-spec.md`). `phase-1-investigate.md` expandido.
+- **`agents/openai.yaml`** adicionado em `spec-plan` e `implementar` (política do Codex: sem invocação implícita, casando com o `disable-model-invocation` do cabeçalho).
+- **Consequência do espelho:** as referências cruzadas ao `/gpt-builder` que o 2.3.0 tinha adicionado no rodapé de fluxo de `spec-plan` e `implementar` **saíram** (a versão local não as tem) e esse rodapé de `implementar` voltou ao inglês. `/gpt-builder` segue no plugin; só deixou de ser citado no rodapé dessas duas skills.
+
 ## 2.3.0 — 2026-09-17
 
 Sincroniza `spec-plan` e `implementar` com as versões locais evoluídas, remove o legado "grelhar" e corrige a documentação. Aditivo, sem quebra.

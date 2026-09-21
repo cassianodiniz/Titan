@@ -30,45 +30,11 @@ Requisitos que ninguém escreve na spec. Passe por cada um e diga **onde caiu** 
 
 Levantar um é sempre grátis; crescer o escopo é decisão do usuário.
 
+Quando a issue já traz a seção `Varredura (decidida na entrevista)`, parta dela: confira cada linha contra o código e pergunte só o que ela não cobriu — o usuário já respondeu o resto.
+
 ## Formato
 
-Substitua cada marcador por valor concreto ou omita a seção. Cabeçalho com "N/A" embaixo não existe.
-
-```markdown
-# <Feature>
-
-Fontes:
-- <URL do ticket / caminho da spec / "conversa"> - <o que ela decide>
-
-## Fora de escopo
-- <capacidade excluída> - <por quê>
-
-## Itens
-
-### F1 - <fatia: um resultado observável>
-
-**C1** - <uma afirmação observável; se precisa de "e", divida>
-Prova: `<comando que roda UM teste nomeado, ex.: pytest tests/x.py::test_y>`
-
-**C2** - <afirmação>
-Prova: `<comando>`
-
-### F2 - <fatia>
-
-**C3** - <afirmação>
-Prova: `<comando>`
-
-## Varredura
-- validação: C1
-- modos de falha: C2
-- idempotência: já existe em `<arquivo>`
-- autorização: fora de escopo - <por quê>
-- concorrência: ...
-- ciclo do dado: ...
-- dependência externa: ...
-- transições de estado: ...
-- observabilidade: ...
-```
+Escreva `.checks/<feature>.md` no formato canônico: [Checklist format](../../build-review/references/checklist-format.md) — é o mesmo arquivo que o `$build-review` lê (`Sources`, `Out of scope`, `Landing`, `Checks`, `Swept`, `Coverage`). Abra-o só depois de passar pelo "Recuse em vez de chutar" e pela varredura acima; o resultado da varredura dos 9 vai na seção `Swept`.
 
 ## Handoff (só quando a construção troca de agente ou de sessão)
 
@@ -76,4 +42,4 @@ Quem continua lê o checklist e o **diff do que já entrou** — nunca um resumo
 
 Os itens agrupam sob as fatias de onde vieram (uma fatia = um resultado observável); numeram-se direto (`C1..Cn`) porque o contrato de cada fatia e o fiscal se referem a eles pelo número.
 
-Escrito o checklist, siga pra fatiar e construir. Esperar aprovação por padrão não compra nada quando a fonte já foi decidida e o checklist só a reescreve com prova. Pare só pelo que o usuário sozinho decide: escopo que a varredura levantou e que cresceria o trabalho; o que o "recuse em vez de chutar" pegou e perguntar não resolveu.
+Escrito o checklist, siga pra fatiar e construir. O commit-marco de início (`chore(checks): start <nome deste arquivo, sem .md>`) já foi feito antes deste arquivo existir, como manda o SKILL.md; este checklist entra num commit depois dele. Esperar aprovação por padrão não compra nada quando a fonte já foi decidida e o checklist só a reescreve com prova. Pare só pelo que o usuário sozinho decide: escopo que a varredura levantou e que cresceria o trabalho; o que o "recuse em vez de chutar" pegou e perguntar não resolveu.

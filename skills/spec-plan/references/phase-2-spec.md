@@ -52,6 +52,9 @@ Use este formato:
 - Seams aprovados: <interfaces públicas>
 - Provas conhecidas: <comandos reais ou UNKNOWN>
 
+## Varredura (decidida na entrevista)
+- <cada um dos 9 que toca esta issue>: <critério de aceite acima | já existe em … | fora de escopo porque …>
+
 ## Fora de escopo
 - <limite desta issue>
 ```
@@ -92,22 +95,14 @@ Se a publicação externa for autorizada, crie as issues em ordem de dependênci
 
 ## 5. Handoff para implementar uma issue
 
-Liste as issues da fronteira atual e peça ao usuário que escolha a próxima. Depois da escolha, ofereça os dois construtores para a issue escolhida — quem constrói é decisão do usuário:
+Liste as issues da fronteira atual e peça ao usuário que escolha a próxima. Depois da escolha, ofereça somente um comando:
 
-- **`$implementar`** — o **próprio Claude** constrói (TDD nas junções, checklist com prova por item, commits na branch atual):
-
-  ```text
-  $implementar SPEC_FILE="docs/plans/<plan-id>/issues/<issue-key>-<slug>.md"
-  ```
-
-- **`$gpt-builder`** — um **subagente GPT (Codex)** constrói com acesso total; o Claude revisa o diff inteiro como um PR e um fiscal prova cada item antes de você assinar. Use quando quiser construir com um subagente GPT em vez do Claude:
-
-  ```text
-  $gpt-builder SPEC_FILE="docs/plans/<plan-id>/issues/<issue-key>-<slug>.md"
-  ```
+```text
+$implementar SPEC_FILE="docs/plans/<plan-id>/issues/<issue-key>-<slug>.md"
+```
 
 Uma invocação implementa uma issue. O fluxo padrão é sequencial: só ofereça outra issue depois que a atual sair da fronteira ou for concluída.
 
 Se o usuário pedir implementação paralela, não presuma isolamento. Só ofereça vários handoffs quando cada sessão já tiver checkout/worktree e branch próprios e o artefato aprovado estiver disponível numa base compartilhada; caso contrário, explique o pré-requisito e mantenha o fluxo sequencial. Nunca passe `index.md`, o diretório do plano ou vários arquivos na mesma invocação.
 
-Depois da implementação (por `$implementar` ou `$gpt-builder`), `$build-review` usa o mesmo arquivo da issue como fonte original, junto da checklist exclusiva e do diff deixados pelo construtor. A `spec-plan` não chama nenhuma dessas skills automaticamente; apenas oferece o próximo passo.
+Depois da implementação, `$build-review` usa o mesmo arquivo da issue como fonte original, junto da checklist exclusiva e do diff deixados pela `$implementar`. A `spec-plan` não chama nenhuma dessas skills automaticamente; apenas oferece o próximo passo.
