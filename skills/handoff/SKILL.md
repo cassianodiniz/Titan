@@ -1,6 +1,6 @@
 ---
 name: handoff
-description: "Gera um documento de handoff (passagem de bastão) pra continuar o trabalho desta conversa numa sessão NOVA, do zero, sem o histórico. Use SEMPRE que o usuário disser /handoff, \"gera um handoff\", \"vou limpar o contexto\", \"passa isso pra uma sessão nova\", \"documento de continuação\", \"resume pra eu continuar depois\", \"to chegando no limite de contexto\", ou quando uma conversa longa está terminando e ele quer retomar o mesmo trabalho mais tarde. O objetivo é capturar ESTADO + PONTEIROS (não um resumo), ancorado em git e arquivos, de forma que a sessão nova não invente regra, não repita o que já foi resolvido, e não omita o que importa."
+description: "Use quando o usuário disser /handoff, \"gera um handoff\", \"vou limpar o contexto\", \"passa isso pra uma sessão nova\", \"documento de continuação\", \"resume pra eu continuar depois\", \"tô chegando no limite de contexto\", ou quando uma conversa longa vai terminar e ele quer retomar o MESMO trabalho depois, numa sessão nova do zero, sem o histórico da conversa."
 ---
 
 # Handoff — passagem de bastão entre sessões
@@ -22,8 +22,8 @@ Antes de redigir, levante o estado real do projeto (se houver repositório). Rod
 ```bash
 pwd
 # Ancora em git SÓ se esta pasta for um repositório. Em pastas SEM git
-# (ex.: uma pasta de skills que roda sem git — versão é via cofre
-# ~/skills-repo + GitHub), pula silenciosamente, sem cuspir "not a git repository".
+# (ex.: uma pasta de skills que roda sem git e é versionada
+# em outro lugar), pula silenciosamente, sem cuspir "not a git repository".
 if git rev-parse --git-dir >/dev/null 2>&1; then
   git rev-parse --show-toplevel; git branch --show-current
   git log -1 --oneline
@@ -35,6 +35,10 @@ fi
 ```
 
 Quando HÁ git, esses dados viram a seção "ESTADO DO PROJETO (git)" — a âncora de realidade: a sessão nova confere o texto contra o estado de verdade. Quando NÃO há git (caso da pasta de skills), pule essa seção e registre só o `pwd`, dizendo que esta pasta não é versionada localmente.
+
+**Atenção à working tree suja.** A âncora do git captura trabalho não commitado — `git status --short` diz QUAIS arquivos você mexeu e `git diff --stat` diz QUANTO — mas só enxerga o que está **salvo em arquivo**, e mostra o QUÊ, nunca o PORQUÊ. Duas consequências pro documento:
+- Se o `git status` vier sujo e grande (muita mudança não commitada), **explique o motivo dessas mudanças** em "DECISÕES TOMADAS" / "ESTADO AGORA" — senão a sessão nova vê o diff sem entender a intenção.
+- Decisão ou raciocínio que só viveu no chat NÃO aparece no git (nem em arquivo) — tem que ser copiado literal pro handoff (regra 6). Ponteiro pra algo que o git não vê é informação perdida.
 
 ## As 9 regras de geração (é aqui que handoff falha)
 
@@ -126,27 +130,13 @@ Olhe o que você escreveu com olhos novos e tire qualquer linha que: (a) repete 
 
 ## Teste de continuação a seco — o leitor cego (antes de salvar)
 
-A releitura acima é você revendo o próprio texto — e você ainda lembra da conversa, então preenche os buracos de cabeça sem perceber. **O teste de verdade é entregar o doc a quem NÃO esteve aqui.** Esse passo roda enquanto a conversa original ainda existe — é a última janela pra tapar buraco antes da aba morrer.
+A releitura acima é você revendo o próprio texto — e você ainda lembra da conversa, então preenche os buracos de cabeça sem perceber. **O teste de verdade é entregar o doc a quem NÃO esteve aqui:** um leitor cego (Codex) que só tem o documento e aponta o que não dá pra continuar. Roda enquanto a conversa original ainda existe.
 
-Por padrão, manda o handoff pronto pra um **leitor cego (Codex)** que só tem o documento e responde uma coisa: *"só com isto, o que você NÃO conseguiria continuar?"*. O que ele apontar volta pro doc.
-
-1. **Trava de dado pra fora:** o doc vai pro Codex (fornecedor externo). Antes de mandar, mascare dado real de pessoa (nome, telefone, CPF, email), credencial (token, chave) e também identificador interno sensível (nome de cliente/aluno/projeto, ID de banco) — troca por etiqueta estável (`ALUNO_A`, `TOKEN_***`, `PROJETO_X`). Vai a ESTRUTURA do trabalho, não a identidade de ninguém. Se algum buraco só fizer sentido com o dado real, trate à parte — não mande o dado cru.
-
-2. **Monta o input** num arquivo temporário: uma instrução curta + o handoff inteiro (já mascarado). A instrução é literal:
-   > "Você é um agente que vai continuar este trabalho numa sessão NOVA, sem nenhum histórico além deste documento. NÃO tem acesso à conversa que o gerou. Leia e responda só isto: (a) o que você NÃO conseguiria fazer ou decidir só com este doc? (b) que decisão está sem o porquê, te obrigando a adivinhar ou reabrir? (c) que ponteiro/arquivo citado você não conseguiria localizar? (d) que restrição está sem prova reproduzível? Liste os buracos, do mais grave ao menor. Se conseguiria continuar sem travar, diga isso."
-
-3. **Roda o leitor cego** (script auto-contido na pasta desta skill — use o caminho-base que aparece quando a skill carrega, NÃO um caminho relativo ao cwd; o teto de 15 min e o retry já estão dentro do script):
-   ```bash
-   bash "<pasta-base-desta-skill>/scripts/cold-read.sh" /tmp/cold-input.md /tmp/cold-out.md high
-   ```
-   - Saiu OK → para cada buraco que PROCEDE (muda se a sessão nova continua ou não), **corrige o doc**: copia o raciocínio que faltou, conserta o ponteiro, rebaixa a restrição sem prova. Buraco frívolo (estilo, "eu faria diferente") descarta. Uma passada, não vira debate.
-   - **Falha graciosa:** Codex ausente/travado (exit 3 ou 5) → NÃO trava o handoff (é fluxo de pressa). Cai pro plano B: você mesmo relê o doc no papel de leitor cego ("esqueça a conversa") e marca no rodapé do handoff `revisão de continuação: menor garantia (sem Codex)`. Risco é só um doc — seguir sem o revisor externo é aceitável, desde que avisado.
-
-4. Um revisor, não dois. Dupla GPT+Gemini num doc curto acha 90% a mesma coisa e dobra o ponto de falha — o ganho é sair do seu viés, e um leitor cego já faz isso.
+**O passo completo — mascaramento de dado sensível, montagem do input, o script `cold-read.sh` e o que fazer com os buracos — está em [`references/leitor-cego.md`](references/leitor-cego.md).** Recomendado sempre; imprescindível em trabalho crítico. Codex ausente → falha graciosa: você mesmo relê no papel de leitor cego e marca no rodapé `revisão de continuação: menor garantia (sem Codex)`.
 
 ## Entrega
 
-O handoff é um **arquivo**; a entrega no chat é um **prompt colável** que aponta pra ele — pro usuário copiar e colar num Claude novo (ele não quer abrir o arquivo na tela, quer o prompt pronto). Nesta ordem:
+O handoff é um **arquivo**; a entrega no chat é um **prompt colável** que aponta pra ele — pro usuário copiar e colar num Claude novo (sem precisar abrir o arquivo na tela: o prompt já vem pronto). Nesta ordem:
 
 1. **Salve o documento** num local previsível:
    - Se houver repositório git: `<raiz-do-repo>/.claude/handoffs/handoff-<branch>-AAAA-MM-DD-HHMMSS.md` (crie a pasta se não existir; sanitize a branch trocando `/` por `-`).
@@ -159,7 +149,7 @@ O handoff é um **arquivo**; a entrega no chat é um **prompt colável** que apo
    Antes de tocar em qualquer coisa, execute a "Primeira ação OBRIGATÓRIA" da seção COMO RETOMAR do handoff (conferir git + rodar os testes/checagem de estado). Só depois siga os PRÓXIMOS PASSOS.
    ```
    - O caminho TEM que ser **absoluto** (clicável/colável em qualquer máquina), dentro do bloco de código.
-   - **100% colável:** nada pra o usuário editar, preencher ou filtrar.
+   - **100% colável:** nada pro usuário editar, preencher ou filtrar.
 
 3. **Avise o caminho salvo em uma linha** abaixo do bloco (ex: "Handoff salvo em `<caminho>` — cole o prompt acima num Claude novo."). NÃO cole o conteúdo inteiro do handoff no chat — ele está no arquivo. No máximo, 1-2 linhas do que o documento cobre.
 

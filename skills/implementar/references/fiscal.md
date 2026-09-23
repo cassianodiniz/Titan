@@ -6,7 +6,7 @@ Quem construiu não fiscaliza: re-checar o próprio trabalho reaplica o raciocí
 
 O trabalho é estreito (rodar prova, localizar asserção, comparar com o checklist), então roda no modelo econômico do runtime. Estreito não é cego: decidir se uma asserção corresponde ao item ainda é julgamento — só que sobre uma pergunta pequena.
 
-Não é opcional e não espera ser pedido: é o que separa "pronto" de um auto-relato. Ele não substitui a revisão geral (`/revisar`): o relatório diz "provas verificadas; revisão geral pendente" enquanto ela não rodar.
+Não é opcional e não espera ser pedido: é o que separa "pronto" de um auto-relato. Ele não substitui a revisão geral (`/build-review`): o relatório diz "provas verificadas; revisão geral pendente" enquanto ela não rodar.
 
 ## Briefing (prompt do fiscal)
 
@@ -35,7 +35,7 @@ Escreva `.checks/<feature>.verificado.md` começando pelo veredito:
 **Diff**: <SHA base>..<head>
 **Rodada**: 1 - completa
 **Fiscal**: subagente independente (autor != fiscal)
-**Escopo**: provas verificadas; revisão geral (/revisar) pendente
+**Escopo**: provas verificadas; revisão geral (/build-review) pendente
 
 ## Fonte x checklist
 | Determinação da fonte | No checklist? | Omitida / contrariada |

@@ -1,7 +1,6 @@
 ---
 name: implementar
-description: Use when the user explicitly invokes /implementar, $implementar or @implementar to build work already decided in a spec, plan, tickets or issue of the current repository. Not for deciding what to build.
-disable-model-invocation: true
+description: Use when the user invokes /implementar, $implementar or @implementar, or says yes to the hand-off offered by /spec-plan, to build work already decided in a spec, plan, tickets or issue of the current repository. Not for deciding what to build.
 ---
 
 # Implementar
@@ -23,6 +22,10 @@ When `SPEC_FILE` comes from `$spec-plan`, it must identify exactly one approved 
 - If `SPEC_FILE` is an index, a directory, or a document containing multiple implementation issues without one explicit target, stop and ask which issue to implement.
 - Use an issue-specific checklist path such as `.checks/<plan-id>-<issue-key>-<slug>.md` so concurrent plans do not share a checklist.
 - Preserve the approved issue as the original source for `$build-review`; do not rewrite it during implementation.
+
+When the argument is a plan name, find the plan whose `index.md` declares `Plan name: <that name>`. Zero matches or more than one: stop and ask. In that plan, take the first issue in dependency order that is `approved`, has every blocker finished (`Status: done`), and has no start marker in `git log`. Say which issue you will implement, in one line, and wait for the user's yes before anything else.
+
+With no argument and no hand-off in this conversation, never choose a plan yourself — not the most recent, not the one in the conversation. List the plans that have pending issues, by name, and ask.
 
 Before writing the first test, read [TDD](references/tdd/tdd.md). It is the reference for the red → green loop: what a good test is, where tests go, and the rules of the loop. Use TDD where possible, at pre-agreed seams.
 

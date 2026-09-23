@@ -1,92 +1,166 @@
-# Titan — pensar, fazer e passar o bastão
+# cass — pensar antes de fazer, construir com prova, conferir antes de confiar
 
-Nove skills de desenvolvimento, chamáveis individualmente — repo-agnóstico, serve pra qualquer
-projeto: planejar um produto novo, estudar um problema a fundo, executar uma tarefa com crítico,
-refletir sobre uma decisão antes de cravar, e passar o bastão entre sessões.
+Nove skills pra trabalhar com IA no Claude Code sem cair nas armadilhas de sempre: a IA
+que sai construindo antes de entender o pedido, que diz "pronto" sem ter testado, que
+inventa número de pesquisa. Cada skill resolve um desses momentos e pode ser chamada
+sozinha. Serve pra qualquer projeto.
 
-**Autoria:** Cassiano Diniz · **Co-autoria:** Thales Laray
+**Autoria:** Cassiano Diniz · **Co-autoria:** Thales Laray (skill `planejar`)
+
+---
+
+## 📚 Meus estudos sobre IA
+
+Estas skills nasceram de estudo, não de palpite. O material que eu uso pra decidir qual
+modelo de IA serve pra quê está aberto aqui:
+
+**[Comparativo de modelos de IA, lado a lado →](https://claude.ai/artifact/UeTaqkfwazmmBcgRvtFAiM)**
+
+Compara os modelos atuais em qualidade, custo, velocidade e taxa de alucinação, com a fonte
+e a data de cada número, e explica os testes (benchmarks) pra quem não é da área.
+
+---
 
 ## Instalar
 
-**1. O plugin** — no Claude Code, uma linha por vez:
+**1. O plugin.** No Claude Code, uma linha por vez:
 
 ```
-/plugin marketplace add cassianodiniz/cassiano.diniz
-/plugin install Titan@cassiano.diniz
+/plugin marketplace add cassianodiniz/cass
+/plugin install cass@cass
 ```
 
-**2. Os requisitos** — as ferramentas externas que algumas skills usam. Um comando no terminal
-instala o que dá automático (Mac/Linux; Windows via Git Bash):
+Reinicie o Claude Code. As skills aparecem como `/cass:planejar`, `/cass:spec-plan` etc.
+
+**2. As ferramentas que algumas skills usam por fora.** Um comando no terminal instala o que
+dá automático (Mac/Linux; no Windows, pelo Git Bash):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/cassianodiniz/Titan/main/install.sh | SKIP_PLUGIN=1 bash
+curl -fsSL https://raw.githubusercontent.com/cassianodiniz/cass/main/install.sh | SKIP_PLUGIN=1 bash
 ```
 
-Ele instala: o **Codex CLI** (o crítico que confronta as decisões), os plugins **superpowers**
-(brainstorm + escrever o plano) e **cloudflare**, e as skills **taste-skill** (design de tela),
-**find-skills** e **gemini-api-dev** (mockups). Fica manual só o que depende de conta/chave sua:
-**`codex login`**, a **GEMINI_API_KEY** (mockups, grátis em aistudio.google.com/apikey) e — se você
-usar — a **/pesquisa + Perplexity** (a pesquisa web da planejar). Detalhe item a item no
-**[INSTALL.md](INSTALL.md)**. Depois, **reinicie o Claude Code**.
+Fica manual só o que depende de conta sua: o **`codex login`** (as skills que usam o GPT), a
+conta no **Exa** (a `search`) e a **GEMINI_API_KEY** (mockups da `planejar`). Detalhe item a
+item no **[INSTALL.md](INSTALL.md)**.
 
-> Nenhum requisito trava o plugin: o que faltar, a skill degrada com aviso e segue.
+> Nenhuma dependência trava o plugin: se faltar alguma, a skill avisa e segue do jeito que dá.
 
-## O que faz
+---
 
-| Comando | O que faz |
-|---|---|
-| `/Titan:planejar <ideia>` | Desenha um produto/software novo do zero antes de codar (8 fases: brainstorm → escopo → design → plano auditado). No fim, oferece executar com a gpt-builder. |
-| `/Titan:spec-plan <ideia>` | Sabatina um plano/decisão/ideia até o entendimento comum e escreve uma **spec congelada** pra construir com IA. No fim, oferece construir com `/implementar` (Claude) ou `/gpt-builder` (subagente GPT). |
-| `/Titan:auto-think <problema>` | Estuda a fundo um problema **sem resposta**: ataca de vários ângulos em paralelo, confronta com o Codex/GPT em 2 rodadas, e entrega **opções com veredito**. Gera caminhos — não executa. |
-| `/Titan:implementar <spec>` | Constrói uma **spec já decidida** com o **próprio Claude** — TDD nas junções combinadas, checklist com prova por item, commits na branch atual. É a alternativa à `gpt-builder` (que delega ao Codex). |
-| `/Titan:gpt-builder <spec>` | Entrega uma **spec congelada** (ex.: `PLAN.md`) pro **Codex construir** com acesso total; o **Claude revisa o diff** inteiro como um PR, um **fiscal independente** prova cada item, e **você assina** antes de qualquer commit. Sem spec? Ela manda pra `/spec-plan` primeiro. |
-| `/Titan:search <pergunta>` | Pesquisa profunda via **Exa** com procedência: cada número volta com a página, a frase e a data em que foi lido. Precisa de conta Exa. |
-| `/Titan:build-review` | Junta **3 revisores independentes** sobre um diff já construído — padrões da casa, aderência à spec, e um fiscal que prova cada item da checklist. Roda **depois da `gpt-builder`**, como pente-fino. |
-| `/Titan:gpt-optimizer` | Segunda opinião adversarial pra **refletir sobre uma decisão que você JÁ tem** antes de cravar: o Codex (GPT-5.6) tenta derrubar e devolve veredito **Seguir / Ajustar / Bloquear**. |
-| `/Titan:handoff` | Gera um documento de passagem de bastão pra continuar o trabalho numa sessão nova, do zero. |
+## Qual eu uso?
 
-**Como se encaixam:** `planejar`, `spec-plan` e `auto-think` são os pensadores (uma desenha um
-produto novo, outra sabatina um plano até virar spec, a terceira estuda um problema aberto) e
-entregam a spec pra `gpt-builder` construir. `search` alimenta qualquer um deles com pesquisa de
-procedência. `gpt-optimizer` é o confronto avulso — fora do ciclo, testa uma decisão pronta a
-qualquer momento. `handoff` salva o ponto e passa pra próxima sessão.
+Comece pela sua situação, não pelo nome da skill.
 
-## Qual eu uso? — guia rápido pra quem tá começando
-
-Se os nomes ainda não dizem nada, comece pela **sua situação**. Ache a linha que
-descreve o seu momento e use o comando da direita:
-
-| Quando você... | Use | O que ganha no fim |
+| Quando você... | Use | O que recebe no fim |
 |---|---|---|
-| tem uma **ideia de app/produto** e quer construir do zero | `/planejar` | um plano detalhado, já revisado, pronto pra executar |
-| tem um **plano/decisão** e quer virar uma spec sólida pra construir com IA | `/spec-plan` | uma spec congelada, sabatinada até o entendimento comum |
-| tem um **problema difícil sem resposta pronta** e quer enxergar as saídas | `/auto-think` | 2–3 caminhos possíveis, com a recomendação e o porquê de cada um |
-| tem uma **spec pronta** e quer que ela seja construída e conferida | `/gpt-builder` | o trabalho pronto: o **Codex constrói** a spec, o **Claude + um fiscal revisam** antes de fechar |
-| precisa de **pesquisa confiável** (dados, mercado, papers) com fonte de cada número | `/search` | achados com procedência: página, frase e data de cada número |
-| **já decidiu algo** e quer testar se a decisão aguenta antes de cravar | `/gpt-optimizer` | um veredito claro: **Seguir**, **Ajustar** ou **Bloquear** |
-| vai **fechar a sessão** e quer continuar depois sem perder o fio | `/handoff` | um documento que a próxima sessão lê pra retomar do ponto exato |
+| tem a ideia de um **produto que ainda não existe** e quer saber se vale e como fazer | `/cass:planejar` | um plano completo, com pesquisa de mercado, tecnologia e telas, já revisado |
+| quer **mudar ou acrescentar algo** num projeto, ou tem uma ideia solta que precisa virar tarefas | `/cass:spec-plan` | um plano fatiado em tarefas pequenas, sem dúvida em aberto |
+| tem um **problema difícil e ainda não sabe a resposta** | `/cass:auto-think` | a opção recomendada e as alternativas, cada uma com o porquê |
+| tem um **plano aprovado** e quer que o Claude construa | `/cass:implementar` | o trabalho pronto e testado, salvo no seu computador |
+| tem um **plano aprovado** e quer que o GPT construa, gastando menos Claude | `/cass:gpt-builder` | o mesmo resultado: o Codex constrói, o Claude confere |
+| **terminou de construir** e quer uma vistoria antes de publicar | `/cass:build-review` | Aprovado ou Reprovado, com a prova de cada item |
+| precisa de **pesquisa confiável**, com a fonte de cada número | `/cass:search` | os achados com página, frase e data de cada dado |
+| **já decidiu algo** e quer saber se a decisão aguenta | `/cass:gpt-optimizer` | Seguir, Ajustar ou Bloquear, com os furos que procedem |
+| vai **fechar a conversa** e quer continuar depois | `/cass:handoff` | um documento de passagem e um texto pronto pra colar na sessão nova |
 
-> Regra de bolso: **pensar** algo → `planejar` (produto novo), `spec-plan` (virar spec) ou `auto-think` (problema aberto).
-> **Pesquisar** com fonte → `search`. **Fazer** algo → `gpt-builder` (o Codex constrói, o Claude revisa).
-> **Conferir** uma decisão pronta → `gpt-optimizer`. **Continuar depois** → `handoff`.
+---
 
-### Por dentro: o que cada um faz, passo a passo
+## As skills parecidas: como não confundir
 
-O detalhe completo está no fluxograma abaixo. Em uma linha, o caminho de cada comando:
+Algumas skills fazem trabalhos vizinhos. A diferença está no **momento** em que você está.
 
-| Comando | Como funciona por dentro |
-|---|---|
-| `/planejar` | brainstorm da ideia → pesquisa (como já resolveram + qual stack) → design e mockups → escreve o plano → **Codex (GPT) audita** → corrige → entrega o plano final |
-| `/spec-plan` | **Fase 1 investiga** (sabatina até o entendimento comum, sem chutar) → **Fase 2 escreve a spec e fatia em issues** (problema, cenários de comportamento, decisões) → oferece construir com `/implementar` (Claude) ou `/gpt-builder` (subagente GPT) |
-| `/auto-think` | **formula o problema** → estuda vários ângulos em paralelo (puxa a doc oficial quando é de uma tecnologia) → **Codex/GPT tenta derrubar** cada saída → re-cava o que ficou aberto → escolhe entre as que sobraram → entrega as opções com veredito |
-| `/gpt-builder` | portão (spec + árvore limpa + checklist) → o **Codex constrói** a partir da spec congelada → o **Claude lê o diff inteiro** e roda a prova + um **fiscal independente** prova cada item no HEAD → fix-loop limitado → **você assina** antes do commit |
-| `/search` | planeja a busca → dispara subagentes no Exa → **checa os relatórios** antes de confiar → compila com procedência (página, frase, data por número) → arquiva em `search-findings/` |
-| `/gpt-optimizer` | monta o alvo (a sua decisão) → **Codex tenta derrubar** → você filtra com prova o que não procede → **Codex audita o seu filtro** → veredito **Seguir / Ajustar / Bloquear** |
-| `/handoff` | ancora no git (branch, commit, o que mudou) → captura o estado e os ponteiros (fato vs suposição) → salva o documento e abre na tela |
+### Pensar: `planejar`, `spec-plan` ou `auto-think`?
 
-## Fluxograma
+- **`planejar`** é pra algo **totalmente novo**, que ainda não existe e pede pesquisa de
+  mercado: quem já faz isso, pra quem é, que tecnologia usar, como vão ser as telas. É a
+  mais longa das três.
+- **`spec-plan`** é pra todo o resto: uma função nova num sistema que já existe, uma mudança,
+  uma ideia que você já sabe o que é mas ainda não virou tarefa. Ela te entrevista até não
+  sobrar dúvida e fatia o trabalho.
+- **`auto-think`** é pra quando **você ainda não sabe a resposta**. Ela não planeja nem
+  constrói: estuda o problema e te devolve opções com veredito. Escolhida a opção, o próximo
+  passo é a `spec-plan`.
 
-As portas e o ciclo (detalhe em [FLUXOGRAMA.md](FLUXOGRAMA.md)):
+### Construir: `implementar` ou `gpt-builder`?
+
+As duas entregam a mesma coisa, com a mesma régua de qualidade: uma lista do que foi
+prometido, a prova de cada item, testes e o trabalho salvo no seu computador. Nada vai pro
+GitHub sem o seu OK. Muda só **quem digita o código**:
+
+- **`implementar`**: o próprio Claude constrói. É o caminho padrão e funciona tanto no
+  Claude Code quanto no Codex.
+- **`gpt-builder`**: o Claude planeja e confere, o Codex (GPT) constrói. É como ter um gerente
+  e um pedreiro: fica **mais barato** porque o trabalho pesado sai da cota do Claude. Exige o
+  Codex instalado e logado.
+
+### Conferir: `gpt-optimizer`, `auto-think` ou `build-review`?
+
+- **`gpt-optimizer`**: a decisão **já está tomada** e você quer testá-la antes de agir. O GPT
+  tenta derrubar. Leva minutos.
+- **`auto-think`**: a pergunta **ainda está aberta**. Estudo completo, com pesquisa. Leva
+  bem mais tempo.
+- **`build-review`**: o trabalho **já foi construído** e vai ser publicado. Três revisores
+  conferem o resultado, não a ideia.
+
+---
+
+## As nove skills
+
+Cada linha: o que faz em português claro, e o detalhe técnico pra quem programa.
+
+**`/cass:planejar`** — Você conta a ideia de um produto novo e a skill conduz em etapas:
+pesquisa de mercado, o que o produto precisa fazer, qual tecnologia usar, como vão ser as
+telas e um plano de construção revisado por outros agentes. Você aprova cada etapa. Não
+escreve código.
+<br/>*Técnico:* 9 fases com portão de aprovação; requisitos em EARS; stack com viés Cloudflare; auditoria multiagente; entrega plano + `features.json`.
+
+**`/cass:spec-plan`** — Transforma uma mudança ou ideia em um plano com tarefas pequenas.
+Pergunta em rodadas curtas, sempre com opções e uma recomendação, até não sobrar dúvida.
+No fim, oferece construir com `implementar` ou `gpt-builder`.
+<br/>*Técnico:* spec + issues autocontidas em `docs/plans/<plano>/issues/`; cenários de comportamento; varredura dos "9 esquecidos" (validação, falhas, idempotência...).
+
+**`/cass:auto-think`** — Estuda um problema sem resposta pronta: pesquisa com fonte, ataca
+por vários ângulos e manda o GPT tentar derrubar cada ideia, duas vezes. Volta com a
+recomendada e as alternativas. Não executa nada. Antes de mandar qualquer coisa pra fora,
+troca nomes e dados pessoais por etiquetas.
+<br/>*Técnico:* confronto adversarial com Codex `gpt-6-sol` em 2 rodadas; pesquisa via `search`.
+
+**`/cass:implementar`** — O Claude constrói um plano já aprovado, uma tarefa por vez: escreve
+a lista do que foi prometido com a prova de cada item, testa e salva no seu computador. Um
+fiscal independente confere as provas.
+<br/>*Técnico:* TDD vermelho→verde; checklist em `.checks/` com teste nomeado por item; commits na branch atual; push e PR só com OK.
+
+**`/cass:gpt-builder`** — Mesmo trabalho do `implementar`, mas quem constrói é o Codex. O
+Claude escreve a ordem de serviço, lê tudo o que o Codex fez como se fosse revisar o trabalho
+de um colega, e só salva o que passou na prova.
+<br/>*Técnico:* `codex exec` com `gpt-6-sol` esforço `medium`; fiscal prova cada item no HEAD; até 2 rodadas de correção antes do Claude assumir.
+
+**`/cass:build-review`** — Vistoria final antes de publicar. Três revisores que não conversam
+entre si: um confere as regras do projeto, outro se o que foi pedido foi feito, e um fiscal
+prova cada item da lista, inclusive estragando o código de propósito pra ver se os testes
+percebem.
+<br/>*Técnico:* 3 subagentes (Standards, Spec, Fiscal) sobre `<marco>..HEAD`; injeção de defeito em `git worktree`; o veredito é do Fiscal.
+
+**`/cass:search`** — Pesquisa na internet sem número inventado: cada dado volta com a página,
+a frase exata e a data em que foi lido. O que não achar, ela diz que não achou. Guarda tudo
+numa pasta do projeto.
+<br/>*Técnico:* orquestrador Exa com subagentes; registro de procedência por número; arquivo em `search-findings/`. Precisa de conta Exa (tem plano grátis).
+
+**`/cass:gpt-optimizer`** — Segunda opinião sobre uma decisão que você já tomou. O GPT recebe
+uma ordem: tentar derrubar. Volta com Seguir, Ajustar ou Bloquear e só os furos que
+procedem. Só roda quando você chama.
+<br/>*Técnico:* Codex `gpt-6-sol` esforço `high`, só leitura; a 2ª rodada audita o seu filtro dos pontos.
+
+**`/cass:handoff`** — A conversa ficou longa e você quer continuar depois. A skill escreve um
+documento de passagem com o que foi decidido, o que falta e onde estão as coisas, separando
+fato de suposição, e te dá um texto pronto pra colar na sessão nova.
+<br/>*Técnico:* ancorado em git; cada afirmação marcada `[GIT]`/`[ARQUIVO]`/`[CHAT]`/`[SUPOSIÇÃO]`; leitor cego opcional via Codex.
+
+---
+
+## Como elas se encaixam
+
+Detalhe passo a passo em [FLUXOGRAMA.md](FLUXOGRAMA.md).
 
 ```mermaid
 %%{init: {'theme':'base', 'themeVariables': {
@@ -98,29 +172,29 @@ As portas e o ciclo (detalhe em [FLUXOGRAMA.md](FLUXOGRAMA.md)):
 flowchart TD
     START(["💡 O que você quer fazer?"])
 
-    subgraph PENSAR["pensar / especificar — produzem uma SPEC"]
+    subgraph PENSAR["pensar — produzem o plano"]
         direction TB
         P["<b>🧠 planejar</b><br/><i>produto novo do zero → plano auditado</i>"]
-        SP["<b>📝 spec-plan</b><br/><i>sabatina um plano/decisão → spec congelada</i>"]
-        AT["<b>🔬 auto-think</b><br/><i>estuda um problema → opções com veredito</i>"]
+        SP["<b>📝 spec-plan</b><br/><i>mudança ou ideia → plano com tarefas</i>"]
+        AT["<b>🔬 auto-think</b><br/><i>problema aberto → opções com veredito</i>"]
     end
 
-    GB["<b>⚙️ gpt-builder</b> / <b>🔨 implementar</b><br/><i>a SPEC entra: o Codex (gpt-builder) ou o Claude (implementar) constrói; o Claude + um fiscal revisam o diff, você assina antes do commit</i>"]
+    GB["<b>🔨 implementar</b> ou <b>⚙️ gpt-builder</b><br/><i>o Claude (implementar) ou o Codex (gpt-builder) constrói;<br/>um fiscal prova cada item; você autoriza antes de publicar</i>"]
 
     subgraph APOIO["apoio — a qualquer momento"]
         direction TB
-        SE["<b>🔎 search</b><br/><i>pesquisa com procedência (fonte de cada número)</i>"]
+        SE["<b>🔎 search</b><br/><i>pesquisa com a fonte de cada número</i>"]
         GO["<b>🛡️ gpt-optimizer</b><br/><i>testa uma decisão pronta → Seguir / Ajustar / Bloquear</i>"]
-        HO["<b>🪢 handoff</b><br/><i>salva o ponto e passa o bastão pra outra sessão</i>"]
+        HO["<b>🪢 handoff</b><br/><i>passa o trabalho pra uma sessão nova</i>"]
     end
 
     START --> P & SP & AT
     START --> SE & GO & HO
     P -->|"o plano"| GB
-    SP -->|"a spec"| GB
-    AT -->|"a solução escolhida"| GB
-    GB --> BR["<b>🕵️ build-review</b><br/><i>3 revisores sobre o diff — pente-fino (opcional)</i>"]
-    BR --> DONE(["✅ Produto conferido:<br/>o que PROVEI vs o que ASSUMI"])
+    SP -->|"as tarefas"| GB
+    AT -->|"a opção escolhida"| SP
+    GB --> BR["<b>🕵️ build-review</b><br/><i>vistoria final com 3 revisores</i>"]
+    BR --> DONE(["✅ Pronto pra publicar:<br/>o que foi PROVADO vs o que foi ASSUMIDO"])
     GB -. "ficou longo" .-> HO
     SE -. "alimenta" .-> PENSAR
 
@@ -137,3 +211,27 @@ flowchart TD
     style PENSAR fill:#eef7f5,stroke:#14b8a6,stroke-width:2px;
     style APOIO fill:#f8fafc,stroke:#94a3b8,stroke-width:2px;
 ```
+
+---
+
+## Extra: economia de tokens (RTK + Ponytail)
+
+Não é uma skill, é um guia de instalação de duas ferramentas que fazem o Claude gastar menos
+da sua cota. Pra instalar, cole isto no Claude Code e ele faz o resto:
+
+```
+Leia https://raw.githubusercontent.com/cassianodiniz/cass/main/economia-tokens.md e execute tudo.
+```
+
+O guia completo está em [economia-tokens.md](economia-tokens.md).
+
+---
+
+## Requisitos, em uma linha cada
+
+- **Claude Code** — onde as skills rodam.
+- **Codex CLI** (≥ 0.156, com `codex login`) — `gpt-builder`, `gpt-optimizer`, `auto-think` e o leitor cego do `handoff`. Sem ele, essas skills avisam e o Claude assume o papel, com garantia menor.
+- **Exa** — a `search` (e a pesquisa de quem chama a `search`).
+- **git** — `implementar`, `gpt-builder` e `build-review` trabalham num repositório git.
+
+Histórico de versões em [CHANGELOG.md](CHANGELOG.md).

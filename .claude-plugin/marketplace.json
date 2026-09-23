@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "cass",
+  "description": "Catálogo do plugin cass, de Cassiano Diniz.",
+  "owner": {
+    "name": "Cassiano Diniz",
+    "email": "cassi.diniz@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "cass",
+      "source": "./",
+      "description": "Pensar antes de fazer, construir com prova e conferir antes de confiar: 9 skills de trabalho com IA.",
+      "category": "productivity"
+    }
+  ]
+}

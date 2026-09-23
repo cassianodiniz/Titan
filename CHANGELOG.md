@@ -1,4 +1,14 @@
-# Changelog — Titan
+# Changelog — cass (antigo Titan)
+
+## 3.0.0 — 2026-09-23
+
+O plugin passa a se chamar **`cass`** (antes `Titan`) e o repositório passa a ser o próprio catálogo de instalação. **Quebra:** quem instalou o `Titan` pelo catálogo `cassiano.diniz` precisa reinstalar (o catálogo antigo saiu do ar).
+
+- **Instalação consertada.** O README mandava usar o catálogo `cassianodiniz/cassiano.diniz`, que não existe mais. Agora o repositório traz `.claude-plugin/marketplace.json`: `/plugin marketplace add cassianodiniz/cass` + `/plugin install cass@cass`. `install.sh` e `INSTALL.md` acompanham.
+- **Um modelo só pra falar com o GPT: `gpt-6-sol`.** `gpt-optimizer` (esforço `high`), `auto-think` e o motor `_shared/confronto-codex.md` (antes `gpt-5.6-sol`/`gpt-5.6-terra`) e o leitor cego do `handoff` (antes `gpt-5.6-terra`). O `gpt-6-sol` recusa `service_tier="flex"` (HTTP 400), então o `gpt-optimizer` e o `handoff` deixaram de pedir essa via. Testado com chamada real, rodada 1 e rodada 2.
+- **Sincronizadas com as versões locais:** `spec-plan` (oferece os dois construtores no fim), `implementar` (relatório abre pelo que precisa do usuário), `build-review` (relatório abre pelo veredito), `gpt-builder` (passa a usar as referências do `implementar`; a pasta `references/` própria saiu), `gpt-optimizer` e `handoff` (ganha `references/leitor-cego.md` e o aviso de árvore suja).
+- **Auditoria de funcionamento:** removidas as citações a skills que não vêm no plugin (`/revisar`, `/gpt-review`, `/codex-build`, `/setup-matt-pocock-skills`); corrigidos dois links quebrados em `build-review/references/checklist-format.md`; tirados trechos que se dirigiam ao autor como se fosse o usuário; `planejar` passa a oferecer `implementar`/`gpt-builder` pra construir o plano; `auto-think` passa a citar `spec-plan` na fronteira.
+- **README reescrito** pra quem está começando: guia "Qual eu uso?", seção sobre as skills parecidas, detalhe técnico de cada uma, link pros estudos de IA do autor e o prompt de instalação do guia de economia de tokens.
 
 ## 2.4.0 — 2026-09-20
 

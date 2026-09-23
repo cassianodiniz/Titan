@@ -1,21 +1,22 @@
 ---
 name: spec-plan
-description: Use quando o usuário invocar explicitamente /spec-plan, $spec-plan ou @spec-plan para transformar uma ideia ou mudança ainda não fechada em um plano executável. Não use quando o trabalho já estiver decidido nem para implementar.
-disable-model-invocation: true
+description: Use when the user invokes /spec-plan, $spec-plan or @spec-plan to turn an idea or change that is not yet settled into an executable plan. Do not use when the work is already decided, nor to implement, nor when the user is only thinking aloud.
 ---
 
 # Spec Plan
 
-Transforme a ideia em issues aprovadas, cada uma autocontida e pronta para uma sessão separada de `$implementar`.
+Turn the idea into approved issues, each self-contained and ready for a separate `$implementar` session.
 
-Siga duas fases, nesta ordem. Leia cada referência somente quando a fase começar:
+Follow two phases, in this order. Read each reference only when its phase begins:
 
-1. **Investigar:** leia `references/phase-1-investigate.md`. Feche escopo, decisões e seams de teste antes de pedir a confirmação de entendimento compartilhado.
-2. **Planejar e fatiar:** depois da confirmação, leia `references/phase-2-spec.md`. Produza a spec e as issues, mostre tudo ao usuário e espere aprovação antes de gravar ou publicar.
+1. **Investigate:** read `references/phase-1-investigate.md`. Close scope, decisions and test seams before asking for confirmation of shared understanding.
+2. **Plan and slice:** after confirmation, read `references/phase-2-spec.md`. Produce the spec and the issues, present the plan to the user as the phase describes, and wait for approval before writing in the repository or publishing.
 
-Invariantes:
+Write everything the user may read in the user's language: messages, the parent spec and the issues.
 
-- Nunca implemente a feature.
-- Nunca publique externamente sem autorização explícita para o destino exato.
-- Nunca use um `PLAN.md` compartilhado. Cada plano tem diretório próprio e cada issue tem um único arquivo de implementação.
-- O handoff para `$implementar` aponta para exatamente um arquivo de issue, nunca para o índice ou para o diretório inteiro.
+Invariants:
+
+- Never implement the feature.
+- Never publish externally without explicit authorization for the exact destination.
+- Never use a shared `PLAN.md`. Each plan has its own directory and each issue has a single implementation file.
+- The handoff to `$implementar` points to exactly one issue file, never to the index or to the whole directory.

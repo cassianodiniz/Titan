@@ -1,6 +1,6 @@
 ---
 name: auto-think
-description: "Estuda a fundo um problema difícil ou decisão que pesa e volta com recomendação + alternativas, COM VEREDITO — não executa (quem executa é /implementar, com o Claude, ou /gpt-builder, com um subagente GPT). A própria sessão estuda os ângulos e pesquisa a web pela skill /search (com procedência por número), confronta cada candidata com GPT-sol como advogado do diabo em 2 rodadas, e re-cava o que fica aberto. Acionar por comando: /auto-think <problema>. Fronteira: parecer rápido sobre decisão já tomada = /Titan:gpt-optimizer; planejar produto novo do zero = /planejar; EXECUTAR uma tarefa = /implementar (Claude) ou /gpt-builder (subagente GPT)."
+description: "Estuda a fundo um problema difícil ou decisão que pesa e volta com recomendação + alternativas, COM VEREDITO — não executa (quem executa é /auto-worker). A própria sessão estuda os ângulos e pesquisa a web pela skill /search (com procedência por número), confronta cada candidata com GPT-sol como advogado do diabo em 2 rodadas, e re-cava o que fica aberto. Acionar por comando: /auto-think <problema>. Fronteira: parecer rápido sobre decisão já tomada = /Titan:gpt-optimizer; planejar produto novo do zero = /planejar; EXECUTAR uma tarefa = /auto-worker."
 ---
 
 # auto-think
@@ -18,11 +18,12 @@ resolve"), ou de pesquisa pura ("o que o mundo já resolveu sobre isto").
 
 **A fronteira que define tudo:**
 - `/planejar` = desenhar um PRODUTO novo do zero antes de codar.
-- `/gpt-builder` = EXECUTAR uma tarefa e entregar feito.
+- `/spec-plan` = a solução já foi escolhida e precisa virar um plano construível (spec + tarefas).
+- `/implementar` ou `/gpt-builder` = EXECUTAR uma tarefa e entregar feito.
 - `auto-think` = ESTUDAR um problema a fundo e entregar solução(ões) recomendada(s). Não executa.
 
-Se no fim o usuário quiser rodar a solução escolhida, o ponteiro é: "quer que eu execute a A?
-→ /gpt-builder". O auto-think nunca cruza essa linha sozinho.
+Se no fim o usuário quiser rodar a solução escolhida, o ponteiro é: "quer transformar a A em plano?
+→ /spec-plan", e dali pra `/implementar` ou `/gpt-builder`. O auto-think nunca cruza essa linha sozinho.
 
 ---
 
@@ -36,7 +37,7 @@ raso não é estudar.
 
 **É sempre fundo — não tem mais "modo rápido".** Antes existia um modo leve quando você pedia
 "rápido/só o essencial"; ele saiu. O motivo: quando o que você quer é uma resposta rápida sobre
-uma decisão que você JÁ tem em mente, o caminho é a `/Titan:gpt-optimizer` (confronto avulso e
+uma decisão que você JÁ tem em mente, o caminho é a `/cass:gpt-optimizer` (confronto avulso e
 direto) — não o auto-think. Aqui, se foi chamado, **vai fundo**. A skill nunca decide sozinha
 "acho que isso é simples, vou de raso" — na dúvida entre raso e fundo, vai fundo, porque foi
 pra isso que foi chamada.
@@ -62,7 +63,7 @@ confrontos") — mas não é desculpa pra entregar menos. O usuário escolheu es
   ver passo 5), não enquanto "achar coisa nova".
 
 **Quer rápido? Use a outra skill.** O atalho pra "me dá um parecer rápido sobre isto" deixou de
-morar aqui — ele é a `/Titan:gpt-optimizer`, que confronta uma decisão pronta sem o estudo de
+morar aqui — ele é a `/cass:gpt-optimizer`, que confronta uma decisão pronta sem o estudo de
 vários ângulos. O auto-think é a ferramenta de **estudar a fundo**; pedir pra ele ser raso é
 pedir a coisa errada.
 
@@ -86,7 +87,7 @@ mais importa pro auto-think está abaixo.
 
 O auto-think pode investigar o sistema do usuário — código, banco, arquivos — e isso pode
 esbarrar em dado real de paciente/aluno, em senha ou em chave. Agora quem sai pra fora é **o
-confronto** (passos 3 e 6: as candidatas vão pro **Codex/GPT-5.6-sol, OpenAI, fornecedor
+confronto** (passos 3 e 6: as candidatas vão pro **Codex/GPT-6-sol, OpenAI, fornecedor
 externo**) e **a pesquisa web** (a query vai pro Exa, via `/search`). A produção — ângulos,
 síntese, re-cava — fica na **sessão atual (Anthropic)**, que também é quem lê o código/banco. Logo:
 
@@ -94,13 +95,13 @@ síntese, re-cava — fica na **sessão atual (Anthropic)**, que também é quem
 > (nome, CPF, telefone, email, endereço) e qualquer credencial (token, senha, chave).**
 > Vai o RACIOCÍNIO do problema; não vai a identidade de quem quer que seja.
 
-**Risco aceito conscientemente (decisão Cassiano, revisada 12/09/2026):**
+**Risco aceito conscientemente (decisão do autor, revisada 12/09/2026):**
 o confronto (`codex exec --sandbox read-only`) roda com leitura do diretório de trabalho
 real, não só do prompt mascarado — em tese o Codex poderia ler outro arquivo sensível da pasta
-além do que foi mandado no prompt. Cassiano decidiu NÃO isolar em diretório redigido: o
+além do que foi mandado no prompt. O autor decidiu NÃO isolar em diretório redigido: o
 `/auto-think` normalmente roda sobre um problema/decisão pontual, não de dentro de pasta cheia
-de dado de aluno/paciente. Se um dia isso rodar de uma pasta com dado sensível solto (ex.: Drive
-da Mentoria), reavaliar — a trava de mascarar o PROMPT continua obrigatória de qualquer forma.
+de dado de aluno/paciente. Se um dia isso rodar de uma pasta com dado sensível solto (ex.: pasta
+de clientes), reavaliar — a trava de mascarar o PROMPT continua obrigatória de qualquer forma.
 
 Como mascarar sem perder o sentido: troca por etiqueta estável (`PACIENTE_1`, `ALUNO_A`,
 `TELEFONE_X`, `TOKEN_***`), preservando a estrutura pra o estudo ainda fazer sentido. Se o
@@ -136,7 +137,7 @@ o problema, não baixar a base.
 - **Fonte da web tem o mesmo rigor:** afirmação de blog/fórum vale menos que doc oficial. Cita
   a fonte e a data; marca como ASSUMIDO quando a fonte é fraca ou a versão não bate. Confrontar
   a pesquisa = checar se a fonte sustenta a afirmação, não só se "alguém disse na internet".
-- **Não se auto-aprova:** o confrontador é o GPT-5.6-sol (fornecedor OpenAI, externo), enquanto
+- **Não se auto-aprova:** o confrontador é o GPT-6-sol (fornecedor OpenAI, externo), enquanto
   quem produz é a sessão (Anthropic). Fornecedores diferentes nas duas pontas — o auto-think nunca
   aprova o próprio raciocínio sozinho.
 
@@ -174,7 +175,7 @@ espelhando o pedido antes de cavar:
   critério de sucesso). Como o alvo já foi confirmado acima, agora é larga-e-some: não volta a perguntar.
 - **A profundidade é sempre fundo** (ver a Calibragem) — não há mais modo leve. **Nunca encolhe
   por chute** ("acho que isso é simples"): isso é o que fazia a skill trabalhar pouco. Se for um
-  parecer rápido sobre uma decisão pronta, o caminho é a `/Titan:gpt-optimizer`, não esta skill.
+  parecer rápido sobre uma decisão pronta, o caminho é a `/cass:gpt-optimizer`, não esta skill.
 - **Escape do trivial (única exceção ao fundo-por-padrão):** se ao enquadrar o problema ele se
   revelar trivial ou JÁ resolvido — e isso for **provável com evidência colada**, não com
   palpite — diz isso direto e não gasta o ciclo. "Já tem resposta pronta aqui: <prova>" é uma
@@ -263,16 +264,16 @@ sustenta. Junta tudo num leque — **mira ≥ 3 candidatas distintas** antes de 
 Se os ângulos convergiram todos na mesma candidata, dispara mais um ângulo (contrário ou
 radical) pra garantir que não é falta de imaginação, e não convergência real.
 
-### 3. Confrontar os achados (GPT-5.6-sol tenta derrubar) — 1ª rodada
-Cada achado e cada candidata passa pelo **GPT-5.6-sol** (via Codex CLI) como **advogado do diabo**
+### 3. Confrontar os achados (GPT-6-sol tenta derrubar) — 1ª rodada
+Cada achado e cada candidata passa pelo **GPT-6-sol** (via Codex CLI) como **advogado do diabo**
 (decisão 12/09/2026 — quem produz é a sessão/Anthropic; quem confronta é o GPT/OpenAI, fornecedores
 diferentes). O GPT tenta REFUTAR: isto resolve mesmo o problema ou só um sintoma? A premissa é
 fato ou foi vendida como fato? Tem caminho mais simples? A fonte sustenta a afirmação? O que
 sobrevive fica; o que é refutado cai (com o motivo registrado pra a entrega).
 
 Como chamar (mascarando dado real ANTES — ver a trava acima): via Bash, `codex exec --model
-gpt-5.6-sol --sandbox read-only`, prompt adversarial + manifesto das candidatas. Mecânica e o
-prompt das duas rodadas: `references/confronto.md`, seção "Confronto (GPT-5.6-sol)". Confronta em
+gpt-6-sol --sandbox read-only`, prompt adversarial + manifesto das candidatas. Mecânica e o
+prompt das duas rodadas: `references/confronto.md`, seção "Confronto (GPT-6-sol)". Confronta em
 LOTE (várias candidatas num prompt só) pra não multiplicar chamadas.
 
 ### 4. O PORTÃO DE QUALIDADE — 4 perguntas que toda candidata passa
@@ -336,7 +337,7 @@ ainda aberta**, NÃO para calado: entrega o que tem e **pergunta "ainda tem dúv
 decisão e bati o teto — continuo?"**. O teto é rede contra descontrole, não tesoura escondida.
 
 ### 6. Confrontar os sobreviventes — 2ª rodada
-Antes de entregar, os finalistas (a recomendada + as alternativas reais) voltam ao **GPT-5.6-sol** —
+Antes de entregar, os finalistas (a recomendada + as alternativas reais) voltam ao **GPT-6-sol** —
 retomando a MESMA sessão do Codex da 1ª rodada (resume), pra ele lembrar o que já apontou — agora
 com a pergunta afiada: *dessas que sobraram, qual escolher e por quê — e o que ainda fura na
 recomendada?* Essa segunda passada é o que separa "sobreviveu por sorte" de "sobreviveu de
@@ -369,7 +370,7 @@ gasta no máximo: **2 rodadas de confronto** (1ª em todas as candidatas, 2ª no
 consegue cumprir; matar por relógio, não.
 
 **4. O confronto GPT (passos 3 e 6) tem 15 min — passou disso, travou.** Cada chamada
-`codex exec --model gpt-5.6-sol` vai envelopada num teto de 15 min que o SO mata sozinho
+`codex exec --model gpt-6-sol` vai envelopada num teto de 15 min que o SO mata sozinho
 (o `perl -e 'alarm 900'` — `timeout` puro não existe no Mac, `perl` existe no Mac e no Windows).
 Comando exato: `references/confronto.md`. Rodou mais de 15 min = **travou**, ponto. O processo é
 morto. **Mata e refaz** — re-dispara a mesma chamada uma vez. Travou de novo → o confronto ficou
@@ -491,7 +492,7 @@ qualitativo: escopo, reversível/destrutivo, dependência nova — nunca "leva X
 ## A mecânica de composição (provar numa fatia antes de cavar fundo)
 
 O auto-think depende de acionar outras peças: a skill `/search` pra pesquisa web (via Skill tool),
-`context7` pra doc oficial, o Codex GPT-5.6-sol pro confronto (via Bash, mecânica em
+`context7` pra doc oficial, o Codex GPT-6-sol pro confronto (via Bash, mecânica em
 `references/confronto.md`), e leitura do sistema do usuário. Antes de montar um ciclo grande num
 problema novo, **prova numa fatia pequena que a peça que você vai usar responde** (uma busca curta
 via `/search`, uma chamada de Codex de teste) — assim um problema de encaixe aparece cedo, não no

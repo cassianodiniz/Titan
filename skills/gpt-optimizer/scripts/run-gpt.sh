@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ════════════════════════════════════════════════════════════════════════
-# run-gpt.sh — chama o Codex (GPT-5.6) como revisor adversarial e grava o
+# run-gpt.sh — chama o Codex (gpt-6-sol) como revisor adversarial e grava o
 # parecer limpo num arquivo. Encapsula a chamada pra não errar o stdin
 # (codex exec trava esperando stdin se rodado sem redirecionar a entrada).
 #
@@ -8,7 +8,7 @@
 #   run-gpt.sh <INPUT_FILE> <OUTPUT_FILE> [EFFORT] [THREAD_FILE]
 #     INPUT_FILE  = prompt + selo + manifesto, já montado pelo Claude
 #     OUTPUT_FILE = onde gravar o parecer do GPT
-#     EFFORT      = xhigh (default) | high
+#     EFFORT      = high (default) | xhigh
 #     THREAD_FILE = memória do revisor (opcional). Vazio/inexistente = rodada 1:
 #                   abre sessão nova e GRAVA o thread_id aqui. Já preenchido =
 #                   rodada 2+: RETOMA a mesma sessão, e o GPT lembra o que já
@@ -27,7 +27,7 @@ set -uo pipefail
 
 IN="${1:?uso: run-gpt.sh <INPUT> <OUTPUT> [EFFORT]}"
 OUT="${2:?uso: run-gpt.sh <INPUT> <OUTPUT> [EFFORT]}"
-EFFORT="${3:-xhigh}"
+EFFORT="${3:-high}"
 THREAD_FILE="${4:-}"
 
 [ -f "$IN" ] || { echo "input_ausente: $IN"; exit 5; }
@@ -37,8 +37,7 @@ RAW="$(mktemp)"; ERR="$(mktemp)"
 trap 'rm -f "$RAW" "$ERR"' EXIT
 
 # Uma tentativa do Codex. Devolve 0 se produziu parecer não-vazio em $OUT.
-# - service_tier="flex" = modo flex (mais barato/lento que fast).
-#   Precisa ser explícito porque --ignore-user-config ignora o tier do config.
+# - sem service_tier: o gpt-6-sol recusa "flex" (HTTP 400 "Unsupported service_tier: flex", testado 22/09/2026).
 # - --sandbox read-only: o revisor recebe o alvo inteiro via stdin; é uma
 #   revisão de leitura, não pode (nem precisa) escrever no workspace.
 # - -o grava a resposta final já limpa; stdin (-) carrega o pacote inteiro sem
@@ -60,12 +59,10 @@ run_codex () {
     # --model e --ignore-user-config são obrigatórios aqui: sem eles o resume lê o
     # `model` do ~/.codex/config.toml, que o app do Codex reescreve sozinho ao
     # atualizar. A sessão retomada NÃO carrega o modelo da rodada 1.
-    # Modelo padrão: gpt-5.6-sol (ordem Cassiano 10/07/2026; o 400 antigo era
-    # CLI desatualizada — 0.144.1 aceita; provado com exec real).
+    # Modelo padrão: gpt-6-sol, esforço high (22/09/2026; era gpt-6-astra).
     codex exec resume "$TID" \
-      --model gpt-5.6-sol \
+      --model gpt-6-sol \
       -c model_reasoning_effort="$EFFORT" \
-      -c service_tier="flex" \
       -c sandbox_mode="read-only" \
       --skip-git-repo-check \
       --ignore-user-config \
@@ -74,9 +71,8 @@ run_codex () {
     rc=$?
   else
     codex exec \
-      --model gpt-5.6-sol \
+      --model gpt-6-sol \
       -c model_reasoning_effort="$EFFORT" \
-      -c service_tier="flex" \
       --skip-git-repo-check \
       --ignore-user-config \
       -c windows.sandbox="elevated" \
@@ -105,7 +101,7 @@ run_codex () {
   return 0
 }
 
-# Tenta 2x: a 1ª falha do Codex costuma ser transitória (rede / fila flex).
+# Tenta 2x: a 1ª falha do Codex costuma ser transitória (rede / fila).
 if run_codex; then echo "ok"; exit 0; fi
 if run_codex; then echo "ok (2ª tentativa)"; exit 0; fi
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ════════════════════════════════════════════════════════════════════════
-# cold-read.sh — entrega o handoff PRONTO ao Codex (GPT-5.5) como LEITOR CEGO
+# cold-read.sh — entrega o handoff PRONTO ao Codex (gpt-6-sol) como LEITOR CEGO
 # (não viu a conversa) e grava o parecer limpo num arquivo: "só com este doc,
 # o que você NÃO conseguiria continuar?". Encapsula a chamada pra não errar o
 # stdin (codex exec trava esperando stdin se rodado sem redirecionar a entrada).
@@ -34,8 +34,7 @@ RAW="$(mktemp)"; ERR="$(mktemp)"
 trap 'rm -f "$RAW" "$ERR"' EXIT
 
 # Uma tentativa do Codex. Devolve 0 se produziu parecer não-vazio em $OUT.
-# - service_tier="flex" = modo flex do gpt-5.5 (mais barato/lento que fast).
-#   Precisa ser explícito porque --ignore-user-config ignora o tier do config.
+# - sem service_tier: o gpt-6-sol recusa "flex" (HTTP 400 "Unsupported service_tier: flex").
 # - --sandbox read-only: o revisor recebe o alvo inteiro via stdin; é uma
 #   revisão de leitura, não pode (nem precisa) escrever no workspace.
 # - -o grava a resposta final já limpa; stdin (-) carrega o pacote inteiro sem
@@ -46,9 +45,8 @@ run_codex () {
   # perl -e 'alarm 900' = teto de 15 min direto no codex (timeout puro não existe
   # no Mac; perl existe nos dois SOs). Passou disso, o SO mata e a tentativa falha.
   perl -e 'alarm 900; exec @ARGV' codex exec \
-    --model gpt-5.6-terra \
+    --model gpt-6-sol \
     -c model_reasoning_effort="$EFFORT" \
-    -c service_tier="flex" \
     --skip-git-repo-check \
     --ignore-user-config \
     -c windows.sandbox="elevated" \
@@ -67,7 +65,7 @@ run_codex () {
   [ -s "$OUT" ] && return 0 || return 1
 }
 
-# Tenta 2x: a 1ª falha do Codex costuma ser transitória (rede / fila flex).
+# Tenta 2x: a 1ª falha do Codex costuma ser transitória (rede / fila).
 if run_codex; then echo "ok"; exit 0; fi
 if run_codex; then echo "ok (2ª tentativa)"; exit 0; fi
 
