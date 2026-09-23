@@ -244,7 +244,7 @@ This is not a disclaimer and not hedging. It is the same rule as `not stated` ap
 
 ## Where research gets saved
 
-Every research run that cites external sources is archived in the house library, grouped under one folder so that past research is findable as a body rather than scattered per project.
+Every research run that cites external sources is archived in the research library, grouped under one folder so that past research is findable as a body rather than scattered per project.
 
 **Ask the skill's own script for the destination — do not build the path yourself and do not hardcode it.** It lives beside this file, at `scripts/destino_pesquisa.py`:
 
@@ -260,7 +260,7 @@ It prints one absolute path and has already created it. What it guarantees, so t
 
 **If the script exits non-zero, stop and report it.** Do not fall back to a relative folder, do not invent a substitute destination, do not save "somewhere for now". An unsaved research run is a fixable problem; a research run saved where nobody will find it is the problem this replaced.
 
-Run it with `--conferir` to check the library is reachable without creating anything — worth doing before a long research run, so a Drive problem surfaces before the work, not after.
+Run it with `--conferir` to check the library is reachable without creating anything — worth doing before a long research run, so a folder problem surfaces before the work, not after.
 
 **The layout it produces:**
 
@@ -308,7 +308,7 @@ Your interpretation does not live in the source file — it lives in `estudo.md`
 
 **This is where the provenance record pays off.** The `evidence_quote` you already captured for every number *is* the copied passage — you are not doing the work twice, you are filing what you already have.
 
-**Before calling the research done:** every source cited in your answer has a file; every number in your answer points to a copied block. Whatever fails that check leaves the answer or becomes a declared gap. Then update `BIBLIOTECA.md` and `INDICE-MESTRE.md` at the library root in the same pass — an index left stale is material nobody finds again.
+**Before calling the research done:** every source cited in your answer has a file; every number in your answer points to a copied block. Whatever fails that check leaves the answer or becomes a declared gap. If the library root keeps an index file (e.g. `INDICE-MESTRE.md`), update it in the same pass — an index left stale is material nobody finds again.
 
 If the full output cannot fit in a single screen, the file above is where it goes. Include a pointer to it below the 1-screen output.
 

@@ -8,7 +8,7 @@
 
 **Como usar** — abra o Claude Code e cole isto:
 
-> Leia https://raw.githubusercontent.com/cassianodiniz/Titan/main/economia-tokens.md e execute tudo.
+> Leia https://raw.githubusercontent.com/cassianodiniz/cass/main/economia-tokens.md e execute tudo.
 
 Pronto. O Claude faz o resto sozinho. (Se você já tem o arquivo na mão, também dá: arraste ele pro Claude Code e escreva *"leia este arquivo e execute tudo"*.)
 

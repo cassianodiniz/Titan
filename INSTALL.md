@@ -1,6 +1,6 @@
-# Instalar o plugin `Titan` (e o que ele usa por fora)
+# Instalar o plugin `cass` (e o que ele usa por fora)
 
-O plugin `Titan` (skills `planejar`, `spec-plan`, `auto-think`, `implementar`, `gpt-builder`, `search`, `build-review`, `handoff`, `gpt-optimizer`) **orquestra** ferramentas externas —
+O plugin `cass` (skills `planejar`, `spec-plan`, `auto-think`, `implementar`, `gpt-builder`, `search`, `build-review`, `handoff`, `gpt-optimizer`) **orquestra** ferramentas externas —
 ele não empacota elas. Este arquivo reúne tudo que precisa instalar pra ele rodar completo.
 
 A boa notícia: nada disso trava o plugin. A `planejar` tem um **preflight (Fase 0)** que confere
@@ -12,20 +12,20 @@ O que tem fallback, degrada sozinho.
 ## 0. Autoinstall — um comando
 
 O `install.sh` instala **tudo que dá** sozinho, via a CLI `claude` (`claude plugin install`),
-`npx` e `npm`: o próprio plugin Titan, os plugins externos (superpowers, cloudflare), as skills
+`npx` e `npm`: o próprio plugin cass, os plugins externos (superpowers, cloudflare), as skills
 via npx (taste-skill, find-skills, gemini-api-dev), o **Codex CLI** (se faltar) e o MCP do Stitch
 (se você passar a chave). Não precisa mais colar `/plugin` na mão.
 
 **Numa máquina que ainda não tem o plugin** (bootstrap direto do GitHub):
 ```bash
-curl -fsSL https://raw.githubusercontent.com/cassianodiniz/Titan/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/cassianodiniz/cass/main/install.sh | bash
 ```
 
-**Se já tem o plugin** (roda da pasta dele, ou peça pro Claude *"roda o install.sh do Titan"*):
+**Se já tem o plugin** (roda da pasta dele, ou peça pro Claude *"roda o install.sh do cass"*):
 ```bash
 bash install.sh                          # instala tudo que dá
 STITCH_API_KEY=suachave bash install.sh  # + configura o MCP do Stitch
-SKIP_PLUGIN=1 bash install.sh            # só as dependências (não reinstala o Titan)
+SKIP_PLUGIN=1 bash install.sh            # só as dependências (não reinstala o cass)
 ```
 
 **Só sobra o que depende de chave/conta sua** (o script avisa no fim):
@@ -39,16 +39,19 @@ item-por-item, caso queira instalar na mão.
 
 ---
 
-## 1. Instalar o próprio plugin `Titan`
+## 1. Instalar o próprio plugin `cass`
 
 Pelo `/plugin`, adicione o marketplace e instale:
 
 ```
-/plugin marketplace add cassianodiniz/cassiano.diniz
-/plugin install Titan@cassiano.diniz
+/plugin marketplace add cassianodiniz/cass
+/plugin install cass@cass
 ```
 
-Depois as skills ficam disponíveis como `Titan:planejar`, `Titan:gpt-builder`, `Titan:handoff`.
+Depois as skills ficam disponíveis como `/cass:planejar`, `/cass:gpt-builder`, `/cass:handoff` e assim por diante.
+
+> Instalou o antigo `Titan` pelo catálogo `cassiano.diniz`? Esse catálogo saiu do ar. Remova com
+> `/plugin uninstall Titan@cassiano.diniz` e `/plugin marketplace remove cassiano.diniz`, e instale o `cass` acima.
 
 ---
 
@@ -58,7 +61,7 @@ Depois as skills ficam disponíveis como `Titan:planejar`, `Titan:gpt-builder`, 
 |---|---|---|
 | **superpowers** (`brainstorming`, `writing-plans`) | `planejar` Fases 1 e 5 | `/plugin marketplace add obra/superpowers-marketplace`<br/>`/plugin install superpowers@superpowers-marketplace` |
 | **Taste Skill** (`design-taste-frontend`) | `planejar` Fase 4 (só se houver tela) | `npx skills add https://github.com/Leonxlnx/taste-skill --skill "design-taste-frontend"` |
-| **Codex CLI** (constrói + revisor GPT-5.6) | `gpt-builder` (constrói a partir da spec) e `planejar`/`auto-think` (confronto) | Instalar o Codex CLI da OpenAI e logar. Sem ele, o `gpt-builder` não constrói (o Claude assume, com garantia menor); em risco alto, fica BLOQUEADO até voltar. |
+| **Codex CLI** ≥ 0.156 (constrói + revisor `gpt-6-sol`) | `gpt-builder` (constrói a partir da spec), `gpt-optimizer` e `auto-think` (confronto), `handoff` (leitor cego) | Instalar o Codex CLI da OpenAI e logar. Sem ele, o `gpt-builder` não constrói (o Claude assume, com garantia menor); em risco alto, fica BLOQUEADO até voltar. |
 | **Exa** (busca web com procedência) | `search` (pesquisa profunda) | Conta Exa: OAuth no MCP do Exa, ou variável `EXA_API_KEY` (chave grátis em https://dashboard.exa.ai/api-keys). Sem ela, a `search` não roda. |
 
 ---

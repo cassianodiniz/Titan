@@ -1,12 +1,12 @@
-# Fluxograma — plugin `Titan`
+# Fluxograma — plugin `cass`
 
 Plugin com **nove skills**. Cada uma é uma **porta de entrada independente** — você pode começar
 por qualquer uma:
 
 - **🧠 /planejar** — desenha um produto/software do zero, **descobre como o problema já foi resolvido lá fora** e **audita a planta** antes de construir.
-- **📝 /spec-plan** — você traz um **plano/decisão/ideia**; ele **sabatina até o entendimento comum** e escreve uma **spec congelada** pronta pra construir com IA. No fim, oferece mandar pra `/gpt-builder`.
+- **📝 /spec-plan** — você traz um **plano/decisão/ideia**; ele **sabatina até o entendimento comum** e escreve uma **spec congelada** pronta pra construir com IA. No fim, oferece construir com `/implementar` (Claude) ou `/gpt-builder` (Codex).
 - **🔬 /auto-think** — você traz um **problema sem resposta**; ele **estuda a fundo** (vários ângulos em paralelo, confronta os achados com o Codex/GPT) e entrega **opções com veredito**. Gera caminhos — não executa, para na recomendação.
-- **⚙️ /gpt-builder** — recebe uma **spec congelada** e executa: o **Codex constrói** (mão na massa, acesso total), o **Claude lê o diff inteiro** e um **fiscal independente** prova cada item; **você assina** antes de qualquer commit.
+- **⚙️ /gpt-builder** — recebe uma **spec congelada** e executa: o **Codex constrói** (mão na massa, acesso total), o **Claude lê o diff inteiro** e um **fiscal independente** prova cada item; o Claude salva localmente o que passou e **nada vai pro GitHub sem o seu OK**.
 - **🔨 /implementar** — constrói uma **spec já decidida** com o **próprio Claude** (TDD nas junções combinadas, checklist com prova por item, commits na branch atual). É a alternativa à `gpt-builder`: mesmo lugar no fluxo, só que quem constrói é o Claude, não o Codex.
 - **🕵️ /build-review** — depois de construído (por `/implementar` ou `/gpt-builder`), junta **3 revisores independentes** sobre o diff (padrões da casa, aderência à spec, e um fiscal que prova cada item da checklist). Pente-fino final.
 - **🔎 /search** — **pesquisa profunda via Exa com procedência**: cada número volta com a página, a frase e a data em que foi lido. Alimenta os outros ou roda sozinha.
@@ -14,7 +14,7 @@ por qualquer uma:
 - **🛡️ /gpt-optimizer** — **segunda opinião adversarial pra refletir antes de cravar**, no meio de qualquer conversa: sem precisar de plano nem código formal, ele monta o alvo sozinho, o Codex tenta derrubar, e devolve veredito **Seguir / Ajustar / Bloquear**.
 
 Elas também formam **um ciclo**: a spec sai do `planejar` (a planta), do `spec-plan` (sabatinada) ou
-a solução escolhida sai do `auto-think`, e vai pro `gpt-builder` pra ser construída; se o trabalho
+a solução escolhida sai do `auto-think` (e passa pela `spec-plan`), e vai pro `implementar` ou pro `gpt-builder` pra ser construída; se o trabalho
 fica longo e o contexto enche, você chama o `handoff` e numa sessão nova retoma de onde parou.
 
 > A grande diferença que costuma confundir: **`planejar` revisa o PLANO** (a planta, antes de
@@ -23,11 +23,11 @@ fica longo e o contexto enche, você chama o `handoff` e numa sessão nova retom
 >
 > E entre os "pensadores": **`planejar` parte de uma IDEIA de produto** (desenha algo novo);
 > **`spec-plan` parte de um PLANO/DECISÃO** (sabatina até virar spec); **`auto-think` parte de um
-> PROBLEMA sem resposta** (investiga e recomenda opções). Os três alimentam o `gpt-builder`.
+> PROBLEMA sem resposta** (investiga e recomenda opções). Os três levam à construção (`implementar` ou `gpt-builder`); o `auto-think` passa antes pela `spec-plan`.
 >
 > Já o **`gpt-optimizer`** parte de uma **decisão que você JÁ tomou** — não gera opções, **testa a que você
 > escolheu** (o GPT tenta derrubar). É o **confronto avulso**, fora do ciclo, que você chama a
-> qualquer momento — o mesmo motor de confronto Codex que o `planejar` e o `auto-think` usam por dentro.
+> qualquer momento — o mesmo tipo de confronto com o Codex que o `auto-think` usa por dentro.
 
 ```mermaid
 %%{init: {'theme':'base', 'themeVariables': {
@@ -74,7 +74,7 @@ flowchart TD
             P3["<b>3 · Pesquisa técnica</b><br/><i>escolhe a stack com dados, não achismo</i>"]
             P4["<b>4 · Design</b><br/><i>estilo, mockups e documento visual</i>"]
             P5["<b>5 · Escreve o plano</b><br/><i>passos miúdos com o código já pronto</i>"]
-            P6["<b>6 · Auditoria do PLANO</b><br/><i>especialistas + <b>Codex GPT</b> revisam a planta</i>"]
+            P6["<b>6 · Auditoria do PLANO</b><br/><i>especialistas revisam a planta</i>"]
             P7["<b>7 · Correção</b><br/><i>aplica no plano tudo que a auditoria achou</i>"]
             P8["<b>8 · Montagem</b><br/><i>plano final, limpo, pronto pra executar</i>"]
             PINTRO --> P0 --> P1 --> P1B --> P2 --> P3 --> P4 --> P5 --> P6 --> P7 --> P8
@@ -113,7 +113,7 @@ flowchart TD
     end
 
     %% pontes dos pensadores → gpt-builder
-    P8 --> PONTE{"Oferecer execução com a gpt-builder?<br/>opcional, só com seu OK"}
+    P8 --> PONTE{"Oferecer construção (implementar ou gpt-builder)?<br/>opcional, só com seu OK"}
     PONTE -->|"prefiro de outro jeito"| FIMP(["📄 Plano salvo em docs/"])
     PONTE -->|"você aceita"| CONTRATO["<b>📄 Contrato de execução</b><br/><i>trava o objetivo e o que NÃO reabrir</i>"]
     CONTRATO --> AINTRO
@@ -124,18 +124,18 @@ flowchart TD
 
     T6 --> TPONTE{"Quer executar a escolhida?<br/>opcional, só com seu OK"}
     TPONTE -->|"é só estudo"| FIMT(["📄 Soluções entregues + detalhe em .md"])
-    TPONTE -->|"vira spec e executa"| AINTRO
+    TPONTE -->|"vira spec (spec-plan) e constrói"| AINTRO
 
     %% ───────── GPT-BUILDER (spec-driven) ─────────
     subgraph AUTO[" "]
         direction TB
-        AINTRO["<b>⚙️ /gpt-builder</b> — spec congelada entra, produto conferido sai<br/>o Codex constrói, o Claude + um fiscal revisam · você entra só no arranque e na assinatura do diff<br/><i>alternativa: <b>/implementar</b> — mesmo lugar no fluxo, mas quem constrói é o próprio Claude</i>"]
+        AINTRO["<b>⚙️ /gpt-builder</b> — spec congelada entra, produto conferido sai<br/>o Codex constrói, o Claude + um fiscal revisam · você entra só no arranque e no OK pra publicar<br/><i>alternativa: <b>/implementar</b> — mesmo lugar no fluxo, mas quem constrói é o próprio Claude</i>"]
         AG0{"<b>Portão</b> · antes de qualquer código<br/>spec existe? · árvore git limpa? · checklist escrito (1 prova por item)?"}
         AG1["<b>Codex constrói a partir da spec</b> (sessão fresca, acesso de escrita `--yolo`)<br/><i>uma entrega inteira por contrato — não fatia pra 'paralelizar'</i>"]
         AG2["<b>Claude lê o diff INTEIRO</b> como PR de contribuidor + roda a PROVA ele mesmo<br/><i>a saída colada pelo Codex NÃO conta como prova · confere que o diff é o do HEAD atual</i>"]
         AG3["<b>Fiscal independente</b> (outro agente, não o Codex) prova cada item do checklist no HEAD<br/><i>confirma que o teste existe e rodou, cita arquivo:linha, devolve PASS/FAIL</i>"]
         ADEC{"Tudo verde (Claude + fiscal)?<br/>fix-loop: teto de 2 rodadas na MESMA sessão do Codex"}
-        AGATE{"<b>Portão humano</b> · você aprova o diff?<br/>prova passa · fiscal PASS · diff lido"}
+        AGATE{"<b>Verificação</b> · passou?<br/>prova passa · fiscal PASS · diff lido"}
         AINTRO --> AG0
         AG0 -->|"falta a spec"| SINTRO
         AG0 -->|"árvore suja"| STOPTREE(["⛔ Para: comite/stash antes<br/>o diff do Codex precisa ficar isolado"])
@@ -146,7 +146,7 @@ flowchart TD
         ADEC -->|"verde"| AGATE
     end
 
-    AGATE -->|"você aprova"| COMMIT["<b>Claude comita</b> (nunca o Codex) — depois do seu OK"]
+    AGATE -->|"tudo verde"| COMMIT["<b>Claude comita localmente</b> (nunca o Codex)<br/><i>publicar no GitHub espera o seu OK</i>"]
     AGATE -->|"algo errado"| AG1
     COMMIT --> BREV["<b>🕵️ /build-review</b> (opcional, pente-fino)<br/><i>3 revisores independentes sobre o diff + a checklist: padrões · aderência à spec · fiscal que prova cada item</i>"]
     BREV --> ENTREGA(["✅ Entrega traduzida:<br/>o que PROVEI (com evidência) vs o que ASSUMI"])

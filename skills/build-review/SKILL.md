@@ -1,7 +1,6 @@
 ---
 name: build-review
-description: Use quando uma feature já construída vai ser revisada antes do merge e existem uma checklist do que foi prometido (`.checks/<feature>.md`), um diff `<base>..HEAD` e a issue/spec original. Junta três revisores independentes num só passo — dois eixos de qualidade (padrões da casa + aderência ao pedido) e um fiscal que prova cada item da checklist rodando os testes e injetando defeito. Acionada só pelo usuário com /build-review. Não use pra planejar nem construir, nem quando ainda não há checklist.
-disable-model-invocation: true
+description: Use quando uma feature já construída vai ser revisada antes do merge e existem uma checklist do que foi prometido (`.checks/<feature>.md`), um diff `<base>..HEAD` e a issue/spec original. Junta três revisores independentes num só passo — dois eixos de qualidade (padrões da casa + aderência ao pedido) e um fiscal que prova cada item da checklist rodando os testes e injetando defeito. Acionada com /build-review ou com o sim ao convite do /implementar. Não use pra planejar nem construir, nem quando ainda não há checklist.
 license: os textos em references/ são cópias verbatim — Matt Pocock (CC-BY-4.0, github.com/mattpocock) e a skill implement (Tech Leads Club, CC-BY-4.0)
 ---
 
@@ -54,6 +53,10 @@ O Fiscal faz julgamento pesado (mutação, cobertura) — não rode ele no model
 A saída É exatamente estes quatro blocos, nesta ordem:
 
 ```
+## Portão
+<PASS ou FAIL — este é o veredito do FISCAL>
+Standards e Spec: <nº de achados em cada, o pior de cada eixo>
+
 ## Standards
 <relatório do subagente Standards, verbatim ou levemente limpo>
 
@@ -62,11 +65,9 @@ A saída É exatamente estes quatro blocos, nesta ordem:
 
 ## Fiscal
 <veredito PASS/FAIL do Fiscal + as tabelas de evidência>
-
-## Portão
-<PASS ou FAIL — este é o veredito do FISCAL>
-Standards e Spec: <nº de achados em cada, o pior de cada eixo>
 ```
+
+No Portão, diga o que vem: PASS → "posso subir e abrir a PR?"; FAIL → "posso devolver os achados à skill que construiu (`/implementar` ou `/gpt-builder`) para consertar?". Só age com o sim.
 
 Regras da junção, que vêm dos próprios textos-fonte:
 

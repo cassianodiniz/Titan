@@ -1,7 +1,7 @@
 # Mecânica de modelos — específico do /auto-think
 
 **Decisão 12/09/2026 (inversão dos papéis):** a pesquisa e a síntese voltaram pra **sessão atual**
-(o próprio Claude que roda o auto-think), e o **confronto adversarial passou a ser o GPT-5.6-sol**
+(o próprio Claude que roda o auto-think), e o **confronto adversarial passou a ser o GPT-6-sol**
 (via Codex CLI). Antes (12/07/2026) era o contrário: GPT nos ângulos, Opus no confronto.
 
 Por que inverteu (racional do dono, validado numa fatia antes de cravar):
@@ -63,7 +63,7 @@ reabre todos os ângulos — só o que fecha a dúvida em aberto.
 
 ---
 
-## Confronto (passos 3 e 6) — GPT-5.6-sol como advogado do diabo, via Codex CLI
+## Confronto (passos 3 e 6) — GPT-6-sol como advogado do diabo, via Codex CLI
 
 Aqui é o único ponto do ciclo que usa o Codex. O GPT-sol tenta **DERRUBAR** o leque que a sessão
 produziu. Mecânica espelhada do `/gpt-builder` (prompt por stdin, saída em arquivo, sandbox
@@ -104,7 +104,7 @@ Formato de resposta:
 - (curtos, acionáveis, cada um com a evidência/raciocínio que o sustenta)
 EOF
 
-perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-5.6-sol \
+perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-6-sol \
   --skip-git-repo-check --ignore-user-config --sandbox read-only \
   -o /tmp/auto-think-confronto-1.md \
   - <"$P" 2>/dev/null

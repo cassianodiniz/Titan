@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # ════════════════════════════════════════════════════════════════════════
-# install.sh — AUTOINSTALL do plugin `Titan` e de tudo que ele usa por fora.
+# install.sh — AUTOINSTALL do plugin `cass` e de tudo que ele usa por fora.
 #
 # Instala SOZINHO (via a CLI `claude` + `npx` + `npm`):
-#   • o próprio plugin Titan (marketplace + install)
+#   • o próprio plugin cass (marketplace + install)
 #   • os plugins externos que a planejar usa (superpowers, cloudflare)
 #   • as skills via npx (taste-skill, find-skills, gemini-api-dev)
 #   • o Codex CLI (o crítico), se faltar
@@ -12,10 +12,10 @@
 # Uso:
 #   bash install.sh                          # instala tudo que dá
 #   STITCH_API_KEY=xxxx bash install.sh      # + configura o MCP do Stitch
-#   SKIP_PLUGIN=1 bash install.sh            # não instala o Titan (só as deps)
+#   SKIP_PLUGIN=1 bash install.sh            # não instala o cass (só as deps)
 #
 # Bootstrap direto do GitHub (numa máquina sem o plugin ainda):
-#   curl -fsSL https://raw.githubusercontent.com/cassianodiniz/Titan/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/cassianodiniz/cass/main/install.sh | bash
 #
 # Mac/Linux nativo; no Windows, via Git Bash. NÃO roda em PowerShell/cmd.
 # ════════════════════════════════════════════════════════════════════════
@@ -26,7 +26,7 @@ ok()   { printf '  ✅ %s\n' "$*"; }
 warn() { printf '  ⚠️  %s\n' "$*"; }
 run()  { local d="$1"; shift; say "→ $d"; if "$@"; then ok "$d"; else warn "$d — falhou; veja o INSTALL.md"; fi; say ""; }
 
-say "=== AUTOINSTALL do plugin Titan ==="
+say "=== AUTOINSTALL do plugin cass ==="
 say ""
 
 # ── Pré-requisitos ──────────────────────────────────────────────────────
@@ -35,10 +35,10 @@ command -v claude >/dev/null 2>&1 || { HAS_CLAUDE=0; warn "CLI 'claude' não enc
 command -v npx    >/dev/null 2>&1 || { HAS_NPX=0;    warn "npx (Node.js) não encontrado — instale o Node (https://nodejs.org). As skills via npx e o Codex não vão instalar."; }
 say ""
 
-# ── 1. O próprio plugin Titan ────────────────────────────────────────────
+# ── 1. O próprio plugin cass ─────────────────────────────────────────────
 if [ "${SKIP_PLUGIN:-0}" != "1" ] && [ "$HAS_CLAUDE" = "1" ]; then
-  run "Marketplace cassiano.diniz" claude plugin marketplace add cassianodiniz/cassiano.diniz
-  run "Plugin Titan"               claude plugin install Titan@cassiano.diniz -s user
+  run "Marketplace cass" claude plugin marketplace add cassianodiniz/cass
+  run "Plugin cass"      claude plugin install cass@cass -s user
 fi
 
 # ── 2. Plugins externos que a planejar orquestra ─────────────────────────
@@ -56,7 +56,7 @@ if [ "$HAS_NPX" = "1" ]; then
   run "Gemini (gemini-api-dev)"             npx -y skills add google-gemini/gemini-skills --skill gemini-api-dev --global
 fi
 
-# ── 4. Codex CLI (o crítico GPT-5.5) ─────────────────────────────────────
+# ── 4. Codex CLI (o GPT: gpt-6-sol) ─────────────────────────────────────
 if command -v codex >/dev/null 2>&1; then
   ok "Codex CLI já instalado"; say ""
 elif [ "$HAS_NPX" = "1" ]; then
@@ -84,4 +84,4 @@ say "  • MCPs context7/firecrawl → conforme seu provedor (opcionais; degrada
 say "════════════════════════════════════════════════════════════════"
 say ""
 say "Reinicie o Claude Code (ou abra sessão nova) pra carregar os plugins."
-say "O preflight da Fase 0 do /Titan:planejar confere o que ficou faltando."
+say "O preflight da Fase 0 do /cass:planejar confere o que ficou faltando."

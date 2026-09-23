@@ -1,7 +1,7 @@
 {
-  "name": "Titan",
-  "version": "2.4.0",
-  "description": "Pensar, especificar, fazer e passar o bastão: skills chamáveis individualmente. planejar (metodologia completa pra desenhar produto/software novo do zero antes de codar), spec-plan (sabatina um plano/decisão/ideia até o entendimento comum e produz uma spec congelada pronta pra construir com IA), auto-think (modo largar-e-esquecer pra ESTUDAR um problema difícil — pesquisa, estuda de vários ângulos, confronta os achados com o Codex/GPT, verifica e entrega uma ou mais soluções com veredito; não executa), implementar (constrói uma spec já decidida com o PRÓPRIO Claude — TDD nas junções, checklist com prova por item, commits na branch atual), gpt-builder (entrega a spec congelada pro Codex CONSTRUIR com acesso total; o Claude revisa o diff inteiro como um PR, um fiscal independente prova cada item, e o humano assina antes de qualquer commit), search (pesquisa profunda via Exa com procedência — cada número volta com a página, a frase e a data em que foi lido), build-review (junta três revisores independentes sobre um diff já construído: padrões da casa, aderência à spec, e um fiscal que prova cada item da checklist), handoff (gera documento de passagem de bastão pra continuar o trabalho numa sessão nova do zero) e gpt-optimizer (revisor adversarial on-demand via Codex GPT-5.6 que te faz refletir sobre uma decisão no meio da conversa — o GPT tenta derrubar, advogado do diabo; sem precisar de plano, PR ou código formal). Fluxo: planejar/spec-plan produzem a spec; implementar (Claude) ou gpt-builder (Codex) constroem a partir dela; build-review faz o pente-fino final. Repo-agnóstico — serve pra qualquer projeto.",
+  "name": "cass",
+  "version": "3.0.0",
+  "description": "Skills do Cassiano Diniz pra trabalhar com IA do jeito certo: pensar antes de fazer, construir com prova e conferir antes de confiar. planejar (produto novo do zero, com pesquisa de mercado), spec-plan (transforma uma mudança ou ideia em plano com tarefas), auto-think (estuda um problema sem resposta e traz opções com veredito), implementar (o Claude constrói um plano aprovado), gpt-builder (o Codex constrói e o Claude confere — mais barato), build-review (revisão final com 3 revisores independentes), search (pesquisa com a fonte de cada número), gpt-optimizer (o GPT tenta derrubar uma decisão que você já tomou) e handoff (passa o trabalho pra uma sessão nova sem perder o fio).",
   "author": {
     "name": "Cassiano Diniz",
     "email": "cassi.diniz@gmail.com"
@@ -15,10 +15,12 @@
   "keywords": [
     "planejamento",
     "spec",
-    "autonomia",
-    "handoff",
+    "implementacao",
+    "revisao",
     "pesquisa",
     "codex",
-    "seguranca"
-  ]
+    "handoff"
+  ],
+  "homepage": "https://github.com/cassianodiniz/cass",
+  "repository": "https://github.com/cassianodiniz/cass"
 }

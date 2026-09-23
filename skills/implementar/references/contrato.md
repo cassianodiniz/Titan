@@ -1,6 +1,6 @@
 # Contrato de entrega (prompt para um executor delegado)
 
-Um contrato por **entrega inteira** — nunca por arquivo, teste ou etapa. Serve para um processo Codex (`/codex-build` usa este mesmo formato) e para um subagente do runtime. O executor começa com zero contexto: tudo que ele precisa está aqui ou em disco, por ponteiro (caminhos, números de issue, SHA), não por cópia longa. Seção vazia é sinal vermelho.
+Um contrato por **entrega inteira** — nunca por arquivo, teste ou etapa. Serve para um processo Codex (o `/gpt-builder` usa este mesmo formato) e para um subagente do runtime. O executor começa com zero contexto: tudo que ele precisa está aqui ou em disco, por ponteiro (caminhos, números de issue, SHA), não por cópia longa. Seção vazia é sinal vermelho.
 
 ```
 Você implementa UMA entrega do repo <caminho>. Trabalhe só nela. Não faça commit nem push; não crie branch; não abra outros agentes.

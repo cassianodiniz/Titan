@@ -1,6 +1,6 @@
-# Confronto via Codex GPT-5.5 — motor compartilhado
+# Confronto via Codex GPT-6-sol — motor compartilhado
 
-Usado por `/planejar` e `/auto-think`. Este arquivo é o ÚNICO lugar onde mora a
+Usado pelo `/auto-think`. Este arquivo é o ÚNICO lugar onde mora a
 mecânica de chamar o Codex como segundo par de olhos: como invocar sem travar, como não mandar
 dado real pra fora, como garantir que ele leu a versão certa, e a regra de ouro de filtrar o
 parecer. Cada skill mantém só o que é dela (o que mandar e o que fazer com a resposta) e aponta
@@ -8,8 +8,8 @@ pra cá.
 
 **Variantes por skill** (o que cada uma muda no comando da seção 3, pra não divergirem por
 acidente): `/auto-think` roda `xhigh` + `service_tier="fast"` (estudo caro, máximo de
-raciocínio na via rápida); `/planejar` roda `high` na 1ª checagem. O teto `alarm 900`, o
-selo e o fallback são iguais pras três.
+raciocínio na via rápida). Uma skill nova que use este motor documenta aqui a sua variante; o
+teto `alarm 900`, o selo e o fallback são iguais pra todas.
 
 > **Por que existe.** O Codex é um modelo DIFERENTE do que conduz o trabalho. A graça é a
 > divergência de opinião, não a confirmação — um segundo cérebro que tenta derrubar o
@@ -54,7 +54,7 @@ O padrão é: o prompt vai por **stdin** (não como argumento), com **teto de 15
 resposta cai num arquivo de saída.
 
 ```bash
-perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-5.6-terra \
+perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-6-sol \
   -c model_reasoning_effort="xhigh" \
   -c service_tier="fast" \
   --skip-git-repo-check --ignore-user-config --sandbox read-only \
@@ -80,10 +80,10 @@ perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-5.6-terra \
   vez; travou de novo → "Codex fora" (seção 5). Usa `perl` porque o `timeout` puro não existe
   no Mac; no Linux dá pra trocar por `timeout 900`.
 - **Esforço e tier:** o comando acima já vem em `xhigh` + `service_tier="fast"` (o padrão do
-  `auto-think`: máximo de raciocínio na via rápida do gpt-5.5). O `fast` precisa ser explícito
+  `auto-think`: máximo de raciocínio na via rápida do gpt-6-sol). O `fast` precisa ser explícito
   porque `--ignore-user-config` ignora o tier do config global. Uma skill que queira esforço
-  menor numa checagem leve (ex: `planejar` na 1ª chamada) troca `xhigh` por `high` no comando dela.
-- **Atalho:** a skill irmã `/Titan:gpt-optimizer` (no mesmo plugin) traz o `run-gpt.sh`,
+  menor numa checagem leve troca `xhigh` por `high` no comando dela.
+- **Atalho:** a skill irmã `/cass:gpt-optimizer` (no mesmo plugin) traz o `run-gpt.sh`,
   mas hoje ele roda afinado pro fluxo dela (**`--sandbox read-only`**, sem selo) — se o seu
   confronto precisa de outro sandbox ou da trava de selo, monte a chamada inline (acima). O
   helper de selo continua em `_shared/scripts/verify-selo.sh`.
@@ -98,7 +98,7 @@ que é novo.
 **Rodada 1** — capture o `thread_id` (o identificador da conversa) do stream JSON:
 
 ```bash
-perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-5.6-terra \
+perl -e 'alarm 900; exec @ARGV' codex exec --model gpt-6-sol \
   -c model_reasoning_effort="xhigh" -c service_tier="fast" \
   --skip-git-repo-check --ignore-user-config --sandbox read-only --json \
   -o /tmp/confronto-review.md \
@@ -114,9 +114,9 @@ Do JSON `{"type":"thread.started","thread_id":"..."}` extraia `THREAD_ID`. O par
 # Sem o -c sandbox_mode abaixo ele herda config.toml e o crítico PASSA A ESCREVER ARQUIVOS.
 # ⚠️ `--model` e `--ignore-user-config` também são obrigatórios: a sessão retomada NÃO carrega
 # o modelo da rodada 1, e o app do Codex reescreve o `model` do config sozinho ao atualizar
-# (visto em 09/07/2026: virou "gpt-5.6-sol", que a CLI 0.140 recusa com HTTP 400).
+# (visto em 09/07/2026: o `model` do config mudou sozinho pra um modelo que a CLI da época recusava com HTTP 400).
 perl -e 'alarm 900; exec @ARGV' codex exec resume "$THREAD_ID" \
-  --model gpt-5.6-terra -c sandbox_mode="read-only" -c model_reasoning_effort="xhigh" \
+  --model gpt-6-sol -c sandbox_mode="read-only" -c model_reasoning_effort="xhigh" \
   --skip-git-repo-check --ignore-user-config --json -o /tmp/confronto-review.md \
   - < /tmp/confronto-rodada-N.md 2>/dev/null >/dev/null
 ```
@@ -130,7 +130,7 @@ Regras da retomada:
 - **O selo continua valendo** a cada rodada: novo material → novo hash → o Codex recarimba.
 - Sessão perdida ou `THREAD_ID` vazio → abre rodada 1 de novo (seção 3). Não improvisa.
 
-Confronto de rodada única (o caso comum do `/planejar`) ignora esta seção — usa a seção 3 e pronto.
+Confronto de rodada única ignora esta seção — usa a seção 3 e pronto.
 
 ## 4. Regra de ouro — o Claude filtra antes, COM PROVA
 
