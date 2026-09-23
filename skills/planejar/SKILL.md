@@ -5,6 +5,7 @@ description: >
   stack → design → plano auditado. Use quando o usuário quiser planejar um novo produto ou
   projeto (web app, mobile, extensão, SaaS, API), tiver uma ideia pra transformar em produto,
   ou pedir spec, PRD, MVP ou plano antes de codar. Entrega o PLANO; o código vem depois.
+disable-model-invocation: true
 ---
 
 # Planejar
