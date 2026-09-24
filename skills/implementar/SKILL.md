@@ -45,6 +45,7 @@ A red proof blocks completion and must be fixed, not merely noted. An expected R
 4. The checks and the test-policy rows do not change while you build: once written they are the bar you build under, not a position to argue against, and lowering either is renegotiation with the user, visible in the diff. `Landing` is the exception, and it is additive - a door you discover while building gets a row, never a deletion.
 5. Implementation and its proofs are run by the current session, which does not delegate to other agents. Record the actual command, result, and exit code for every required proof. Do not report the work complete while any required proof is failing or unverified. Independent verification is a separate step, run after this skill by `build-review` on the checklist and diff left here; what this skill owes that step is an honest checklist in the format below and the final commit range accessible. Completion reported here is the session's own account, not independent review.
 6. **Blast radius:** an approved checklist authorises local edits and local commits. `git push`, deploy and production data changes need an explicit go-ahead.
+7. **Each issue starts on its own yes.** Before the start marker of any issue - the first one of the session or the next one after a merge - say which issue, in one line, and wait for the user's yes to that issue. "Merge feito", "ok", or an answer to your own "next I'll start X" closes the current issue; it is not that yes. A plan you announced in an earlier message authorises nothing.
 
 ## When NOT to be lazy
 

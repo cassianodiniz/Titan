@@ -148,6 +148,7 @@ Rejected by the user → ask what's wrong, route back to Step 4 (or take over di
 
 ## Hard rules
 
+- Each issue starts on its own yes. Before the start marker of any issue - the first one of the session or the next one after a merge - say which issue, in one line, and wait for the user's yes to that issue. "Merge feito", "ok", or an answer to your own "next I'll start X" closes the current issue; it is not that yes. A plan you announced in an earlier message authorises nothing.
 - Clean tree before launch. Always. No exceptions. Start marker before the checklist.
 - Claude never skips the diff read, and never skips the fiscal. Codex claims are advisory until Claude has read the diff, run the proof, and a fresh fiscal has proven every checklist item at HEAD.
 - No code before the checklist; no checklist item without a named proof.
