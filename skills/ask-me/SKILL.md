@@ -83,4 +83,15 @@ If the task depends on information spread across several places (Drive, WhatsApp
 Antes de mexer em qualquer coisa: olhe tudo que pode ser relevante (<os lugares desta tarefa>), inclusive o que o pedido não cita. Se o que encontrar contradisser este pedido, pare e me pergunte.
 ```
 
-After the brief, ask: "Executo aqui agora?" Start only on a yes.
+Right after the brief, in the same message, end with one execution question. Pick it with this check: does the brief change code in a repository **and** its "Fazer" list name two or more separate features (for example: login, a trash bin and an export)?
+
+- **No** (one feature, a small edit, or any task outside code: files, spreadsheets, messages, research): ask "Executo aqui agora?"
+- **Yes**: ask the question below, because an agent that builds several features in one go tends to skip steps, and /spec-plan slices them into tasks built and tested one at a time:
+
+```
+Executo aqui agora, ou levo pra /spec-plan fatiar em tarefas?
+ a) Executa aqui
+ b) Leva pra /spec-plan
+```
+
+Execute only on a yes (or a). On b, invoke /spec-plan and hand it the brief as its input.

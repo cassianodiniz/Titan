@@ -1,6 +1,6 @@
 ---
 name: auto-think
-description: "Estuda a fundo um problema difícil ou decisão que pesa e volta com recomendação + alternativas, COM VEREDITO — não executa (quem executa é /auto-worker). A própria sessão estuda os ângulos e pesquisa a web pela skill /search (com procedência por número), confronta cada candidata com GPT-sol como advogado do diabo em 2 rodadas, e re-cava o que fica aberto. Acionar por comando: /auto-think <problema>. Fronteira: parecer rápido sobre decisão já tomada = /Titan:gpt-optimizer; planejar produto novo do zero = /planejar; EXECUTAR uma tarefa = /auto-worker."
+description: "Estuda a fundo um problema difícil ou decisão que pesa e volta com recomendação + alternativas, COM VEREDITO — não executa (quem executa é /implementar ou /gpt-builder). A própria sessão estuda os ângulos e pesquisa a web pela skill /search (com procedência por número), confronta cada candidata com GPT-sol como advogado do diabo em 2 rodadas, e re-cava o que fica aberto. Acionar por comando: /auto-think <problema>. Fronteira: parecer rápido sobre decisão já tomada = /gpt-optimizer; planejar produto novo do zero = /planejar; EXECUTAR uma tarefa = /implementar ou /gpt-builder."
 ---
 
 # auto-think
