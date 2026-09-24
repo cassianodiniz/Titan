@@ -189,8 +189,8 @@ troca nomes e dados pessoais por etiquetas.
 <br/>*Técnico:* confronto adversarial com Codex `gpt-6-sol` em 2 rodadas; pesquisa via `search`.
 
 **`/cass:implementar`** — O Claude constrói um plano já aprovado, uma tarefa por vez: escreve
-a lista do que foi prometido com a prova de cada item, testa e salva no seu computador. Um
-fiscal independente confere as provas.
+a lista do que foi prometido com a prova de cada item, testa e salva no seu computador. No
+fim, oferece a vistoria independente (`build-review`), que confere as provas com outros olhos.
 <br/>*Técnico:* TDD vermelho→verde; checklist em `.checks/` com teste nomeado por item; commits na branch atual; push e PR só com OK.
 
 **`/cass:gpt-builder`** — Mesmo trabalho do `implementar`, mas quem constrói é o Codex. O
