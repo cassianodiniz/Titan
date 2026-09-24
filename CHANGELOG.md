@@ -1,5 +1,14 @@
 # Changelog — cass (antigo Titan)
 
+## 3.2.0 — 2026-09-24
+
+- **`handoff` enxuta (de ~2.500 pra ~900 palavras).** Sai o leitor cego via Codex (`references/leitor-cego.md` e `scripts/cold-read.sh`): nos testes ele não evitou nada. Entram três coisas medidas:
+  - **Trava do git.** Arquivo que a conversa criou ou alterou e está sem commit: a skill para, lista os arquivos, propõe a mensagem de commit e espera o sim. Arquivo que a conversa nunca tocou não trava e aparece como "fora deste trabalho".
+  - **Trabalho novo.** Quando o trabalho atual acabou (PR mergeada, "do zero"), a âncora passa a ser o ramo principal e o documento manda abrir ramo novo a partir dele. Antes, ancorava no ramo encerrado e a sessão nova dava falso alarme.
+  - **Segredo nunca entra no documento**; ele aponta onde o segredo mora.
+  Teste com 26 agentes isolados, comparando sem skill, a versão antiga e a nova: a trava parou 4 de 4 (a antiga, 0 de 2); token fora do documento em 4 de 4 (a antiga, 1 de 4); âncora certa ao começar do zero em 3 de 3 (a antiga, 0 de 3).
+- **`implementar` e `gpt-builder`: cada issue começa com o seu próprio sim** (PR #6). "Merge feito" ou "ok" fecha a issue atual; não autoriza a próxima.
+
 ## 3.1.0 — 2026-09-24
 
 - **Nova skill `ask-me`.** Te entrevista em rodadas curtas (até 4 perguntas, cada uma com a resposta recomendada) antes de mandar uma tarefa pro agente, confere a cada rodada se uma resposta nova contradiz um limite já dado, e fecha com o pedido pronto pra colar. README, FLUXOGRAMA, INSTALL e manifestos passam a contar dez skills.
