@@ -6,10 +6,47 @@ inventa número de pesquisa. Cada skill resolve um desses momentos e pode ser ch
 sozinha. Serve pra qualquer projeto.
 
 <p align="center">
-  <img src="docs/como-se-encaixam.svg" width="680" alt="Como as skills se encaixam: pensar (planejar, spec-plan, auto-think), construir (implementar ou gpt-builder) e conferir (build-review), com volta ao construtor quando reprova; embaixo, as avulsas ask-me, search, gpt-optimizer e handoff.">
+  <img src="docs/qual-sua-situacao.svg" width="680" alt="Mapa de porta de entrada: qual é a sua situação? Coisa nova: ask-me e search; se for um produto inteiro, planejar. Mudar um projeto que já funciona: ask-me pra tarefa pequena, spec-plan se tem várias etapas. Já sei mais ou menos: ask-me, search atacando o plano, gpt-optimizer. Não sei o que fazer: ask-me, auto-think, spec-plan. Com o plano pronto, implementar ou gpt-builder constroem e build-review confere, com volta ao construtor quando reprova. A qualquer momento, handoff.">
 </p>
 
-Detalhe passo a passo em [FLUXOGRAMA.md](FLUXOGRAMA.md).
+## Como eu uso no dia a dia
+
+Quase tudo começa na **`/cass:ask-me`**. Ela serve pra qualquer coisa, não só pra código:
+organizar uma pasta, montar uma planilha, escrever uma mensagem, mudar um sistema. Ela te
+entrevista até o pedido ficar claro e te entrega um texto pronto pra colar no agente. Depois,
+depende da sua situação:
+
+**🌱 Coisa nova, que ainda não existe**
+1. `/cass:ask-me` pra organizar a ideia.
+2. `/cass:search` pra achar referências: quem já fez algo parecido e como.
+3. Se for um **produto inteiro** (com telas, login, banco de dados), vá direto na
+   `/cass:planejar`. Ela faz a pesquisa de mercado, escolhe a tecnologia (Supabase,
+   Cloudflare…) e desenha as telas antes de qualquer código.
+
+**🔧 Mudar um projeto que já funciona**
+- Tarefa pequena (trocar um texto, uma cor, um número): `/cass:ask-me` e pronto.
+- Tem várias etapas: `/cass:spec-plan`, que fatia o trabalho em tarefas pequenas. Se você
+  começou na `ask-me`, ela mesma oferece levar o pedido pra `spec-plan` no fim.
+
+**🤔 Já sei mais ou menos o que fazer**
+1. `/cass:ask-me` pra pensar junto.
+2. Peça: *"ataca o plano com /search"*. Ela procura na internet quem já resolveu o mesmo
+   problema e mostra onde o seu plano pode melhorar.
+3. Peça: *"revisa com gpt-optimizer"*. O GPT dá uma segunda olhada em tudo o que foi achado
+   e tenta derrubar, em até 2 rodadas.
+
+É a versão rápida e manual do que a `auto-think` faz sozinha e mais a fundo.
+
+**🧭 Tenho um problema e não sei o que fazer**
+1. `/cass:ask-me` pra organizar o problema.
+2. `/cass:auto-think` pra resolver. Ela pesquisa a fundo, o Claude propõe uma conclusão, o
+   GPT tenta derrubar (em até 2 rodadas) e você recebe um veredito.
+3. Escolheu o caminho? `/cass:spec-plan` transforma ele em tarefas.
+
+**Depois, em todos os casos:** com o plano pronto, `/cass:implementar` (o Claude constrói)
+ou `/cass:gpt-builder` (o GPT constrói, mais barato), e no fim `/cass:build-review` confere
+tudo antes de publicar. A conversa ficou longa? `/cass:handoff` passa o trabalho pra uma
+sessão nova.
 
 <table>
 <tr>
@@ -129,7 +166,9 @@ Cada linha: o que faz em português claro, e o detalhe técnico pra quem program
 **`/cass:ask-me`** — Antes de mandar uma tarefa, a skill te entrevista em rodadas curtas
 (no máximo 4 perguntas, cada uma com a resposta que ela recomenda) até os dois entenderem
 a mesma coisa. A cada rodada confere se alguma resposta nova bate com um limite que você
-já deu. No fim, entrega o pedido pronto pro agente. Não executa nada sem o seu sim.
+já deu. No fim, entrega o pedido pronto pro agente. Serve pra qualquer
+atividade, não só código. Se o pedido for uma mudança em código com várias etapas, oferece
+levar pra `spec-plan`. Não executa nada sem o seu sim.
 <br/>*Técnico:* árvore de decisões resolvida por fronteira; fatos do ambiente ela busca sozinha; pedido final com Objetivo / Pronto quando / Fazer / NÃO fazer / Parar e perguntar.
 
 **`/cass:planejar`** — Você conta a ideia de um produto novo e a skill conduz em etapas:
@@ -167,7 +206,8 @@ percebem.
 
 **`/cass:search`** — Pesquisa na internet sem número inventado: cada dado volta com a página,
 a frase exata e a data em que foi lido. O que não achar, ela diz que não achou. Guarda tudo
-numa pasta do projeto.
+numa pasta do projeto. Serve pra pesquisar um assunto e também pra **atacar um plano**:
+peça "ataca o plano com /search" e ela procura quem já resolveu o mesmo problema.
 <br/>*Técnico:* orquestrador Exa com subagentes; registro de procedência por número; arquivo em `search-findings/`. Precisa de conta Exa (tem plano grátis).
 
 **`/cass:gpt-optimizer`** — Segunda opinião sobre uma decisão que você já tomou. O GPT recebe
