@@ -11,19 +11,30 @@ sozinha. Serve pra qualquer projeto.
 
 Detalhe passo a passo em [FLUXOGRAMA.md](FLUXOGRAMA.md).
 
-**Autoria:** Cassiano Diniz · **Co-autoria:** Thales Laray (skill `planejar`)
+<table>
+<tr>
+<th width="50%">📚 Meus estudos sobre IA</th>
+<th width="50%">⚡ Extra: economia de tokens</th>
+</tr>
+<tr>
+<td valign="top">
 
----
-
-## 📚 Meus estudos sobre IA
-
-Estas skills nasceram de estudo, não de palpite. O material que eu uso pra decidir qual
-modelo de IA serve pra quê está aberto aqui:
+Estas skills nasceram de estudo, não de palpite. O comparativo que eu uso pra decidir qual modelo serve pra quê: qualidade, custo, velocidade e alucinação, com a fonte e a data de cada número.
 
 **[Comparativo de modelos de IA, lado a lado →](https://claude.ai/artifact/UeTaqkfwazmmBcgRvtFAiM)**
 
-Compara os modelos atuais em qualidade, custo, velocidade e taxa de alucinação, com a fonte
-e a data de cada número, e explica os testes (benchmarks) pra quem não é da área.
+</td>
+<td valign="top">
+
+Não é uma skill: é um guia que instala duas ferramentas (RTK + Ponytail) pro Claude gastar menos da sua cota. Você cola uma frase no Claude Code e ele instala sozinho, no Mac ou no Windows.
+
+**[Como instalar a economia de tokens →](economia-tokens.md)**
+
+</td>
+</tr>
+</table>
+
+**Autoria:** Cassiano Diniz · **Co-autoria:** Thales Laray (skill `planejar`)
 
 ---
 
@@ -168,19 +179,6 @@ procedem. Só roda quando você chama.
 documento de passagem com o que foi decidido, o que falta e onde estão as coisas, separando
 fato de suposição, e te dá um texto pronto pra colar na sessão nova.
 <br/>*Técnico:* ancorado em git; cada afirmação marcada `[GIT]`/`[ARQUIVO]`/`[CHAT]`/`[SUPOSIÇÃO]`; leitor cego opcional via Codex.
-
----
-
-## Extra: economia de tokens (RTK + Ponytail)
-
-Não é uma skill, é um guia de instalação de duas ferramentas que fazem o Claude gastar menos
-da sua cota. Pra instalar, cole isto no Claude Code e ele faz o resto:
-
-```
-Leia https://raw.githubusercontent.com/cassianodiniz/cass/main/economia-tokens.md e execute tudo.
-```
-
-O guia completo está em [economia-tokens.md](economia-tokens.md).
 
 ---
 
