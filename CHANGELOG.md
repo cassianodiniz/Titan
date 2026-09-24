@@ -3,6 +3,7 @@
 ## 3.1.0 — 2026-09-24
 
 - **Nova skill `ask-me`.** Te entrevista em rodadas curtas (até 4 perguntas, cada uma com a resposta recomendada) antes de mandar uma tarefa pro agente, confere a cada rodada se uma resposta nova contradiz um limite já dado, e fecha com o pedido pronto pra colar. README, FLUXOGRAMA, INSTALL e manifestos passam a contar dez skills.
+- **Desenho novo no topo do README** (`docs/como-se-encaixam.svg`): linha de montagem pensar → construir → conferir, com a volta quando reprova e as avulsas numa faixa à parte; acompanha o modo escuro do GitHub. O diagrama antigo (mermaid) de "Como elas se encaixam" saiu.
 
 ## 3.0.0 — 2026-09-23
 

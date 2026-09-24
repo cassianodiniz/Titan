@@ -5,6 +5,12 @@ que sai construindo antes de entender o pedido, que diz "pronto" sem ter testado
 inventa número de pesquisa. Cada skill resolve um desses momentos e pode ser chamada
 sozinha. Serve pra qualquer projeto.
 
+<p align="center">
+  <img src="docs/como-se-encaixam.svg" width="680" alt="Como as skills se encaixam: pensar (planejar, spec-plan, auto-think), construir (implementar ou gpt-builder) e conferir (build-review), com volta ao construtor quando reprova; embaixo, as avulsas ask-me, search, gpt-optimizer e handoff.">
+</p>
+
+Detalhe passo a passo em [FLUXOGRAMA.md](FLUXOGRAMA.md).
+
 **Autoria:** Cassiano Diniz · **Co-autoria:** Thales Laray (skill `planejar`)
 
 ---
@@ -162,62 +168,6 @@ procedem. Só roda quando você chama.
 documento de passagem com o que foi decidido, o que falta e onde estão as coisas, separando
 fato de suposição, e te dá um texto pronto pra colar na sessão nova.
 <br/>*Técnico:* ancorado em git; cada afirmação marcada `[GIT]`/`[ARQUIVO]`/`[CHAT]`/`[SUPOSIÇÃO]`; leitor cego opcional via Codex.
-
----
-
-## Como elas se encaixam
-
-Detalhe passo a passo em [FLUXOGRAMA.md](FLUXOGRAMA.md).
-
-```mermaid
-%%{init: {'theme':'base', 'themeVariables': {
-  'fontSize':'15px',
-  'fontFamily':'Helvetica, Arial, sans-serif',
-  'lineColor':'#1f6b4f',
-  'edgeLabelBackground':'#ffffff'
-}}}%%
-flowchart TD
-    START(["💡 O que você quer fazer?"])
-
-    subgraph PENSAR["pensar — produzem o plano"]
-        direction TB
-        P["<b>🧠 planejar</b><br/><i>produto novo do zero → plano auditado</i>"]
-        SP["<b>📝 spec-plan</b><br/><i>mudança ou ideia → plano com tarefas</i>"]
-        AT["<b>🔬 auto-think</b><br/><i>problema aberto → opções com veredito</i>"]
-    end
-
-    GB["<b>🔨 implementar</b> ou <b>⚙️ gpt-builder</b><br/><i>o Claude (implementar) ou o Codex (gpt-builder) constrói;<br/>um fiscal prova cada item; você autoriza antes de publicar</i>"]
-
-    subgraph APOIO["apoio — a qualquer momento"]
-        direction TB
-        SE["<b>🔎 search</b><br/><i>pesquisa com a fonte de cada número</i>"]
-        GO["<b>🛡️ gpt-optimizer</b><br/><i>testa uma decisão pronta → Seguir / Ajustar / Bloquear</i>"]
-        HO["<b>🪢 handoff</b><br/><i>passa o trabalho pra uma sessão nova</i>"]
-    end
-
-    START --> P & SP & AT
-    START --> SE & GO & HO
-    P -->|"o plano"| GB
-    SP -->|"as tarefas"| GB
-    AT -->|"a opção escolhida"| SP
-    GB --> BR["<b>🕵️ build-review</b><br/><i>vistoria final com 3 revisores</i>"]
-    BR --> DONE(["✅ Pronto pra publicar:<br/>o que foi PROVADO vs o que foi ASSUMIDO"])
-    GB -. "ficou longo" .-> HO
-    SE -. "alimenta" .-> PENSAR
-
-    classDef think fill:#ffffff,color:#134e4a,stroke:#14b8a6,stroke-width:1.5px;
-    classDef build fill:#15803d,color:#ffffff,stroke:#86efac,stroke-width:1.5px;
-    classDef help fill:#ffffff,color:#0f172a,stroke:#94a3b8,stroke-width:1.5px;
-    classDef start fill:#334155,color:#ffffff,stroke:#0f172a,stroke-width:1.5px;
-    classDef fim fill:#1e293b,color:#ffffff,stroke:#0f172a,stroke-width:1.5px;
-    class P,SP,AT think;
-    class GB build;
-    class SE,GO,HO,BR help;
-    class START start;
-    class DONE fim;
-    style PENSAR fill:#eef7f5,stroke:#14b8a6,stroke-width:2px;
-    style APOIO fill:#f8fafc,stroke:#94a3b8,stroke-width:2px;
-```
 
 ---
 
