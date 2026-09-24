@@ -1,5 +1,9 @@
 # Changelog — cass (antigo Titan)
 
+## 3.1.0 — 2026-09-24
+
+- **Nova skill `ask-me`.** Te entrevista em rodadas curtas (até 4 perguntas, cada uma com a resposta recomendada) antes de mandar uma tarefa pro agente, confere a cada rodada se uma resposta nova contradiz um limite já dado, e fecha com o pedido pronto pra colar. README, FLUXOGRAMA, INSTALL e manifestos passam a contar dez skills.
+
 ## 3.0.0 — 2026-09-23
 
 O plugin passa a se chamar **`cass`** (antes `Titan`) e o repositório passa a ser o próprio catálogo de instalação. **Quebra:** quem instalou o `Titan` pelo catálogo `cassiano.diniz` precisa reinstalar (o catálogo antigo saiu do ar).

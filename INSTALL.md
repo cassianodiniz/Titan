@@ -1,6 +1,6 @@
 # Instalar o plugin `cass` (e o que ele usa por fora)
 
-O plugin `cass` (skills `planejar`, `spec-plan`, `auto-think`, `implementar`, `gpt-builder`, `search`, `build-review`, `handoff`, `gpt-optimizer`) **orquestra** ferramentas externas —
+O plugin `cass` (skills `ask-me`, `planejar`, `spec-plan`, `auto-think`, `implementar`, `gpt-builder`, `search`, `build-review`, `handoff`, `gpt-optimizer`) **orquestra** ferramentas externas —
 ele não empacota elas. Este arquivo reúne tudo que precisa instalar pra ele rodar completo.
 
 A boa notícia: nada disso trava o plugin. A `planejar` tem um **preflight (Fase 0)** que confere

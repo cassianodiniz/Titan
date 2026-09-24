@@ -1,6 +1,6 @@
 # cass — pensar antes de fazer, construir com prova, conferir antes de confiar
 
-Nove skills pra trabalhar com IA no Claude Code sem cair nas armadilhas de sempre: a IA
+Dez skills pra trabalhar com IA no Claude Code sem cair nas armadilhas de sempre: a IA
 que sai construindo antes de entender o pedido, que diz "pronto" sem ter testado, que
 inventa número de pesquisa. Cada skill resolve um desses momentos e pode ser chamada
 sozinha. Serve pra qualquer projeto.
@@ -53,6 +53,7 @@ Comece pela sua situação, não pelo nome da skill.
 
 | Quando você... | Use | O que recebe no fim |
 |---|---|---|
+| quer **ser entrevistado antes** de mandar uma tarefa pro agente, pra ele não sair do pedido | `/cass:ask-me` | um pedido fechado, pronto pra colar: o que fazer, o que não fazer e quando parar e perguntar |
 | tem a ideia de um **produto que ainda não existe** e quer saber se vale e como fazer | `/cass:planejar` | um plano completo, com pesquisa de mercado, tecnologia e telas, já revisado |
 | quer **mudar ou acrescentar algo** num projeto, ou tem uma ideia solta que precisa virar tarefas | `/cass:spec-plan` | um plano fatiado em tarefas pequenas, sem dúvida em aberto |
 | tem um **problema difícil e ainda não sabe a resposta** | `/cass:auto-think` | a opção recomendada e as alternativas, cada uma com o porquê |
@@ -104,9 +105,15 @@ GitHub sem o seu OK. Muda só **quem digita o código**:
 
 ---
 
-## As nove skills
+## As dez skills
 
 Cada linha: o que faz em português claro, e o detalhe técnico pra quem programa.
+
+**`/cass:ask-me`** — Antes de mandar uma tarefa, a skill te entrevista em rodadas curtas
+(no máximo 4 perguntas, cada uma com a resposta que ela recomenda) até os dois entenderem
+a mesma coisa. A cada rodada confere se alguma resposta nova bate com um limite que você
+já deu. No fim, entrega o pedido pronto pro agente. Não executa nada sem o seu sim.
+<br/>*Técnico:* árvore de decisões resolvida por fronteira; fatos do ambiente ela busca sozinha; pedido final com Objetivo / Pronto quando / Fazer / NÃO fazer / Parar e perguntar.
 
 **`/cass:planejar`** — Você conta a ideia de um produto novo e a skill conduz em etapas:
 pesquisa de mercado, o que o produto precisa fazer, qual tecnologia usar, como vão ser as
