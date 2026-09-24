@@ -61,7 +61,7 @@ Depois as skills ficam disponíveis como `/cass:planejar`, `/cass:gpt-builder`, 
 |---|---|---|
 | **superpowers** (`brainstorming`, `writing-plans`) | `planejar` Fases 1 e 5 | `/plugin marketplace add obra/superpowers-marketplace`<br/>`/plugin install superpowers@superpowers-marketplace` |
 | **Taste Skill** (`design-taste-frontend`) | `planejar` Fase 4 (só se houver tela) | `npx skills add https://github.com/Leonxlnx/taste-skill --skill "design-taste-frontend"` |
-| **Codex CLI** ≥ 0.156 (constrói + revisor `gpt-6-sol`) | `gpt-builder` (constrói a partir da spec), `gpt-optimizer` e `auto-think` (confronto), `handoff` (leitor cego) | Instalar o Codex CLI da OpenAI e logar. Sem ele, o `gpt-builder` não constrói (o Claude assume, com garantia menor); em risco alto, fica BLOQUEADO até voltar. |
+| **Codex CLI** ≥ 0.156 (constrói + revisor `gpt-6-sol`) | `gpt-builder` (constrói a partir da spec), `gpt-optimizer` e `auto-think` (confronto) | Instalar o Codex CLI da OpenAI e logar. Sem ele, o `gpt-builder` não constrói (o Claude assume, com garantia menor); em risco alto, fica BLOQUEADO até voltar. |
 | **Exa** (busca web com procedência) | `search` (pesquisa profunda) | Conta Exa: OAuth no MCP do Exa, ou variável `EXA_API_KEY` (chave grátis em https://dashboard.exa.ai/api-keys). Sem ela, a `search` não roda. |
 
 ---

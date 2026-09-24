@@ -218,15 +218,15 @@ procedem. Só roda quando você chama.
 **`/cass:handoff`** — A conversa ficou longa e você quer continuar depois. A skill escreve um
 documento de passagem com o que foi decidido, o que falta e onde estão as coisas, separando
 fato de suposição, e te dá um texto pronto pra colar na sessão nova.
-<br/>*Técnico:* ancorado em git; cada afirmação marcada `[GIT]`/`[ARQUIVO]`/`[CHAT]`/`[SUPOSIÇÃO]`; leitor cego opcional via Codex.
+<br/>*Técnico:* ancorado num commit — se o trabalho da conversa estiver sem commit, para e pede o commit antes; ao começar do zero algo que surgiu, ancora no ramo principal; cada afirmação marcada `[GIT]`/`[ARQUIVO]`/`[CHAT]`/`[SUPOSIÇÃO]`.
 
 ---
 
 ## Requisitos, em uma linha cada
 
 - **Claude Code** — onde as skills rodam.
-- **Codex CLI** (≥ 0.156, com `codex login`) — `gpt-builder`, `gpt-optimizer`, `auto-think` e o leitor cego do `handoff`. Sem ele, essas skills avisam e o Claude assume o papel, com garantia menor.
+- **Codex CLI** (≥ 0.156, com `codex login`) — `gpt-builder`, `gpt-optimizer` e `auto-think`. Sem ele, essas skills avisam e o Claude assume o papel, com garantia menor.
 - **Exa** — a `search` (e a pesquisa de quem chama a `search`).
-- **git** — `implementar`, `gpt-builder` e `build-review` trabalham num repositório git.
+- **git** — `implementar`, `gpt-builder` e `build-review` trabalham num repositório git; o `handoff` se ancora nele quando existe.
 
 Histórico de versões em [CHANGELOG.md](CHANGELOG.md).

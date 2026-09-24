@@ -1,158 +1,88 @@
 ---
 name: handoff
-description: "Use quando o usuário disser /handoff, \"gera um handoff\", \"vou limpar o contexto\", \"passa isso pra uma sessão nova\", \"documento de continuação\", \"resume pra eu continuar depois\", \"tô chegando no limite de contexto\", ou quando uma conversa longa vai terminar e ele quer retomar o MESMO trabalho depois, numa sessão nova do zero, sem o histórico da conversa."
+description: "Use quando o usuário disser /handoff, \"gera um handoff\", \"vou limpar o contexto\", \"passa isso pra uma sessão nova\", \"documento de continuação\", \"resume pra eu continuar depois\", \"tô chegando no limite de contexto\", ou quando uma conversa longa vai terminar e ele quer retomar o trabalho — ou começar do zero algo que surgiu nela — numa sessão nova, sem o histórico da conversa."
 ---
 
 # Handoff — passagem de bastão entre sessões
 
-Você está gerando um documento pra um **você do futuro** que vai abrir uma sessão limpa, sem nada do histórico desta conversa, e precisa continuar este mesmo trabalho sem perder o fio. A saída vira um **arquivo `.md` salvo em disco** — na sessão nova, o usuário só aponta o caminho do arquivo e manda continuar.
+Você escreve um documento para um você do futuro que abre uma sessão limpa, sem nada desta conversa. Quando a sessão fecha, a conversa some; sobrevive o que está em disco e no git. Por isso o handoff se ancora num commit e aponta arquivos, e só copia do chat o que não existe em disco. Não é resumo: é o estado de agora, com fato separado de suposição.
 
-O modelo mental que importa: quando a sessão fecha, **a conversa inteira é varrida** — ela não persiste. O que sobrevive é o que está em **disco** (arquivos salvos) e no **git** (branch, commits). Por isso um handoff que se apoia na sua memória da conversa é frágil, e um que se **ancora em git e arquivos** é sólido. Sua primeira tarefa é amarrar o documento à realidade do projeto, não à lembrança do chat.
+Se a sessão já foi compactada, diga isso no documento ("parte da conversa pode ter se perdido na compactação").
 
-O segundo erro clássico é tratar handoff como **resumo**. Resumo condensa a conversa e, no caminho, apaga o detalhe exato que a próxima pergunta vai precisar — e preenche os buracos com chute, que vira "regra" inventada na sessão nova. Por isso este handoff **não resume**: captura o **estado** (o que é verdade agora) e aponta **ponteiros** (qual arquivo reler), separando fato de suposição.
+## Passo 0 — Trava do git
 
-A doutrina por trás é o context engineering da Anthropic: o que vale é o **menor conjunto de informação de alto sinal** que faz o trabalho continuar — não o despejo. Contexto inflado "por garantia" piora o desempenho do modelo (*context rot*). Capture tudo que muda o trabalho daqui pra frente, e corte todo o resto.
+Rode `git status --short` (e `git log -1 --oneline`, `git branch --show-current`).
 
-> **Timing:** o ideal é rodar isto **antes** do contexto encher — por volta de 50-70%, antes de qualquer `/compact`. Rodando cedo, a conversa inteira ainda está disponível e o handoff sai completo. Se você perceber que a sessão já foi compactada, **diga isso no documento** ("parte da conversa pode ter sido perdida na compactação"), pra não passar falsa confiança.
+**Algum arquivo que esta conversa criou ou alterou aparece sem commit?** Pare aqui, sem escrever o handoff. Diga ao usuário quais são esses arquivos, proponha a mensagem de commit e pergunte se pode commitar. Gere o handoff só depois do commit. Motivo: o handoff aponta um commit; trabalho fora dele pode se perder ou se misturar com outra frente, e a sessão nova não teria como conferir o ponto de partida.
 
-## Passo 0 — Ancore no git antes de escrever
+Arquivos na lista que esta conversa nunca tocou são de outra frente: não travam, não entram no commit e aparecem no handoff numa linha "fora deste trabalho".
 
-Antes de redigir, levante o estado real do projeto (se houver repositório). Rode e guarde a saída:
+Pasta sem git: não há trava; registre o `pwd` e diga que a validade depende dos arquivos de hoje.
 
-```bash
-pwd
-# Ancora em git SÓ se esta pasta for um repositório. Em pastas SEM git
-# (ex.: uma pasta de skills que roda sem git e é versionada
-# em outro lugar), pula silenciosamente, sem cuspir "not a git repository".
-if git rev-parse --git-dir >/dev/null 2>&1; then
-  git rev-parse --show-toplevel; git branch --show-current
-  git log -1 --oneline
-  git status --short
-  git diff --stat
-else
-  echo "(sem git nesta pasta — projeto não versionado aqui)"
-fi
-```
+## Qual âncora
 
-Quando HÁ git, esses dados viram a seção "ESTADO DO PROJETO (git)" — a âncora de realidade: a sessão nova confere o texto contra o estado de verdade. Quando NÃO há git (caso da pasta de skills), pule essa seção e registre só o `pwd`, dizendo que esta pasta não é versionada localmente.
+- **Continuar o mesmo trabalho** (o padrão): âncora = ramo atual + hash do HEAD.
+- **Começar do zero algo que surgiu** (o usuário diz que o trabalho atual acabou — PR mergeada, "do zero", "outra coisa"): âncora = ramo principal. Registre o hash dele (`git rev-parse --short main`, ou `origin/main` depois de `git fetch` se houver remoto). O handoff manda a sessão nova atualizar o principal e abrir ramo novo a partir dele. O trabalho encerrado entra em uma linha de contexto, não como pendência.
 
-**Atenção à working tree suja.** A âncora do git captura trabalho não commitado — `git status --short` diz QUAIS arquivos você mexeu e `git diff --stat` diz QUANTO — mas só enxerga o que está **salvo em arquivo**, e mostra o QUÊ, nunca o PORQUÊ. Duas consequências pro documento:
-- Se o `git status` vier sujo e grande (muita mudança não commitada), **explique o motivo dessas mudanças** em "DECISÕES TOMADAS" / "ESTADO AGORA" — senão a sessão nova vê o diff sem entender a intenção.
-- Decisão ou raciocínio que só viveu no chat NÃO aparece no git (nem em arquivo) — tem que ser copiado literal pro handoff (regra 6). Ponteiro pra algo que o git não vê é informação perdida.
+## Regras de escrita
 
-## As 9 regras de geração (é aqui que handoff falha)
+1. Varra a conversa inteira. Decisão do começo que nunca foi revogada ainda vale; decisão revista vale na forma final.
+2. Copie literal valor, caminho, comando, número, regra de negócio. Parafrasear é como se inventa o que não foi dito.
+3. Marque a origem: `[GIT]` / `[ARQUIVO]` / `[CHAT]` / `[SUPOSIÇÃO]`. `[GIT]` e `[ARQUIVO]` exigem ponteiro que a sessão nova reabre e confirma (`arquivo:linha` no HEAD, ou comando + saída). Palpite seu — inclusive um que já virou código — é `[SUPOSIÇÃO]`, nunca restrição.
+4. Decisão que só viveu no chat vai copiada com o porquê; ponteiro para arquivo que não existe é informação perdida.
+5. Segredo (token, senha, chave) nunca entra no handoff: aponte onde ele mora (ex.: `.env`).
+6. Corte o que já foi resolvido, a menos que vire restrição para o que vem.
+7. Buraco real vira pergunta em "O QUE NÃO SEI". Gap nomeado vale mais que gap preenchido com chute.
 
-1. **Varra a conversa INTEIRA, não só o fim.** Decisão tomada no começo e nunca revertida ainda vale. Faça uma passada de recall máximo primeiro (não perca nada que muda o trabalho futuro), depois corte o supérfluo.
+## Estrutura
 
-2. **Cite decisão e configuração LITERALMENTE — não parafraseie.** Valor, caminho de arquivo, comando, número, nome de variável, regra de negócio: copie exato. Parafrasear é o mecanismo pelo qual você inventa algo que não foi dito.
-
-3. **Marque a origem de cada afirmação:** `[GIT]` / `[ARQUIVO]` / `[CHAT]` / `[SUPOSIÇÃO]`. `[GIT]`/`[ARQUIVO]` = você confirmou na fonte. `[CHAT]` = o usuário disse na conversa (verdade, mas não está em disco ainda — atenção à regra 6). `[SUPOSIÇÃO]` = inferência sua; se não dá pra confirmar, ou marca assim, ou joga em "O QUE NÃO SEI". Nunca apresente achismo com cara de regra.
-
-   **Origem não é verdade — `[ARQUIVO]` exige ponteiro REPRODUZÍVEL.** Pra marcar algo como `[ARQUIVO]` (ou como RESTRIÇÃO FIRME), você precisa do ponteiro que a sessão nova reabre sozinha e confirma: `arquivo:linha` no HEAD atual, ou comando + saída colada. "Eu revisei e é assim" não conta. Marca composta como `[ARQUIVO+revisão]` é **proibida** — ela já vendeu chute como lei e a sessão nova confiou. Sem ponteiro reproduzível: rebaixa pra `[SUPOSIÇÃO]` ou `[CHAT]`, nunca "limite do sistema". O teste: *se a sessão nova for conferir, ela acha exatamente isto na fonte?* Não acha → não é `[ARQUIVO]`.
-
-4. **Não invente restrição, regra ou requisito que não apareceu na conversa.** Na dúvida: "isso foi dito, ou eu deduzi?". Deduzido vira `[SUPOSIÇÃO]` ou sai.
-
-5. **Corte o que já foi resolvido e fechado.** Bug corrigido, caminho descartado, discussão encerrada — não repita, a não ser que aquilo agora seja uma **restrição** pro que vem (e aí explique o porquê em uma linha). Repetir o resolvido enche o documento e enterra o que importa.
-
-6. **Aponte o arquivo em vez de colar o conteúdo — MAS só funciona se o conteúdo existe em disco.** Pra coisa que está em arquivo, escreva o caminho + pra que serve (`src/foo.ts` — onde fica a lógica X); quem ler relê na hora. **Exceção crítica:** uma decisão, raciocínio ou plano que só existiu no chat e nunca virou arquivo precisa ser **copiado literal** pro handoff — ponteiro pra arquivo que não existe é informação perdida. Se for algo grande e durável, considere salvar num arquivo de verdade e então apontar.
-
-7. **Liste explicitamente o que você NÃO sabe.** Buraco real vira pergunta concreta na seção "O QUE NÃO SEI / CONFIRMAR". Um gap nomeado é infinitamente melhor que um gap preenchido com chute — porque na sessão nova o chute passa por verdade.
-
-8. **Alto sinal, não volume.** Inclua tudo que muda a decisão futura; corte o resto. Mínimo não quer dizer curto — quer dizer só o que importa.
-
-9. **Comece no verbo.** Sem "esse é o handoff de…", sem preâmbulo. Abra direto com a ação: "Leia X. Depois continue Y." Cada próximo passo é uma ordem no imperativo.
-
-## Estrutura de saída
-
-Use estes títulos, nesta ordem. Pule uma seção só se ela ficaria genuinamente vazia (e aí escreva "Nada relevante" em vez de inventar conteúdo).
+Estes títulos, nesta ordem. Seção vazia: "Nada relevante".
 
 ```
-Leia [os arquivos/seções essenciais primeiro]. Depois continue o trabalho descrito abaixo.
+Leia [arquivos essenciais]. Depois continue o trabalho descrito abaixo.
 
 ## OBJETIVO
-[1-2 frases: o que esse trabalho tem que entregar no fim das contas.]
+[1-2 frases.]
 
-## VALIDADE DESTE HANDOFF
-- Gerado em: [data + hora] · HEAD no momento: [hash do último commit — ou "sem git local: validade ancora só nos arquivos de hoje"]
-- ⚠️ Este doc é um RETRATO do momento acima. Se a sessão original CONTINUOU trabalhando depois disto (em planejamento longo isso é comum), partes podem ter sido superadas. A sessão nova trata cada RESTRIÇÃO FIRME / decisão como **válida até conferir contra o estado de hoje** (git quando há; arquivos-chave quando não há — ver "COMO RETOMAR") — não como lei intocável.
+## ÂNCORA
+- Gerado em: [data hora] · Pasta: [raiz do repo]
+- Modo: continuar | trabalho novo a partir do principal
+- Ramo: [ramo] · Commit: [hash + mensagem]
+- Fora deste trabalho (sem commit, não mexer): [arquivos, ou "nada"]
 
-## ESTADO DO PROJETO (git)
-- Diretório: [pwd]
-- Branch: [branch] · Último commit: [hash + mensagem]
-- Não commitado: [resumo do git status --short / diff --stat, ou "árvore limpa"]
-[É a âncora: a sessão nova confere o resto deste documento contra isto.]
+## ESTADO AGORA
+[O que existe e funciona, com origem marcada.]
 
-## ESTADO AGORA (o que é verdade neste momento)
-[O que já existe / já funciona / já foi feito. Fatos com origem marcada [GIT]/[ARQUIVO]/[CHAT]/[SUPOSIÇÃO]. Sem narrativa de "primeiro fizemos, depois...".]
-
-## DECISÕES TOMADAS (e por quê)
-Decisão que JÁ está em arquivo/commit: 1 linha basta — `[decisão literal] — porque [razão] [origem com ponteiro]`.
-
-Decisão que só viveu no CHAT (não virou arquivo) NÃO cabe em 1 linha: a conclusão sem o porquê faz a sessão nova ou reabrir a decisão, ou seguir pelo motivo errado. Pra cada uma, escreva o bloco curto (mini-ADR):
-- **Decisão:** [o que ficou decidido, literal]
-- **Problema:** [o que ela resolve]
-- **Opções consideradas:** [as que estavam na mesa]
-- **Por que esta venceu:** [o motivo + o furo que matou as outras]
-- **Descartado e por quê:** [o que NÃO fazer, pra ninguém refazer]
-
-[Este bloco é obrigatório pra decisão-de-chat — é o raciocínio que a sessão nova não tem de outro jeito. Decisão trivial/reversível não precisa do bloco; decisão que molda o trabalho, sim.]
+## DECISÕES (e por quê)
+Já em arquivo/commit: 1 linha — `decisão — porque X [ponteiro]`.
+Só no chat: **Decisão** · **Por quê** (o problema e o que venceu) · **Descartado** (o que não fazer).
 
 ## JÁ TENTADO E NÃO DEU
-[Caminhos descartados, pra ninguém refazer. 1 linha cada + por que falhou. Se não houver, "Nada relevante".]
-
 ## RESTRIÇÕES FIRMES
-[Regras que não podem ser violadas — só as que o usuário realmente disse ou que estão no código. Cada uma com ponteiro REPRODUZÍVEL (arquivo:linha no HEAD, ou a fala literal do usuário). Regra de engenharia que você "deduziu do código" mas não consegue apontar exatamente onde NÃO entra aqui — vai pra "O QUE NÃO SEI / CONFIRMAR" como item a verificar. Restrição que é andaime temporário de teste (não limite permanente) — diga isso explícito, senão a sessão nova a trata como definitiva.]
-
-## ARQUIVOS-CHAVE (ponteiros, não conteúdo)
-- `caminho/arquivo` — pra que serve / o que mexer aqui
-
+[Só as que o usuário disse (fala literal) ou que estão no código (arquivo:linha).]
+## ARQUIVOS-CHAVE
+- `caminho` — pra que serve
 ## O QUE NÃO SEI / CONFIRMAR
-[Gaps reais como perguntas concretas. Se não houver, "Nada em aberto".]
-
-## PRÓXIMOS PASSOS (imperativo, em ordem)
-1. [Verbo + ação concreta e verificável]
-2. ...
-
+## PRÓXIMOS PASSOS
+1. [Verbo + ação verificável]
 ## COMO SABER QUE DEU CERTO
-[Critério objetivo de pronto: o teste que passa, a tela que aparece, o comando que retorna OK.]
 
-## COMO RETOMAR NESTA SESSÃO NOVA
-**Primeira ação OBRIGATÓRIA — conferir antes de confiar (não improvise antes disto):**
-1. Confirme o diretório ([pwd]). **Se há git aqui:** rode `git log -1 --oneline` e `git status --short` e **compare com a seção VALIDADE/ESTADO DO PROJETO acima** — se o HEAD de hoje ≠ o HEAD do doc, a sessão original CONTINUOU; anuncie "o doc é de um ponto anterior, vou conferir o que mudou" e trate as restrições como suspeitas até reconfirmar. **Se NÃO há git aqui** (ex.: pasta de skills): não há âncora de commit — a validade depende só dos arquivos de hoje, então pule direto pro passo 2 e confie no que os arquivos-chave disserem, não no que o doc afirma.
-2. Leia os ARQUIVOS-CHAVE listados antes de tocar em qualquer coisa. Pra cada RESTRIÇÃO FIRME com ponteiro, **abra o ponteiro e confirme que ainda bate** — se o código não disser o que o doc diz, o ARQUIVO de hoje vence o doc; registre a divergência.
-3. Rode [comando que mostra o estado: testes / build / abrir a tela] pra validar onde o trabalho parou.
-4. Só depois de 1–3 baterem, comece pelo passo 1 de PRÓXIMOS PASSOS. Achou divergência grave (decisão revogada, restrição que não existe no código)? **Pare e diga ao usuário antes de seguir** — não continue por cima de uma premissa morta.
+## COMO RETOMAR
+1. Continuar: `git log -1 --oneline` e `git status --short` devem bater com a ÂNCORA. Trabalho novo: atualize o principal, confira que ele contém o commit da ÂNCORA e abra ramo novo. Não bateu → diga ao usuário o que mudou antes de seguir.
+2. Leia os ARQUIVOS-CHAVE e confirme cada ponteiro das RESTRIÇÕES. Arquivo de hoje vence o documento.
+3. Rode [comando de estado: testes / build].
+4. Siga os PRÓXIMOS PASSOS.
 ```
 
-## Antes de entregar — uma releitura
-
-Olhe o que você escreveu com olhos novos e tire qualquer linha que: (a) repete algo já resolvido sem ser restrição, (b) afirma como regra algo que foi só dedução sua, ou (c) aponta um arquivo que não existe (decisão de chat que devia ter sido copiada literal). Confira também que cada afirmação crítica do "ESTADO AGORA" bate com a seção do git — se não bate, marque `[SUPOSIÇÃO]` ou mova pra "O QUE NÃO SEI". Esse passo de poda é o que separa um handoff de alto sinal de um despejo.
-
-## Teste de continuação a seco — o leitor cego (antes de salvar)
-
-A releitura acima é você revendo o próprio texto — e você ainda lembra da conversa, então preenche os buracos de cabeça sem perceber. **O teste de verdade é entregar o doc a quem NÃO esteve aqui:** um leitor cego (Codex) que só tem o documento e aponta o que não dá pra continuar. Roda enquanto a conversa original ainda existe.
-
-**O passo completo — mascaramento de dado sensível, montagem do input, o script `cold-read.sh` e o que fazer com os buracos — está em [`references/leitor-cego.md`](references/leitor-cego.md).** Recomendado sempre; imprescindível em trabalho crítico. Codex ausente → falha graciosa: você mesmo relê no papel de leitor cego e marca no rodapé `revisão de continuação: menor garantia (sem Codex)`.
+Antes de salvar, releia e tire a linha que repete o resolvido, afirma como regra o que foi dedução, ou aponta arquivo que não existe.
 
 ## Entrega
 
-O handoff é um **arquivo**; a entrega no chat é um **prompt colável** que aponta pra ele — pro usuário copiar e colar num Claude novo (sem precisar abrir o arquivo na tela: o prompt já vem pronto). Nesta ordem:
-
-1. **Salve o documento** num local previsível:
-   - Se houver repositório git: `<raiz-do-repo>/.claude/handoffs/handoff-<branch>-AAAA-MM-DD-HHMMSS.md` (crie a pasta se não existir; sanitize a branch trocando `/` por `-`).
-   - Se não houver git: `~/handoffs/handoff-AAAA-MM-DD-HHMMSS.md`.
-
-2. **Gere um PROMPT COLÁVEL dentro de um bloco de código**, pro usuário copiar e colar em outro Claude. O prompt aponta pro arquivo salvo (o "link" = o **caminho absoluto**) e manda continuar — NÃO repete o conteúdo do handoff (ele está no arquivo). Modelo:
+1. Salve em `<raiz-do-repo>/.claude/handoffs/handoff-<ramo>-AAAA-MM-DD-HHMMSS.md` (troque `/` do ramo por `-`); sem git, `~/handoffs/handoff-AAAA-MM-DD-HHMMSS.md`. O arquivo não entra em commit.
+2. No chat, um bloco de código colável, sem nada para preencher:
    ```
-   Leia o handoff em <caminho ABSOLUTO do .md> e continue o trabalho descrito nele: <objetivo em 1 linha>.
+   Leia o handoff em <caminho ABSOLUTO> e continue o trabalho descrito nele: <objetivo em 1 linha>.
 
-   Antes de tocar em qualquer coisa, execute a "Primeira ação OBRIGATÓRIA" da seção COMO RETOMAR do handoff (conferir git + rodar os testes/checagem de estado). Só depois siga os PRÓXIMOS PASSOS.
+   Antes de tocar em qualquer coisa, faça o COMO RETOMAR do handoff. Só depois siga os PRÓXIMOS PASSOS.
    ```
-   - O caminho TEM que ser **absoluto** (clicável/colável em qualquer máquina), dentro do bloco de código.
-   - **100% colável:** nada pro usuário editar, preencher ou filtrar.
-
-3. **Avise o caminho salvo em uma linha** abaixo do bloco (ex: "Handoff salvo em `<caminho>` — cole o prompt acima num Claude novo."). NÃO cole o conteúdo inteiro do handoff no chat — ele está no arquivo. No máximo, 1-2 linhas do que o documento cobre.
-
-Se **nenhum** local for gravável, aí sim exiba o handoff completo no chat (dentro de um bloco de código) como último recurso, e avise que não deu pra salvar.
-
-Não narre o processo nem peça permissão pra gerar — ele chamou `/handoff` porque já quer o documento + o prompt colável.
+3. Uma linha abaixo com o caminho salvo. Não cole o documento no chat. Se nenhum local for gravável, aí sim mostre o documento inteiro num bloco e avise.
