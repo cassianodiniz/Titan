@@ -1,8 +1,9 @@
 # Fluxograma — plugin `cass`
 
-Plugin com **nove skills**. Cada uma é uma **porta de entrada independente** — você pode começar
+Plugin com **dez skills**. Cada uma é uma **porta de entrada independente** — você pode começar
 por qualquer uma:
 
+- **🎤 /ask-me** — **te entrevista antes de uma tarefa**, em rodadas curtas com resposta recomendada, até o pedido ficar fechado; entrega o pedido pronto pro agente. Avulsa, fora do ciclo: serve antes de qualquer outra.
 - **🧠 /planejar** — desenha um produto/software do zero, **descobre como o problema já foi resolvido lá fora** e **audita a planta** antes de construir.
 - **📝 /spec-plan** — você traz um **plano/decisão/ideia**; ele **sabatina até o entendimento comum** e escreve uma **spec congelada** pronta pra construir com IA. No fim, oferece construir com `/implementar` (Claude) ou `/gpt-builder` (Codex).
 - **🔬 /auto-think** — você traz um **problema sem resposta**; ele **estuda a fundo** (vários ângulos em paralelo, confronta os achados com o Codex/GPT) e entrega **opções com veredito**. Gera caminhos — não executa, para na recomendação.
