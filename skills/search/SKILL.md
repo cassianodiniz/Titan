@@ -1,6 +1,6 @@
 ---
 name: search
-description: "Deep research powered by Exa, with provenance carried through: every number comes back with the page it was read on, the sentence containing it, when it was published and what it was measured on. Use for lead generation, literature reviews, deep dives, competitive analysis, or any query where one search falls short — and especially for research about model behaviour, benchmarks, or any percentage, where findings travel badly between models and tasks."
+description: "Use for research where one search falls short — lead generation, literature reviews, deep dives, competitive analysis — and especially whenever numbers, percentages, benchmarks or claims about model behaviour must come back with the page, the date and what they were measured on, since those findings travel badly between models and tasks."
 ---
 
 # Exa Research Orchestrator

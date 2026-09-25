@@ -1,6 +1,6 @@
 ---
 name: auto-think
-description: "Estuda a fundo um problema difícil ou decisão que pesa e volta com recomendação + alternativas, COM VEREDITO — não executa (quem executa é /implementar ou /gpt-implementar). A própria sessão estuda os ângulos e pesquisa a web pela skill /search (com procedência por número), confronta cada candidata com GPT-sol como advogado do diabo em 2 rodadas, e re-cava o que fica aberto. Acionar por comando: /auto-think <problema>. Fronteira: parecer rápido sobre decisão já tomada = /gpt-optimizer; planejar produto novo do zero = /planejar; EXECUTAR uma tarefa = /implementar ou /gpt-implementar."
+description: "Use quando o usuário invocar /auto-think, ou pedir uma recomendação com veredito sobre um problema difícil, uma decisão que pesa ou uma escolha entre caminhos possíveis — inclusive qual solução a documentação oficial e a prática de mercado sustentam — e aceitar que o estudo leve tempo. Não executa nada. Não use pra parecer rápido sobre uma decisão já tomada (/gpt-optimizer), pra buscar um fato ou número com fonte (/search), pra desenhar produto novo do zero (/planejar) nem pra construir (/implementar ou /gpt-implementar)."
 ---
 
 # auto-think

@@ -3,6 +3,7 @@
 ## 3.3.0 — 2026-09-25
 
 - **`gpt-builder` passa a se chamar `gpt-implementar`.** Ela faz o mesmo trabalho da `implementar`; só muda quem digita o código (o GPT, e o Claude confere). O nome novo deixa o par visível: `/cass:implementar` e `/cass:gpt-implementar`. Quem digitar o nome antigo ainda cai nela, porque a descrição cita `/gpt-builder`. Citações atualizadas em todas as skills, no README, no INSTALL, no instalador e no mapa `docs/qual-sua-situacao.svg`.
+- **Descrições reescritas em 6 skills** (`auto-think`, `gpt-implementar`, `planejar`, `build-review`, `gpt-optimizer`, `search`). A descrição passa a dizer só **quando** usar a skill, não o passo a passo de como ela trabalha: quando resume o método, o agente tende a seguir o resumo e pular a skill. A `build-review` também passa a citar o convite do `/gpt-implementar`, não só o do `/implementar`. Teste cego com 10 agentes Sonnet (22 pedidos, 5 rodadas por versão): as descrições antigas acertaram 109 de 110, as novas 110 de 110.
 
 ## 3.2.0 — 2026-09-24
 

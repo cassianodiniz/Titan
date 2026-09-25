@@ -1,10 +1,6 @@
 ---
 name: planejar
-description: >
-  Planeja produtos digitais antes de qualquer código: brainstorm → spec verificável (EARS) →
-  stack → design → plano auditado. Use quando o usuário quiser planejar um novo produto ou
-  projeto (web app, mobile, extensão, SaaS, API), tiver uma ideia pra transformar em produto,
-  ou pedir spec, PRD, MVP ou plano antes de codar. Entrega o PLANO; o código vem depois.
+description: "Use quando o usuário quiser planejar um produto digital novo do zero antes de qualquer código (web app, mobile, extensão, SaaS, API), tiver uma ideia pra transformar em produto, ou pedir spec, PRD, MVP ou plano de produto. Não use pra mudar um projeto que já existe (/spec-plan)."
 disable-model-invocation: true
 ---
 

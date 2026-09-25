@@ -1,6 +1,6 @@
 ---
 name: build-review
-description: Use quando uma feature já construída vai ser revisada antes do merge e existem uma checklist do que foi prometido (`.checks/<feature>.md`), um diff `<base>..HEAD` e a issue/spec original. Junta três revisores independentes num só passo — dois eixos de qualidade (padrões da casa + aderência ao pedido) e um fiscal que prova cada item da checklist rodando os testes e injetando defeito. Acionada com /build-review ou com o sim ao convite do /implementar. Não use pra planejar nem construir, nem quando ainda não há checklist.
+description: "Use quando uma feature já construída vai ser revisada antes do merge e já existem a checklist do que foi prometido (`.checks/<feature>.md`), o diff `<base>..HEAD` e a issue/spec original; também com /build-review ou com o sim ao convite do /implementar ou do /gpt-implementar. Não use pra planejar nem construir, nem quando ainda não há checklist."
 license: os textos em references/ são cópias verbatim — Matt Pocock (CC-BY-4.0, github.com/mattpocock) e a skill implement (Tech Leads Club, CC-BY-4.0)
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: gpt-optimizer
-description: 'Revisor adversarial via Codex GPT (gpt-6-sol, esforço high) que pega uma decisão, um raciocínio ou um trecho de código que está em jogo na conversa e manda o GPT tentar DERRUBAR (advogado do diabo) — devolve um veredito Seguir/Ajustar/Bloquear com os furos que procedem, pra te proteger de decidir errado. Use SOMENTE quando o usuário invocar de propósito: o comando /gpt-optimizer (ou /gpt), ou pedir pelo nome ("chama o optimizer", "manda pro optimizer"). NÃO dispare sozinho a partir de palavras soltas tipo "reflete", "contraponto" ou "advogado do diabo" no meio de uma conversa normal — esta skill é só sob invocação explícita. Não é pra revisar mensagem de WhatsApp nem código dentro de um fluxo de desenvolvimento dedicado a um projeto.'
+description: "Use SOMENTE quando o usuário invocar de propósito o comando /gpt-optimizer (ou /gpt) ou pedir pelo nome (\"chama o optimizer\", \"manda pro optimizer\"), querendo que o GPT tente derrubar uma decisão, um raciocínio ou um trecho de código que já está na conversa. NÃO dispare por palavras soltas como \"reflete\", \"contraponto\" ou \"advogado do diabo\" no meio de uma conversa normal. Não é pra revisar mensagem de WhatsApp nem código dentro de um fluxo de desenvolvimento com revisão própria."
 ---
 
 # Skill gpt-optimizer — segunda opinião adversarial do GPT pra você refletir, no meio da conversa
