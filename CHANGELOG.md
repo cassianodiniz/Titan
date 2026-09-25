@@ -1,5 +1,9 @@
 # Changelog — cass (antigo Titan)
 
+## 3.3.0 — 2026-09-25
+
+- **`gpt-builder` passa a se chamar `gpt-implementar`.** Ela faz o mesmo trabalho da `implementar`; só muda quem digita o código (o GPT, e o Claude confere). O nome novo deixa o par visível: `/cass:implementar` e `/cass:gpt-implementar`. Quem digitar o nome antigo ainda cai nela, porque a descrição cita `/gpt-builder`. Citações atualizadas em todas as skills, no README, no INSTALL, no instalador e no mapa `docs/qual-sua-situacao.svg`.
+
 ## 3.2.0 — 2026-09-24
 
 - **`handoff` enxuta (de ~2.500 pra ~900 palavras).** Sai o leitor cego via Codex (`references/leitor-cego.md` e `scripts/cold-read.sh`): nos testes ele não evitou nada. Entram três coisas medidas:

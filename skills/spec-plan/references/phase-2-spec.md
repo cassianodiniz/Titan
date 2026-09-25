@@ -109,7 +109,7 @@ List the issues on the current frontier and ask the user to choose the next one.
 
 ```text
 $implementar <plan-name>   (Claude builds)
-$gpt-builder <plan-name>   (Codex builds, Claude verifies)
+$gpt-implementar <plan-name>   (Codex builds, Claude verifies)
 ```
 
 The form `$implementar SPEC_FILE="docs/plans/<plan-id>/issues/<issue-key>-<slug>.md"` remains accepted.

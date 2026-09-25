@@ -6,7 +6,7 @@ license: os textos em references/ são cópias verbatim — Matt Pocock (CC-BY-4
 
 # Build Review — três revisores sobre o mesmo diff
 
-**Onde entra no fluxo:** roda depois de `/implementar` ou `/gpt-builder` — que já deixam a checklist `.checks/<feature>.md` e o diff prontos. É o pente-fino final; não planeja nem constrói.
+**Onde entra no fluxo:** roda depois de `/implementar` ou `/gpt-implementar` — que já deixam a checklist `.checks/<feature>.md` e o diff prontos. É o pente-fino final; não planeja nem constrói.
 
 ## O que é
 
@@ -67,7 +67,7 @@ Standards e Spec: <nº de achados em cada, o pior de cada eixo>
 <veredito PASS/FAIL do Fiscal + as tabelas de evidência>
 ```
 
-No Portão, diga o que vem: PASS → "posso subir e abrir a PR?"; FAIL → "posso devolver os achados à skill que construiu (`/implementar` ou `/gpt-builder`) para consertar?". Só age com o sim.
+No Portão, diga o que vem: PASS → "posso subir e abrir a PR?"; FAIL → "posso devolver os achados à skill que construiu (`/implementar` ou `/gpt-implementar`) para consertar?". Só age com o sim.
 
 Regras da junção, que vêm dos próprios textos-fonte:
 

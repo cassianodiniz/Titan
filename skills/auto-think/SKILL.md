@@ -1,6 +1,6 @@
 ---
 name: auto-think
-description: "Estuda a fundo um problema difícil ou decisão que pesa e volta com recomendação + alternativas, COM VEREDITO — não executa (quem executa é /implementar ou /gpt-builder). A própria sessão estuda os ângulos e pesquisa a web pela skill /search (com procedência por número), confronta cada candidata com GPT-sol como advogado do diabo em 2 rodadas, e re-cava o que fica aberto. Acionar por comando: /auto-think <problema>. Fronteira: parecer rápido sobre decisão já tomada = /gpt-optimizer; planejar produto novo do zero = /planejar; EXECUTAR uma tarefa = /implementar ou /gpt-builder."
+description: "Estuda a fundo um problema difícil ou decisão que pesa e volta com recomendação + alternativas, COM VEREDITO — não executa (quem executa é /implementar ou /gpt-implementar). A própria sessão estuda os ângulos e pesquisa a web pela skill /search (com procedência por número), confronta cada candidata com GPT-sol como advogado do diabo em 2 rodadas, e re-cava o que fica aberto. Acionar por comando: /auto-think <problema>. Fronteira: parecer rápido sobre decisão já tomada = /gpt-optimizer; planejar produto novo do zero = /planejar; EXECUTAR uma tarefa = /implementar ou /gpt-implementar."
 ---
 
 # auto-think
@@ -9,7 +9,7 @@ Modo de trabalho pro usuário **largar um problema difícil e sumir** — e volt
 pronta pra decidir. O auto-think não executa nada: ele **estuda a fundo**. Pesquisa, ataca o
 problema por vários lados ao mesmo tempo, levanta um leque de candidatas, confronta cada uma
 até sobrar só o que aguenta porrada, e entrega as soluções viáveis **com veredito** (a
-recomendada + as alternativas reais). Quem executa a escolhida depois é o `/gpt-builder` —
+recomendada + as alternativas reais). Quem executa a escolhida depois é o `/gpt-implementar` —
 esta skill só pensa.
 
 Repo-agnóstica: serve pra problema técnico ("qual a melhor forma de fazer X no sistema"),
@@ -19,11 +19,11 @@ resolve"), ou de pesquisa pura ("o que o mundo já resolveu sobre isto").
 **A fronteira que define tudo:**
 - `/planejar` = desenhar um PRODUTO novo do zero antes de codar.
 - `/spec-plan` = a solução já foi escolhida e precisa virar um plano construível (spec + tarefas).
-- `/implementar` ou `/gpt-builder` = EXECUTAR uma tarefa e entregar feito.
+- `/implementar` ou `/gpt-implementar` = EXECUTAR uma tarefa e entregar feito.
 - `auto-think` = ESTUDAR um problema a fundo e entregar solução(ões) recomendada(s). Não executa.
 
 Se no fim o usuário quiser rodar a solução escolhida, o ponteiro é: "quer transformar a A em plano?
-→ /spec-plan", e dali pra `/implementar` ou `/gpt-builder`. O auto-think nunca cruza essa linha sozinho.
+→ /spec-plan", e dali pra `/implementar` ou `/gpt-implementar`. O auto-think nunca cruza essa linha sozinho.
 
 ---
 
@@ -77,7 +77,7 @@ parte fácil; qualquer um junta links. O valor está em **atacar os próprios ac
 só o que se sustenta. Por isso o confronto é em mais de uma rodada, e a honestidade ("prova ou
 silêncio") vale igual aqui, mesmo sem dado real em risco.
 
-O contrato de honestidade e segurança é o mesmo do `/gpt-builder`:
+O contrato de honestidade e segurança é o mesmo do `/gpt-implementar`:
 `../_shared/protocolo.md`. Leia antes de começar. O resumo operacional do que
 mais importa pro auto-think está abaixo.
 

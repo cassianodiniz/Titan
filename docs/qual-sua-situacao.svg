@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 604" width="680" height="604" role="img" aria-labelledby="t d">
 <title id="t">Qual skill do cass usar, pela sua situação</title>
-<desc id="d">Mapa de porta de entrada. Coisa nova: ask-me e search; se for um produto inteiro, planejar. Mudar um projeto que já funciona: ask-me pra tarefa pequena, ou spec-plan se tem várias etapas. Já sei mais ou menos: ask-me, search atacando o plano, gpt-optimizer. Não sei o que fazer: ask-me, auto-think, spec-plan. Com o plano pronto, implementar ou gpt-builder constroem e build-review confere; se reprovar, volta pro construtor. A qualquer momento, handoff passa o trabalho pra outra conversa.</desc>
+<desc id="d">Mapa de porta de entrada. Coisa nova: ask-me e search; se for um produto inteiro, planejar. Mudar um projeto que já funciona: ask-me pra tarefa pequena, ou spec-plan se tem várias etapas. Já sei mais ou menos: ask-me, search atacando o plano, gpt-optimizer. Não sei o que fazer: ask-me, auto-think, spec-plan. Com o plano pronto, implementar ou gpt-implementar constroem e build-review confere; se reprovar, volta pro construtor. A qualquer momento, handoff passa o trabalho pra outra conversa.</desc>
 <style>
 svg{--tx:#1f2328;--mu:#59636e;--ln:#59636e;--hf:#e1f5ee;--hs:#0f6e56;--ht:#085041;--hu:#0f6e56;--nf:#f6f8fa;--ns:#d1d9e0;--pf:#eaeef2}
 @media (prefers-color-scheme:dark){svg{--tx:#e6edf3;--mu:#9198a1;--ln:#9198a1;--hf:#0b3a30;--hs:#5dcaa5;--ht:#e1f5ee;--hu:#9fe1cb;--nf:#151b23;--ns:#3d444d;--pf:#262c36}}
@@ -49,7 +49,7 @@ text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,san
 <rect class="frame" x="150" y="368" width="380" height="64" rx="4"/>
 <g class="hot"><rect x="175.0" y="376" width="150" height="48" rx="4"/><text class="h" x="250" y="396" text-anchor="middle">implementar</text><text class="s" x="250" y="413" text-anchor="middle">o Claude constrói</text></g>
 <text x="340" y="405" text-anchor="middle">ou</text>
-<g class="hot"><rect x="355.0" y="376" width="150" height="48" rx="4"/><text class="h" x="430" y="396" text-anchor="middle">gpt-builder</text><text class="s" x="430" y="413" text-anchor="middle">o GPT constrói</text></g>
+<g class="hot"><rect x="355.0" y="376" width="150" height="48" rx="4"/><text class="h" x="430" y="396" text-anchor="middle">gpt-implementar</text><text class="s" x="430" y="413" text-anchor="middle">o GPT constrói</text></g>
 <line class="ln" x1="340" y1="432" x2="340" y2="452" marker-end="url(#a)"/>
 <g class="hot"><rect x="250.0" y="454" width="180" height="48" rx="4"/><text class="h" x="340" y="474" text-anchor="middle">build-review</text><text class="s" x="340" y="491" text-anchor="middle">3 revisores conferem</text></g>
 <path class="ln dash" d="M430 478 H560 V400 H532" marker-end="url(#a)"/>

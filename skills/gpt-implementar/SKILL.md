@@ -1,9 +1,9 @@
 ---
-name: gpt-builder
-description: Hand a frozen spec (one /spec-plan issue or any locked plan) to OpenAI Codex to IMPLEMENT with full write access, while Claude stays the spec-writer and reviewer. Codex builds from the spec in a --yolo sandbox, Claude reads the full diff like a contributor PR, runs the proof test, and iterates fixes via the SAME Codex session up to MAX_FIX_ROUNDS before taking over. Claude commits locally after each verified round; push and PR wait for the user. Use when the user says "/gpt-builder", "have codex build this", "codex implement the plan", "hand the plan to codex", "delegate the build to codex", or right after a plan survives /spec-plan or /gpt-optimizer and they choose Codex for implementation. Also for standalone delegation: refactors, mechanical migrations, bug fixes with a known repro, test/coverage writing — anything that reads as a work order. NOT for tiny edits (~<20 lines — delegation overhead loses), NOT for design work (if writing the spec forces decisions, that's /spec-plan first), NOT for reviewing existing code (/build-review), and NOT for anything needing Claude-session tools (MCP, secrets, browser).
+name: gpt-implementar
+description: Hand a frozen spec (one /spec-plan issue or any locked plan) to OpenAI Codex to IMPLEMENT with full write access, while Claude stays the spec-writer and reviewer. Codex builds from the spec in a --yolo sandbox, Claude reads the full diff like a contributor PR, runs the proof test, and iterates fixes via the SAME Codex session up to MAX_FIX_ROUNDS before taking over. Claude commits locally after each verified round; push and PR wait for the user. Use when the user says "/gpt-implementar" (or the old name "/gpt-builder"), "have codex build this", "codex implement the plan", "hand the plan to codex", "delegate the build to codex", or right after a plan survives /spec-plan or /gpt-optimizer and they choose Codex for implementation. Also for standalone delegation: refactors, mechanical migrations, bug fixes with a known repro, test/coverage writing — anything that reads as a work order. NOT for tiny edits (~<20 lines — delegation overhead loses), NOT for design work (if writing the spec forces decisions, that's /spec-plan first), NOT for reviewing existing code (/build-review), and NOT for anything needing Claude-session tools (MCP, secrets, browser).
 ---
 
-# gpt-builder — Codex Types, Claude Verifies
+# gpt-implementar — Codex Types, Claude Verifies
 
 Same job and same bar as `/implementar`; only the hands change. **Codex types the code in a separate session; Claude does everything before and after the build** — gates, start marker, checklist, commits, verification, report — and treats every Codex claim as advisory until proven. The artifacts are the ones `/implementar` leaves (start marker, issue checklist, commits after the marker, final report), so `/build-review` reads the result the same way.
 
@@ -102,11 +102,11 @@ Same shape as `../implementar/references/contrato.md` — one contract per **who
 ## Step 2 — Launch Codex (fresh session, capture `thread_id`)
 
 ```bash
-codex exec --model gpt-6-sol -c model_reasoning_effort="medium" --yolo --json -o /tmp/gpt-builder.txt - <"$P" 2>/dev/null | grep '"type":"thread.started"'
+codex exec --model gpt-6-sol -c model_reasoning_effort="medium" --yolo --json -o /tmp/gpt-implementar.txt - <"$P" 2>/dev/null | grep '"type":"thread.started"'
 ```
 
 - Prompt goes via stdin (`- <"$P"`) — this both avoids quoting bugs AND sidesteps the non-TTY stdin hang (`codex exec` blocks forever waiting on stdin EOF under Claude Code's Bash tool; feeding the file gives immediate EOF).
-- Parse `thread_id` from the `{"type":"thread.started","thread_id":"..."}` line → `THREAD_ID`. Codex's final report lands in `/tmp/gpt-builder.txt` — read that file; don't parse the JSONL stream for content.
+- Parse `thread_id` from the `{"type":"thread.started","thread_id":"..."}` line → `THREAD_ID`. Codex's final report lands in `/tmp/gpt-implementar.txt` — read that file; don't parse the JSONL stream for content.
 - **Launch refused.** If the permission system blocks the launch (a denied prompt, or a refusal such as "Create Unsafe Agents"), stop and tell the user, quoting the refusal. Do not swap `--yolo` for another flag and do not build it yourself: the point of this skill is that Codex types the code, and a silent swap hides that the build did not happen the way the user chose. The start marker stays: tell the user this issue has started and that the next run must name its file (`SPEC_FILE=<path>`), because selection by plan name skips issues that already have a marker.
 - `2>/dev/null` suppresses cosmetic MCP/auth stderr noise. Confirm success by the report file + a `thread.started` line; neither → failed run (auth/model) — stop and tell the user.
 - **Timing:** foreground with `timeout: 600000` on the Bash tool call (default 2-min tool timeout kills real builds). If the spec is clearly >10 min of work (multi-file feature, migration, anything with image generation), launch with `run_in_background: true` instead and read the `-o` file when it exits. Don't kill a quiet background run early — Codex builds are legitimately slow.
@@ -131,7 +131,7 @@ Problems found → resume the SAME session (Codex keeps its context; cheaper and
 # resume has no --yolo and no -C: run from the repo dir and spell the long flag,
 # or Codex inherits config.toml's sandbox (possibly read-only) and can't write.
 codex exec resume "$THREAD_ID" --model gpt-6-sol -c model_reasoning_effort="medium" --dangerously-bypass-approvals-and-sandbox --json \
-  -o /tmp/gpt-builder.txt - <"$P2" 2>/dev/null >/dev/null
+  -o /tmp/gpt-implementar.txt - <"$P2" 2>/dev/null >/dev/null
 ```
 
 Re-verify (Step 3) after each round. After `MAX_FIX_ROUNDS` failed rounds: STOP delegating — Claude takes over and finishes the remaining fixes directly. Log the takeover. Ping-ponging trivia through delegation burns more than it saves.
@@ -144,7 +144,7 @@ Before the final message, read `../implementar/references/relatorio.md` and foll
 
 Rejected by the user → ask what's wrong, route back to Step 4 (or take over directly if fix rounds are spent).
 
-**Próximo passo (fluxo):** `/spec-plan` → **`/gpt-builder`** (aqui) → `/build-review`. O fiscal daqui prova a aderência à spec; o build-review é o pente-fino de qualidade por cima.
+**Próximo passo (fluxo):** `/spec-plan` → **`/gpt-implementar`** (aqui) → `/build-review`. O fiscal daqui prova a aderência à spec; o build-review é o pente-fino de qualidade por cima.
 
 ## Hard rules
 
