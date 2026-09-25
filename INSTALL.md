@@ -1,6 +1,6 @@
 # Instalar o plugin `cass` (e o que ele usa por fora)
 
-O plugin `cass` (skills `ask-me`, `planejar`, `spec-plan`, `auto-think`, `implementar`, `gpt-builder`, `search`, `build-review`, `handoff`, `gpt-optimizer`) **orquestra** ferramentas externas —
+O plugin `cass` (skills `ask-me`, `planejar`, `spec-plan`, `auto-think`, `implementar`, `gpt-implementar`, `search`, `build-review`, `handoff`, `gpt-optimizer`) **orquestra** ferramentas externas —
 ele não empacota elas. Este arquivo reúne tudo que precisa instalar pra ele rodar completo.
 
 A boa notícia: nada disso trava o plugin. A `planejar` tem um **preflight (Fase 0)** que confere
@@ -48,7 +48,7 @@ Pelo `/plugin`, adicione o marketplace e instale:
 /plugin install cass@cass
 ```
 
-Depois as skills ficam disponíveis como `/cass:planejar`, `/cass:gpt-builder`, `/cass:handoff` e assim por diante.
+Depois as skills ficam disponíveis como `/cass:planejar`, `/cass:gpt-implementar`, `/cass:handoff` e assim por diante.
 
 > Instalou o antigo `Titan` pelo catálogo `cassiano.diniz`? Esse catálogo saiu do ar. Remova com
 > `/plugin uninstall Titan@cassiano.diniz` e `/plugin marketplace remove cassiano.diniz`, e instale o `cass` acima.
@@ -61,7 +61,7 @@ Depois as skills ficam disponíveis como `/cass:planejar`, `/cass:gpt-builder`, 
 |---|---|---|
 | **superpowers** (`brainstorming`, `writing-plans`) | `planejar` Fases 1 e 5 | `/plugin marketplace add obra/superpowers-marketplace`<br/>`/plugin install superpowers@superpowers-marketplace` |
 | **Taste Skill** (`design-taste-frontend`) | `planejar` Fase 4 (só se houver tela) | `npx skills add https://github.com/Leonxlnx/taste-skill --skill "design-taste-frontend"` |
-| **Codex CLI** ≥ 0.156 (constrói + revisor `gpt-6-sol`) | `gpt-builder` (constrói a partir da spec), `gpt-optimizer` e `auto-think` (confronto) | Instalar o Codex CLI da OpenAI e logar. Sem ele, o `gpt-builder` não constrói (o Claude assume, com garantia menor); em risco alto, fica BLOQUEADO até voltar. |
+| **Codex CLI** ≥ 0.156 (constrói + revisor `gpt-6-sol`) | `gpt-implementar` (constrói a partir da spec), `gpt-optimizer` e `auto-think` (confronto) | Instalar o Codex CLI da OpenAI e logar. Sem ele, o `gpt-implementar` não constrói (o Claude assume, com garantia menor); em risco alto, fica BLOQUEADO até voltar. |
 | **Exa** (busca web com procedência) | `search` (pesquisa profunda) | Conta Exa: OAuth no MCP do Exa, ou variável `EXA_API_KEY` (chave grátis em https://dashboard.exa.ai/api-keys). Sem ela, a `search` não roda. |
 
 ---

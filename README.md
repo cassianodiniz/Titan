@@ -6,7 +6,7 @@ inventa número de pesquisa. Cada skill resolve um desses momentos e pode ser ch
 sozinha. Serve pra qualquer projeto.
 
 <p align="center">
-  <img src="docs/qual-sua-situacao.svg" width="680" alt="Mapa de porta de entrada: qual é a sua situação? Coisa nova: ask-me e search; se for um produto inteiro, planejar. Mudar um projeto que já funciona: ask-me pra tarefa pequena, spec-plan se tem várias etapas. Já sei mais ou menos: ask-me, search atacando o plano, gpt-optimizer. Não sei o que fazer: ask-me, auto-think, spec-plan. Com o plano pronto, implementar ou gpt-builder constroem e build-review confere, com volta ao construtor quando reprova. A qualquer momento, handoff.">
+  <img src="docs/qual-sua-situacao.svg" width="680" alt="Mapa de porta de entrada: qual é a sua situação? Coisa nova: ask-me e search; se for um produto inteiro, planejar. Mudar um projeto que já funciona: ask-me pra tarefa pequena, spec-plan se tem várias etapas. Já sei mais ou menos: ask-me, search atacando o plano, gpt-optimizer. Não sei o que fazer: ask-me, auto-think, spec-plan. Com o plano pronto, implementar ou gpt-implementar constroem e build-review confere, com volta ao construtor quando reprova. A qualquer momento, handoff.">
 </p>
 
 ## Como eu uso no dia a dia
@@ -44,7 +44,7 @@ depende da sua situação:
 3. Escolheu o caminho? `/cass:spec-plan` transforma ele em tarefas.
 
 **Depois, em todos os casos:** com o plano pronto, `/cass:implementar` (o Claude constrói)
-ou `/cass:gpt-builder` (o GPT constrói, mais barato), e no fim `/cass:build-review` confere
+ou `/cass:gpt-implementar` (o GPT constrói, mais barato), e no fim `/cass:build-review` confere
 tudo antes de publicar. A conversa ficou longa? `/cass:handoff` passa o trabalho pra uma
 sessão nova.
 
@@ -112,7 +112,7 @@ Comece pela sua situação, não pelo nome da skill.
 | quer **mudar ou acrescentar algo** num projeto, ou tem uma ideia solta que precisa virar tarefas | `/cass:spec-plan` | um plano fatiado em tarefas pequenas, sem dúvida em aberto |
 | tem um **problema difícil e ainda não sabe a resposta** | `/cass:auto-think` | a opção recomendada e as alternativas, cada uma com o porquê |
 | tem um **plano aprovado** e quer que o Claude construa | `/cass:implementar` | o trabalho pronto e testado, salvo no seu computador |
-| tem um **plano aprovado** e quer que o GPT construa, gastando menos Claude | `/cass:gpt-builder` | o mesmo resultado: o Codex constrói, o Claude confere |
+| tem um **plano aprovado** e quer que o GPT construa, gastando menos Claude | `/cass:gpt-implementar` | o mesmo resultado: o Codex constrói, o Claude confere |
 | **terminou de construir** e quer uma vistoria antes de publicar | `/cass:build-review` | Aprovado ou Reprovado, com a prova de cada item |
 | precisa de **pesquisa confiável**, com a fonte de cada número | `/cass:search` | os achados com página, frase e data de cada dado |
 | **já decidiu algo** e quer saber se a decisão aguenta | `/cass:gpt-optimizer` | Seguir, Ajustar ou Bloquear, com os furos que procedem |
@@ -136,7 +136,7 @@ Algumas skills fazem trabalhos vizinhos. A diferença está no **momento** em qu
   constrói: estuda o problema e te devolve opções com veredito. Escolhida a opção, o próximo
   passo é a `spec-plan`.
 
-### Construir: `implementar` ou `gpt-builder`?
+### Construir: `implementar` ou `gpt-implementar`?
 
 As duas entregam a mesma coisa, com a mesma régua de qualidade: uma lista do que foi
 prometido, a prova de cada item, testes e o trabalho salvo no seu computador. Nada vai pro
@@ -144,7 +144,7 @@ GitHub sem o seu OK. Muda só **quem digita o código**:
 
 - **`implementar`**: o próprio Claude constrói. É o caminho padrão e funciona tanto no
   Claude Code quanto no Codex.
-- **`gpt-builder`**: o Claude planeja e confere, o Codex (GPT) constrói. É como ter um gerente
+- **`gpt-implementar`**: o Claude planeja e confere, o Codex (GPT) constrói. É como ter um gerente
   e um pedreiro: fica **mais barato** porque o trabalho pesado sai da cota do Claude. Exige o
   Codex instalado e logado.
 
@@ -179,7 +179,7 @@ escreve código.
 
 **`/cass:spec-plan`** — Transforma uma mudança ou ideia em um plano com tarefas pequenas.
 Pergunta em rodadas curtas, sempre com opções e uma recomendação, até não sobrar dúvida.
-No fim, oferece construir com `implementar` ou `gpt-builder`.
+No fim, oferece construir com `implementar` ou `gpt-implementar`.
 <br/>*Técnico:* spec + issues autocontidas em `docs/plans/<plano>/issues/`; cenários de comportamento; varredura dos "9 esquecidos" (validação, falhas, idempotência...).
 
 **`/cass:auto-think`** — Estuda um problema sem resposta pronta: pesquisa com fonte, ataca
@@ -193,7 +193,7 @@ a lista do que foi prometido com a prova de cada item, testa e salva no seu comp
 fim, oferece a vistoria independente (`build-review`), que confere as provas com outros olhos.
 <br/>*Técnico:* TDD vermelho→verde; checklist em `.checks/` com teste nomeado por item; commits na branch atual; push e PR só com OK.
 
-**`/cass:gpt-builder`** — Mesmo trabalho do `implementar`, mas quem constrói é o Codex. O
+**`/cass:gpt-implementar`** — Mesmo trabalho do `implementar`, mas quem constrói é o Codex. O
 Claude escreve a ordem de serviço, lê tudo o que o Codex fez como se fosse revisar o trabalho
 de um colega, e só salva o que passou na prova.
 <br/>*Técnico:* `codex exec` com `gpt-6-sol` esforço `medium`; fiscal prova cada item no HEAD; até 2 rodadas de correção antes do Claude assumir.
@@ -225,8 +225,8 @@ fato de suposição, e te dá um texto pronto pra colar na sessão nova.
 ## Requisitos, em uma linha cada
 
 - **Claude Code** — onde as skills rodam.
-- **Codex CLI** (≥ 0.156, com `codex login`) — `gpt-builder`, `gpt-optimizer` e `auto-think`. Sem ele, essas skills avisam e o Claude assume o papel, com garantia menor.
+- **Codex CLI** (≥ 0.156, com `codex login`) — `gpt-implementar`, `gpt-optimizer` e `auto-think`. Sem ele, essas skills avisam e o Claude assume o papel, com garantia menor.
 - **Exa** — a `search` (e a pesquisa de quem chama a `search`).
-- **git** — `implementar`, `gpt-builder` e `build-review` trabalham num repositório git; o `handoff` se ancora nele quando existe.
+- **git** — `implementar`, `gpt-implementar` e `build-review` trabalham num repositório git; o `handoff` se ancora nele quando existe.
 
 Histórico de versões em [CHANGELOG.md](CHANGELOG.md).

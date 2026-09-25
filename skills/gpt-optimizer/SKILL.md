@@ -1,6 +1,6 @@
 ---
 name: gpt-optimizer
-description: 'Revisor adversarial via Codex GPT (gpt-6-sol, esforço high) que pega uma decisão, um raciocínio ou um trecho de código que está em jogo na conversa e manda o GPT tentar DERRUBAR (advogado do diabo) — devolve um veredito Seguir/Ajustar/Bloquear com os furos que procedem, pra te proteger de decidir errado. Use SOMENTE quando o usuário invocar de propósito: o comando /gpt-optimizer (ou /gpt), ou pedir pelo nome ("chama o optimizer", "manda pro optimizer"). NÃO dispare sozinho a partir de palavras soltas tipo "reflete", "contraponto" ou "advogado do diabo" no meio de uma conversa normal — esta skill é só sob invocação explícita. Não é pra revisar mensagem de WhatsApp nem código dentro de um fluxo de desenvolvimento dedicado a um projeto.'
+description: "Use SOMENTE quando o usuário invocar de propósito o comando /gpt-optimizer (ou /gpt) ou pedir pelo nome (\"chama o optimizer\", \"manda pro optimizer\"), querendo que o GPT tente derrubar uma decisão, um raciocínio ou um trecho de código que já está na conversa. NÃO dispare por palavras soltas como \"reflete\", \"contraponto\" ou \"advogado do diabo\" no meio de uma conversa normal. Não é pra revisar mensagem de WhatsApp nem código dentro de um fluxo de desenvolvimento com revisão própria."
 ---
 
 # Skill gpt-optimizer — segunda opinião adversarial do GPT pra você refletir, no meio da conversa
@@ -204,7 +204,7 @@ Casos onde a clareza costuma se perder — trate cada um:
 - **Furos só menores:** mesmo corrigindo você mesmo, mostre o que era e o que mudou — uma linha cada, concreta. Não some com a informação.
 - **Nada procedeu:** diga "o GPT levantou X e Y; nenhum se sustenta porque <prova>". Não resuma pra "nada relevante".
 
-**Se o veredito final for SEGUIR** (a decisão passou no confronto): ofereça **levar pra execução** — pergunte se ele quer levar a decisão pra construção agora: `/implementar` (o próprio Claude constrói) ou `/gpt-builder` (o Codex constrói e o Claude confere). É opcional e só com o OK dele; se aceitar, passe o alvo já refletido como objetivo pra skill escolhida. Se a decisão ainda não virou plano, o caminho é `/spec-plan` antes. Se for **AJUSTAR/BLOQUEAR**, não ofereça executar — primeiro resolve o que o confronto apontou.
+**Se o veredito final for SEGUIR** (a decisão passou no confronto): ofereça **levar pra execução** — pergunte se ele quer levar a decisão pra construção agora: `/implementar` (o próprio Claude constrói) ou `/gpt-implementar` (o Codex constrói e o Claude confere). É opcional e só com o OK dele; se aceitar, passe o alvo já refletido como objetivo pra skill escolhida. Se a decisão ainda não virou plano, o caminho é `/spec-plan` antes. Se for **AJUSTAR/BLOQUEAR**, não ofereça executar — primeiro resolve o que o confronto apontou.
 
 ## Fallback — quando o GPT não responde
 

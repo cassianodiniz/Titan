@@ -66,7 +66,7 @@ reabre todos os ângulos — só o que fecha a dúvida em aberto.
 ## Confronto (passos 3 e 6) — GPT-6-sol como advogado do diabo, via Codex CLI
 
 Aqui é o único ponto do ciclo que usa o Codex. O GPT-sol tenta **DERRUBAR** o leque que a sessão
-produziu. Mecânica espelhada do `/gpt-builder` (prompt por stdin, saída em arquivo, sandbox
+produziu. Mecânica espelhada do `/gpt-implementar` (prompt por stdin, saída em arquivo, sandbox
 travado, teto de 15 min): é **leitura/crítica**, não escrita — por isso `--sandbox read-only`
 sempre, nunca `--yolo`.
 
