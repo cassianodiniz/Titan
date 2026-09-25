@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 604" width="680" height="604" role="img" aria-labelledby="t d">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 618" width="680" height="618" role="img" aria-labelledby="t d">
 <title id="t">Qual skill do cass usar, pela sua situação</title>
-<desc id="d">Mapa de porta de entrada. Coisa nova: ask-me e search; se for um produto inteiro, planejar. Mudar um projeto que já funciona: ask-me pra tarefa pequena, ou spec-plan se tem várias etapas. Já sei mais ou menos: ask-me, search atacando o plano, gpt-optimizer. Não sei o que fazer: ask-me, auto-think, spec-plan. Com o plano pronto, implementar ou gpt-implementar constroem e build-review confere; se reprovar, volta pro construtor. A qualquer momento, handoff passa o trabalho pra outra conversa.</desc>
+<desc id="d">Mapa de porta de entrada. Coisa nova: ask-me e search; se for um produto inteiro, planejar. Mudar um projeto que já funciona: ask-me pra tarefa pequena, ou spec-plan se tem várias etapas. Já sei mais ou menos: ask-me, search atacando o plano, gpt-optimizer. Não sei o que fazer: ask-me, auto-think, spec-plan. Com o plano pronto, implementar (o agente da conversa: Claude, Codex ou outro) ou gpt-implementar (o Claude orquestra subagentes GPT) constroem e build-review confere; se reprovar, volta pro construtor. A qualquer momento, handoff passa o trabalho pra outra conversa.</desc>
 <style>
 svg{--tx:#1f2328;--mu:#59636e;--ln:#59636e;--hf:#e1f5ee;--hs:#0f6e56;--ht:#085041;--hu:#0f6e56;--nf:#f6f8fa;--ns:#d1d9e0;--pf:#eaeef2}
 @media (prefers-color-scheme:dark){svg{--tx:#e6edf3;--mu:#9198a1;--ln:#9198a1;--hf:#0b3a30;--hs:#5dcaa5;--ht:#e1f5ee;--hu:#9fe1cb;--nf:#151b23;--ns:#3d444d;--pf:#262c36}}
@@ -46,16 +46,16 @@ text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,san
 <g class="hot"><rect x="513.0" y="268" width="150" height="48" rx="4"/><text class="h" x="588" y="288" text-anchor="middle">spec-plan</text><text class="s" x="588" y="305" text-anchor="middle">plano em tarefas</text></g>
 <path class="ln" d="M92 324 V346 H588 M257 272 V346 M423 316 V346 M588 316 V346 M340 346 V366" marker-end="url(#a)"/>
 <text x="350" y="340" text-anchor="start">plano pronto</text>
-<rect class="frame" x="150" y="368" width="380" height="64" rx="4"/>
-<g class="hot"><rect x="175.0" y="376" width="150" height="48" rx="4"/><text class="h" x="250" y="396" text-anchor="middle">implementar</text><text class="s" x="250" y="413" text-anchor="middle">o Claude constrói</text></g>
-<text x="340" y="405" text-anchor="middle">ou</text>
-<g class="hot"><rect x="355.0" y="376" width="150" height="48" rx="4"/><text class="h" x="430" y="396" text-anchor="middle">gpt-implementar</text><text class="s" x="430" y="413" text-anchor="middle">o GPT constrói</text></g>
-<line class="ln" x1="340" y1="432" x2="340" y2="452" marker-end="url(#a)"/>
-<g class="hot"><rect x="250.0" y="454" width="180" height="48" rx="4"/><text class="h" x="340" y="474" text-anchor="middle">build-review</text><text class="s" x="340" y="491" text-anchor="middle">3 revisores conferem</text></g>
-<path class="ln dash" d="M430 478 H560 V400 H532" marker-end="url(#a)"/>
-<text x="566" y="474" text-anchor="start">reprovou: volta</text>
-<line class="ln" x1="340" y1="502" x2="340" y2="520" marker-end="url(#a)"/>
-<rect class="pill" x="270" y="522" width="140" height="34" rx="17"/><text class="h" x="340" y="544" text-anchor="middle">pode publicar</text>
-<line x1="20" y1="568" x2="660" y2="568" stroke="var(--ns)" stroke-width="1" stroke-dasharray="2 3"/>
-<text x="20" y="588" text-anchor="start">A qualquer momento: <tspan class="h" style="font-size:12px">handoff</tspan> salva o ponto e passa o trabalho pra uma conversa nova.</text>
+<rect class="frame" x="110" y="368" width="460" height="78" rx="4"/>
+<g class="hot"><rect x="125.0" y="376" width="190" height="62" rx="4"/><text class="h" x="220" y="396" text-anchor="middle">implementar</text><text class="s" x="220" y="413" text-anchor="middle">agente da conversa constrói</text><text class="s" x="220" y="429" text-anchor="middle">(Claude, Codex, Grok, etc)</text></g>
+<text x="340" y="412" text-anchor="middle">ou</text>
+<g class="hot"><rect x="365.0" y="376" width="190" height="62" rx="4"/><text class="h" x="460" y="396" text-anchor="middle">gpt-implementar</text><text class="s" x="460" y="413" text-anchor="middle">o Claude orquestra,</text><text class="s" x="460" y="429" text-anchor="middle">subagentes GPT constroem</text></g>
+<line class="ln" x1="340" y1="446" x2="340" y2="466" marker-end="url(#a)"/>
+<g class="hot"><rect x="250.0" y="468" width="180" height="48" rx="4"/><text class="h" x="340" y="488" text-anchor="middle">build-review</text><text class="s" x="340" y="505" text-anchor="middle">3 revisores conferem</text></g>
+<path class="ln dash" d="M430 492 H600 V407 H572" marker-end="url(#a)"/>
+<text x="436" y="486" text-anchor="start">reprovou: volta</text>
+<line class="ln" x1="340" y1="516" x2="340" y2="534" marker-end="url(#a)"/>
+<rect class="pill" x="270" y="536" width="140" height="34" rx="17"/><text class="h" x="340" y="558" text-anchor="middle">pode publicar</text>
+<line x1="20" y1="582" x2="660" y2="582" stroke="var(--ns)" stroke-width="1" stroke-dasharray="2 3"/>
+<text x="20" y="602" text-anchor="start">A qualquer momento: <tspan class="h" style="font-size:12px">handoff</tspan> salva o ponto e passa o trabalho pra uma conversa nova.</text>
 </svg>

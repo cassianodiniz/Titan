@@ -1,7 +1,7 @@
 {
   "name": "cass",
-  "version": "3.3.0",
-  "description": "Skills do Cassiano Diniz pra trabalhar com IA do jeito certo: pensar antes de fazer, construir com prova e conferir antes de confiar. ask-me (te entrevista antes de uma tarefa e entrega o pedido pronto pro agente), planejar (produto novo do zero, com pesquisa de mercado), spec-plan (transforma uma mudança ou ideia em plano com tarefas), auto-think (estuda um problema sem resposta e traz opções com veredito), implementar (o Claude constrói um plano aprovado), gpt-implementar (o Codex constrói e o Claude confere — mais barato), build-review (revisão final com 3 revisores independentes), search (pesquisa com a fonte de cada número), gpt-optimizer (o GPT tenta derrubar uma decisão que você já tomou) e handoff (passa o trabalho pra uma sessão nova sem perder o fio).",
+  "version": "3.3.1",
+  "description": "Skills do Cassiano Diniz pra trabalhar com IA do jeito certo: pensar antes de fazer, construir com prova e conferir antes de confiar. ask-me (te entrevista antes de uma tarefa e entrega o pedido pronto pro agente), planejar (produto novo do zero, com pesquisa de mercado), spec-plan (transforma uma mudança ou ideia em plano com tarefas), auto-think (estuda um problema sem resposta e traz opções com veredito), implementar (o agente da conversa constrói um plano aprovado: Claude, Codex ou outro), gpt-implementar (o Claude orquestra, subagentes GPT no Codex constroem — mais barato), build-review (revisão final com 3 revisores independentes), search (pesquisa com a fonte de cada número), gpt-optimizer (o GPT tenta derrubar uma decisão que você já tomou) e handoff (passa o trabalho pra uma sessão nova sem perder o fio).",
   "author": {
     "name": "Cassiano Diniz",
     "email": "cassi.diniz@gmail.com"

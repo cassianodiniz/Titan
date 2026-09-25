@@ -1,5 +1,9 @@
 # Changelog — cass (antigo Titan)
 
+## 3.3.1 — 2026-09-25
+
+- **Fica claro quem constrói em cada uma.** `implementar`: o agente da própria conversa constrói, e ele pode ser o Claude, o Codex, o Grok ou outro. `gpt-implementar`: o Claude orquestra e subagentes GPT (no Codex) constroem. Antes os textos diziam "o Claude constrói" e "o GPT constrói", o que dava a entender que a `implementar` só roda no Claude. Mudou no mapa `docs/qual-sua-situacao.svg` (caixas mais largas, com duas linhas), no README, no manifesto e na passagem de bastão da `spec-plan` e da `planejar`.
+
 ## 3.3.0 — 2026-09-25
 
 - **`gpt-builder` passa a se chamar `gpt-implementar`.** Ela faz o mesmo trabalho da `implementar`; só muda quem digita o código (o GPT, e o Claude confere). O nome novo deixa o par visível: `/cass:implementar` e `/cass:gpt-implementar`. Quem digitar o nome antigo ainda cai nela, porque a descrição cita `/gpt-builder`. Citações atualizadas em todas as skills, no README, no INSTALL, no instalador e no mapa `docs/qual-sua-situacao.svg`.

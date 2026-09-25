@@ -493,8 +493,8 @@ O plano passa por review adversarial como se fosse codigo real.
 - Todos P0/P1 corrigidos no plano
 
 ### Proximo passo
-Quando quiser executar, neste mesmo plugin: `/implementar` (o Claude constroi)
-ou `/gpt-implementar` (o Codex constroi e o Claude confere), uma tarefa do plano por vez.
+Quando quiser executar, neste mesmo plugin: `/implementar` (o agente desta sessao constroi: Claude, Codex ou outro)
+ou `/gpt-implementar` (o Claude orquestra, subagentes GPT no Codex constroem), uma tarefa do plano por vez.
 Alternativa externa: `superpowers:subagent-driven-development` apontando para o plano + feature list. Terminada a implementacao, rode
 o loop de validacao de `docs/<nome>-jornadas.md` — so lance com tudo ✅.
 ```
@@ -544,4 +544,4 @@ Nem todo produto precisa das 9 fases completas. Sempre confirme com o usuario an
 
 ---
 
-**Execução do plano** (pós-skill): neste plugin, `/implementar` (Claude constrói) ou `/gpt-implementar` (Codex constrói, Claude confere), uma tarefa por vez; fora dele, `superpowers:subagent-driven-development` ou `superpowers:executing-plans` apontando pro plano + `docs/<nome>-features.json`. Depois da implementação: loop de validação de `docs/<nome>-jornadas.md` até todas as jornadas ✅ em todas as resoluções.
+**Execução do plano** (pós-skill): neste plugin, `/implementar` (o agente da sessão constrói: Claude, Codex ou outro) ou `/gpt-implementar` (o Claude orquestra, subagentes GPT no Codex constroem), uma tarefa por vez; fora dele, `superpowers:subagent-driven-development` ou `superpowers:executing-plans` apontando pro plano + `docs/<nome>-features.json`. Depois da implementação: loop de validação de `docs/<nome>-jornadas.md` até todas as jornadas ✅ em todas as resoluções.

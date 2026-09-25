@@ -43,8 +43,9 @@ depende da sua situação:
    GPT tenta derrubar (em até 2 rodadas) e você recebe um veredito.
 3. Escolheu o caminho? `/cass:spec-plan` transforma ele em tarefas.
 
-**Depois, em todos os casos:** com o plano pronto, `/cass:implementar` (o Claude constrói)
-ou `/cass:gpt-implementar` (o GPT constrói, mais barato), e no fim `/cass:build-review` confere
+**Depois, em todos os casos:** com o plano pronto, `/cass:implementar` (o agente da
+conversa constrói: Claude, Codex ou outro) ou `/cass:gpt-implementar` (o Claude orquestra
+subagentes GPT, mais barato), e no fim `/cass:build-review` confere
 tudo antes de publicar. A conversa ficou longa? `/cass:handoff` passa o trabalho pra uma
 sessão nova.
 
@@ -111,8 +112,8 @@ Comece pela sua situação, não pelo nome da skill.
 | tem a ideia de um **produto que ainda não existe** e quer saber se vale e como fazer | `/cass:planejar` | um plano completo, com pesquisa de mercado, tecnologia e telas, já revisado |
 | quer **mudar ou acrescentar algo** num projeto, ou tem uma ideia solta que precisa virar tarefas | `/cass:spec-plan` | um plano fatiado em tarefas pequenas, sem dúvida em aberto |
 | tem um **problema difícil e ainda não sabe a resposta** | `/cass:auto-think` | a opção recomendada e as alternativas, cada uma com o porquê |
-| tem um **plano aprovado** e quer que o Claude construa | `/cass:implementar` | o trabalho pronto e testado, salvo no seu computador |
-| tem um **plano aprovado** e quer que o GPT construa, gastando menos Claude | `/cass:gpt-implementar` | o mesmo resultado: o Codex constrói, o Claude confere |
+| tem um **plano aprovado** e quer que o agente da própria conversa construa (Claude, Codex ou outro) | `/cass:implementar` | o trabalho pronto e testado, salvo no seu computador |
+| tem um **plano aprovado** e quer que o GPT construa, gastando menos Claude | `/cass:gpt-implementar` | o mesmo resultado: o Claude orquestra, subagentes GPT (Codex) constroem |
 | **terminou de construir** e quer uma vistoria antes de publicar | `/cass:build-review` | Aprovado ou Reprovado, com a prova de cada item |
 | precisa de **pesquisa confiável**, com a fonte de cada número | `/cass:search` | os achados com página, frase e data de cada dado |
 | **já decidiu algo** e quer saber se a decisão aguenta | `/cass:gpt-optimizer` | Seguir, Ajustar ou Bloquear, com os furos que procedem |
@@ -142,9 +143,9 @@ As duas entregam a mesma coisa, com a mesma régua de qualidade: uma lista do qu
 prometido, a prova de cada item, testes e o trabalho salvo no seu computador. Nada vai pro
 GitHub sem o seu OK. Muda só **quem digita o código**:
 
-- **`implementar`**: o próprio Claude constrói. É o caminho padrão e funciona tanto no
-  Claude Code quanto no Codex.
-- **`gpt-implementar`**: o Claude planeja e confere, o Codex (GPT) constrói. É como ter um gerente
+- **`implementar`**: o agente da própria conversa constrói. É o caminho padrão e roda em
+  qualquer agente: Claude Code, Codex, Grok ou outro.
+- **`gpt-implementar`**: o Claude orquestra e confere, subagentes GPT (Codex) constroem. É como ter um gerente
   e um pedreiro: fica **mais barato** porque o trabalho pesado sai da cota do Claude. Exige o
   Codex instalado e logado.
 
@@ -188,13 +189,13 @@ recomendada e as alternativas. Não executa nada. Antes de mandar qualquer coisa
 troca nomes e dados pessoais por etiquetas.
 <br/>*Técnico:* confronto adversarial com Codex `gpt-6-sol` em 2 rodadas; pesquisa via `search`.
 
-**`/cass:implementar`** — O Claude constrói um plano já aprovado, uma tarefa por vez: escreve
+**`/cass:implementar`** — O agente da conversa (Claude, Codex ou outro) constrói um plano já aprovado, uma tarefa por vez: escreve
 a lista do que foi prometido com a prova de cada item, testa e salva no seu computador. No
 fim, oferece a vistoria independente (`build-review`), que confere as provas com outros olhos.
 <br/>*Técnico:* TDD vermelho→verde; checklist em `.checks/` com teste nomeado por item; commits na branch atual; push e PR só com OK.
 
-**`/cass:gpt-implementar`** — Mesmo trabalho do `implementar`, mas quem constrói é o Codex. O
-Claude escreve a ordem de serviço, lê tudo o que o Codex fez como se fosse revisar o trabalho
+**`/cass:gpt-implementar`** — Mesmo trabalho do `implementar`, mas o Claude orquestra e quem
+constrói são subagentes GPT, no Codex. O Claude escreve a ordem de serviço, lê tudo o que o Codex fez como se fosse revisar o trabalho
 de um colega, e só salva o que passou na prova.
 <br/>*Técnico:* `codex exec` com `gpt-6-sol` esforço `medium`; fiscal prova cada item no HEAD; até 2 rodadas de correção antes do Claude assumir.
 
