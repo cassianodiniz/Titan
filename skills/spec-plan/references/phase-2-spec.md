@@ -108,8 +108,8 @@ If external publication is authorized, create the issues in dependency order, re
 List the issues on the current frontier and ask the user to choose the next one. After the choice, offer the two builders, one line each, and let the user pick:
 
 ```text
-$implementar <plan-name>   (Claude builds)
-$gpt-implementar <plan-name>   (Codex builds, Claude verifies)
+$implementar <plan-name>   (the agent in this session builds: Claude, Codex or any other)
+$gpt-implementar <plan-name>   (Claude orchestrates, GPT subagents in Codex build)
 ```
 
 The form `$implementar SPEC_FILE="docs/plans/<plan-id>/issues/<issue-key>-<slug>.md"` remains accepted.
